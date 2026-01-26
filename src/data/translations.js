@@ -22,6 +22,17 @@ export const TRANSLATIONS = {
                 users: 'Usuarios Activos',
                 recycled: 'Kg Reciclados',
                 commitment: 'Compromiso'
+            },
+            dashboard_mock: {
+                welcome: 'Bienvenido',
+                activity: 'Actividad',
+                viewAll: 'Ver Todo',
+                plastic: 'Plásticos',
+                paper: 'Papel',
+                points: 'Puntos',
+                rank: 'Rango',
+                time1: 'Hace 2h',
+                time2: 'Ayer'
             }
         },
         programs: {
@@ -181,6 +192,17 @@ export const TRANSLATIONS = {
                 users: 'Active Users',
                 recycled: 'Kg Recycled',
                 commitment: 'Commitment'
+            },
+            dashboard_mock: {
+                welcome: 'Welcome Back',
+                activity: 'Activity',
+                viewAll: 'View All',
+                plastic: 'Plastics',
+                paper: 'Paper',
+                points: 'Points',
+                rank: 'Rank',
+                time1: '2h ago',
+                time2: 'Yesterday'
             }
         },
         programs: {

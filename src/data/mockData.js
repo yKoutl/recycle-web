@@ -40,10 +40,58 @@ export const MOCK_PROGRAMS = (t) => [
 ];
 
 export const MOCK_PARTNERS = (t) => [
-    { id: 1, name: 'EcoIndustry', category: t.partners.types.industrial, logo: '🏭' },
-    { id: 2, name: 'GreenTech', category: t.partners.types.tech, logo: '💻' },
-    { id: 3, name: 'BioVida', category: t.partners.types.food, logo: '🍎' },
-    { id: 4, name: 'CleanCity', category: t.partners.types.urban, logo: '🏙️' },
+    {
+        id: 1,
+        name: 'Nos Planét',
+        category: 'Plataforma',
+        logo: 'NP', // Using text for now as placeholder, or icon
+        bgHeader: 'bg-emerald-600',
+        stats: { prizes: 1, exchanges: 5234 },
+        details: {
+            desc: 'Beneficios exclusivos en la plataforma. Suscripciones y más.',
+            about: 'Nuestra misión es democratizar el reciclaje y hacer que cada acción cuente. Trabajamos para crear una economía circular donde los residuos se conviertan en recursos.',
+            commitment: 'Promovemos el reciclaje inclusivo y la tecnología sostenible en cada paso.'
+        }
+    },
+    {
+        id: 2,
+        name: 'Yape',
+        category: 'Fintech',
+        logo: 'YP',
+        bgHeader: 'bg-violet-600',
+        stats: { prizes: 2, exchanges: 1245 },
+        details: {
+            desc: 'Beneficios en recargas y cashback directo. Canjea tus puntos por saldo.',
+            about: 'Yape transforma la manera de pagar y ahora también la forma de recompensar tus acciones verdes.',
+            commitment: 'Apoyamos la inclusión financiera y ambiental.'
+        }
+    },
+    {
+        id: 3,
+        name: 'BCP',
+        category: 'Banco',
+        logo: 'BCP',
+        bgHeader: 'bg-blue-800',
+        stats: { prizes: 2, exchanges: 856 },
+        details: {
+            desc: 'Descuentos exclusivos en servicios bancarios y bonos de apertura.',
+            about: 'El banco líder comprometido con el desarrollo sostenible del país.',
+            commitment: 'Inversiones responsables y apoyo a iniciativas de cambio climático.'
+        }
+    },
+    {
+        id: 4,
+        name: 'EcoTienda',
+        category: 'Marketplace',
+        logo: 'ET',
+        bgHeader: 'bg-green-500',
+        stats: { prizes: 5, exchanges: 310 },
+        details: {
+            desc: 'Productos ecológicos con descuento especial por tus puntos de reciclaje.',
+            about: 'Tu tienda favorita para productos zero-waste y amigables con el planeta.',
+            commitment: 'Reducción de huella de carbono en logística y packaging.'
+        }
+    },
 ];
 
 export const MOCK_REQUESTS = (t) => [

@@ -78,23 +78,23 @@ const Hero = ({ onScrollToPrograms, t }) => {
                         key={currentSlide}
                         className="space-y-8 animate-in slide-in-from-left fade-in duration-700"
                     >
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full text-green-300 text-sm font-semibold border border-white/10 shadow-lg hover:bg-white/20 transition-colors cursor-default">
+                        <div className="inline-flex items-center  gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-2xl text-green-300 text-sm border border-white/10 shadow-lg hover:bg-white/20 transition-colors cursor-default">
                             <Globe size={16} /> <span>{t.hero.tag}</span>
                         </div>
 
-                        <h1 className="text-5xl lg:text-7xl font-bold leading-tight tracking-tight text-white">
+                        <h1 className="text-5xl lg:text-6xl uppercase leading-tight tracking-tight text-white">
                             {activeSlide.titlePart1} <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-300">{activeSlide.titlePart2}</span>
                         </h1>
 
-                        <p className="text-xl text-gray-200 max-w-lg leading-relaxed font-medium">
+                        <p className="text-lg text-gray-200 max-w-lg leading-relaxed">
                             {activeSlide.subtitle}
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 pt-2">
-                            <Button onClick={onScrollToPrograms} className="h-14 px-8 text-lg shadow-xl shadow-green-900/20">
+                            <Button onClick={onScrollToPrograms} className="h-14 px-8 text-md shadow-green-900/20">
                                 {t.hero.btnPrimary} <ArrowRight size={20} />
                             </Button>
-                            <Button variant="outline" onClick={() => document.getElementById('about').scrollIntoView({ behavior: 'smooth' })} className="h-14 px-8 text-lg bg-transparent border-white/30 text-white hover:bg-white/10 shadow-sm">
+                            <Button variant="outline" onClick={() => document.getElementById('about').scrollIntoView({ behavior: 'smooth' })} className="h-14 px-8 text-md bg-transparent border-white/30 text-white hover:bg-white/10 shadow-sm">
                                 {t.hero.btnSecondary}
                             </Button>
                         </div>

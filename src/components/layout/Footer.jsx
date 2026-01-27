@@ -8,7 +8,7 @@ const Footer = ({ t }) => (
                 <div className="col-span-1 md:col-span-2 space-y-4">
                     <div className="flex items-center gap-2 text-gray-900 dark:text-white">
                         <div className="bg-white p-1 rounded-lg border border-gray-100 dark:border-none"><img src={logoNosPlanet} alt="Logo" className="w-5 h-5 object-contain" /></div>
-                        <span className="text-2xl font-bold">RecycleApp</span>
+                        <span className="text-2xl ">RecycleApp</span>
                     </div>
                     <p className="max-w-sm text-sm leading-relaxed text-gray-500 dark:text-gray-500">
                         {t.footer.desc}

@@ -44,19 +44,19 @@ const Navbar = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t }) => {
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-white shadow-lg transition-transform group-hover:rotate-12`}>
                         <img src={logoNosPlanet} alt="Logo" className="w-8 h-8 object-contain" />
                     </div>
-                    <span className={`text-2xl font-bold tracking-tight ${isScrolled ? 'text-gray-900 dark:text-white' : 'text-white drop-shadow-md'}`}>
+                    <span className={`text-2xl tracking-tight ${isScrolled ? 'text-gray-900 dark:text-white' : 'text-white drop-shadow-md'}`}>
                         Recycle<span className={isScrolled ? 'text-green-600 dark:text-green-400' : 'text-green-400'}>App</span>
                     </span>
                 </div>
 
                 {/* Desktop Menu */}
                 <div className="hidden xl:flex items-center gap-1">
-                    <div className="flex items-center gap-1 mr-4 bg-white/5 backdrop-blur-sm rounded-full p-1 border border-white/10">
+                    <div className="flex items-center gap-1 mr-4 bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-white/10">
                         {navLinks.map((link) => (
                             <button
                                 key={link.id}
                                 onClick={() => scrollToSection(link.id)}
-                                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${isScrolled
+                                className={`px-4 py-2 rounded-2xl text-sm font-medium transition-all duration-300 ${isScrolled
                                     ? 'text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                     : 'text-white/90 hover:text-white hover:bg-white/10'
                                     }`}

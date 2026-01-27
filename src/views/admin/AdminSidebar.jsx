@@ -6,11 +6,11 @@ const AdminSidebar = ({ activeTab, setActiveTab, t, requestsCount, onLogout }) =
     return (
         <aside className="w-72 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 hidden md:flex flex-col fixed h-full z-20 transition-colors duration-500">
             <div className="p-8 border-b border-gray-100 dark:border-gray-800">
-                <div className="flex items-center gap-2.5 text-gray-900 dark:text-white font-bold text-2xl">
+                <div className="flex items-center gap-2.5 text-gray-900 dark:text-white text-2xl">
                     <div className="p-1.5 rounded-lg shadow-md bg-white">
                         <img src={logoNosPlanet} alt="Logo" className="w-6 h-6 object-contain" />
                     </div>
-                    Recycle<span className="text-green-600 dark:text-green-400">Admin</span>
+                    <span className="text-green-600 dark:text-green-400">Recycle</span>
                 </div>
             </div>
 

@@ -15,27 +15,95 @@ export const MOCK_STATS = (t) => [
 export const MOCK_PROGRAMS = (t) => [
     {
         id: 1,
-        title: t.programs.items.p1_title,
+        title: 'Reforesta Perú',
+        organization: 'Ministerio del Ambiente',
         description: t.programs.items.p1_desc,
         image: 'https://images.unsplash.com/photo-1562077981-4d7eafd44932?auto=format&fit=crop&q=80&w=800',
-        points: 50,
-        category: t.programs.categories.plastic
+        ecopoints: 150,
+        participants: 1250,
+        location: 'Lima, Perú',
+        type: 'government', // Blue
+        category: t.programs.categories.plastic,
+        details: {
+            about: 'Programa nacional de reforestación que busca recuperar áreas degradadas mediante la plantación de especies nativas. Cada participante contribuye directamente a la restauración de ecosistemas.',
+            objectives: [
+                'Plantar 50,000 árboles nativos en áreas deforestadas',
+                'Capacitar a comunidades en técnicas de reforestación',
+                'Monitorear el crecimiento y desarrollo de las plantaciones',
+                'Crear conciencia sobre la importancia de los bosques'
+            ],
+            activities: [
+                'Jornadas de plantación todos los sábados',
+                'Talleres de educación ambiental',
+                'Mantenimiento de áreas reforestadas',
+                'Seguimiento fotográfico del progreso'
+            ],
+            contact: {
+                email: 'reforesta@minam.gob.pe',
+                phone: '+51 1 611 6000',
+                web: 'www.minam.gob.pe/reforesta'
+            }
+        }
     },
     {
         id: 2,
-        title: t.programs.items.p2_title,
+        title: 'Limpieza de Playas',
+        organization: 'Nos Planet SAC',
         description: t.programs.items.p2_desc,
-        image: 'https://images.unsplash.com/photo-1533626904905-cc52fd99285e?auto=format&fit=crop&q=80&w=800',
-        points: 30,
-        category: t.programs.categories.glass
+        image: 'https://images.unsplash.com/photo-1621451537084-482c73073a0f?auto=format&fit=crop&q=80&w=800',
+        ecopoints: 100,
+        participants: 850,
+        location: 'Costa Verde',
+        type: 'company', // Green #018F64
+        category: t.programs.categories.glass,
+        details: {
+            about: 'Iniciativa comunitaria para la limpieza y conservación de nuestras playas. Únete a nosotros para mantener nuestros océanos libres de plástico y residuos.',
+            objectives: [
+                'Recolectar 1 tonelada de residuos plásticos',
+                'Concientizar a los bañistas sobre la contaminación',
+                'Clasificar y reciclar los residuos encontrados'
+            ],
+            activities: [
+                'Limpieza matutina de playas',
+                'Charla de seguridad y clasificación',
+                'Pesaje y registro de residuos'
+            ],
+            contact: {
+                email: 'limpieza@nosplanet.com',
+                phone: '+51 999 888 777',
+                web: 'www.nosplanet.com/playas'
+            }
+        }
     },
     {
         id: 3,
-        title: t.programs.items.p3_title,
+        title: 'Amazonía Verde',
+        organization: 'WWF Perú',
         description: t.programs.items.p3_desc,
         image: 'https://images.unsplash.com/photo-1550989460-0adf9ea622e2?auto=format&fit=crop&q=80&w=800',
-        points: 100,
-        category: t.programs.categories.ewaste
+        ecopoints: 200,
+        participants: 2100,
+        location: 'Madre de Dios',
+        type: 'ong', // Red
+        category: t.programs.categories.ewaste,
+        details: {
+            about: 'Proyecto integral para la protección de la biodiversidad en la Amazonía. Trabajamos con comunidades locales para preservar nuestro patrimonio natural.',
+            objectives: [
+                'Proteger 100 hectáreas de bosque virgen',
+                'Apoyar el desarrollo sostenible local',
+                'Investigación de especies en peligro'
+            ],
+            activities: [
+                'Patrullaje y vigilancia forestal',
+                'Talleres de artesanía sostenible',
+                'Expediciones de investigación'
+            ],
+            contact: {
+                email: 'amazonia@wwf.peru.org',
+                phone: '+51 1 222 3333',
+                web: 'www.wwf.org.pe'
+            }
+        }
     },
 ];
 
@@ -102,7 +170,7 @@ export const MOCK_REQUESTS = (t) => [
 ];
 
 export const INITIAL_REVIEWS = (t) => [
-    { id: 1, name: 'Mariana Costa', text: '"Una plataforma increíble. He logrado reducir mis residuos al 50% y además gano recompensas por ello. ¡Totalmente recomendada!"', rating: 5, avatar: 10, likes: 24, liked: false },
-    { id: 2, name: 'Juan Perez', text: '"Muy fácil de usar y el servicio de recolección es excelente."', rating: 4, avatar: 12, likes: 12, liked: false },
-    { id: 3, name: 'Elena Gomez', text: '"Me encanta la iniciativa de GreenPrint para aprender más."', rating: 5, avatar: 15, likes: 45, liked: false },
+    { id: 1, name: 'Mariana Costa', text: '"Una plataforma increíble. He logrado reducir mis residuos al 50% y además gano recompensas por ello. ¡Totalmente recomendada!"', rating: 5, avatar: 10, likes: 24, liked: false, level: 'Eco-Guardián' },
+    { id: 2, name: 'Juan Perez', text: '"Muy fácil de usar y el servicio de recolección es excelente."', rating: 4, avatar: 12, likes: 12, liked: false, level: 'Eco-Guardián' },
+    { id: 3, name: 'Elena Gomez', text: '"Me encanta la iniciativa de GreenPrint para aprender más."', rating: 5, avatar: 15, likes: 45, liked: false, level: 'Eco-Guardián' },
 ];

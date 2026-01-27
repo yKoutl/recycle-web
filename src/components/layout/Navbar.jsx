@@ -45,7 +45,7 @@ const Navbar = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t }) => {
                         <img src={logoNosPlanet} alt="Logo" className="w-8 h-8 object-contain" />
                     </div>
                     <span className={`text-2xl font-bold tracking-tight ${isScrolled ? 'text-gray-900 dark:text-white' : 'text-white drop-shadow-md'}`}>
-                        Recycle<span className={isScrolled ? 'text-green-600 dark:text-green-400' : 'text-green-400'}>App</span>
+                        Recycle<span className={isScrolled ? 'text-primary-day dark:text-primary-night' : 'text-primary-day dark:text-primary-night'}>App</span>
                     </span>
                 </div>
 

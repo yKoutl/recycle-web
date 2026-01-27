@@ -14,7 +14,7 @@ const PartnerModal = ({ isOpen, onClose, partner }) => {
                 {/* Left Side: Visual Identity & Stats */}
                 <div className={`${partner.bgHeader || 'bg-gray-600'} md:w-2/5 p-8 text-white relative flex flex-col items-center justify-center text-center`}>
                     {/* Background Pattern */}
-                    <div className="absolute inset-0 bg-black/10 mix-blend-overlay pattern-diagonal-lines opacity-50"></div>
+                    <div className="absolute inset-0 bg-black/20 mix-blend-overlay pattern-diagonal-lines opacity-50"></div>
 
                     <div className="relative z-10 flex flex-col items-center w-full h-full justify-between">
                         <div className="mt-8">
@@ -45,7 +45,7 @@ const PartnerModal = ({ isOpen, onClose, partner }) => {
                 </div>
 
                 {/* Right Side: Content */}
-                <div className="md:w-3/5 flex flex-col bg-white dark:bg-gray-950">
+                <div className="md:w-3/5 flex flex-col bg-[#D5F6ED] dark:bg-gray-950">
                     <div className="flex justify-end p-4">
                         <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
                             <X size={24} />
@@ -66,7 +66,7 @@ const PartnerModal = ({ isOpen, onClose, partner }) => {
                             </div>
 
                             {/* Commitment Section */}
-                            <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800">
+                            <div className="bg-white/60 dark:bg-gray-900/50 rounded-2xl p-6 border border-white/50 dark:border-gray-800">
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="p-2 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-lg">
                                         <Users size={20} />

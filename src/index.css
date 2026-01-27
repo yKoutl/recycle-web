@@ -1,6 +1,39 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Day Mode (Fresh Mint/Turquoise) */
+:root {
+  --bg-primary-day: linear-gradient(135deg, #F1F7F3 0%, #D5F6ED 50%, #B7ECDC 100%);
+  --text-primary-day: #109A71;
+  --text-secondary-day: #00A383;
+  --gradient-primary-day: linear-gradient(90deg, #018F64, #6EDDC4);
+  --card-accent-day: rgba(213, 246, 237, 0.5);
+
+  /* Default mappings (can serve as fallback or direct usage) */
+  --bg-primary: var(--bg-primary-day);
+  --text-primary: var(--text-primary-day);
+  --text-secondary: var(--text-secondary-day);
+  --gradient-primary: var(--gradient-primary-day);
+  --card-accent: var(--card-accent-day);
+}
+
+/* Night Mode (Warm Earth) */
+.dark {
+  /* Night Mode (Deep Night Forest) */
+  --bg-primary-night: linear-gradient(180deg, #052e16 0%, #030712 50%, #052e16 100%);
+  --text-primary-night: #FFFFFF;
+  --text-secondary-night: #34D399;
+  --gradient-primary-night: linear-gradient(90deg, #059669, #10B981);
+  --card-accent-night: rgba(5, 46, 22, 0.8);
+
+  /* Override defaults for dark mode */
+  --bg-primary: var(--bg-primary-night);
+  --text-primary: var(--text-primary-night);
+  --text-secondary: var(--text-secondary-night);
+  --gradient-primary: var(--gradient-primary-night);
+  --card-accent: var(--card-accent-night);
+}
+
 @keyframes wave {
 
   0%,

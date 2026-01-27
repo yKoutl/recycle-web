@@ -32,12 +32,18 @@ const PartnersSection = ({ t }) => {
             <div className="container mx-auto px-6">
                 <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
                     <div className="max-w-xl">
-                        <span className="text-gray-500 dark:text-gray-400 font-bold tracking-wider uppercase text-sm mb-2 block">{t.partners.tag}</span>
+                        <span className="bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 px-4 py-1.5 rounded-full text-sm font-bold tracking-wide uppercase inline-block mb-3">
+                            {t.partners.tag}
+                        </span>
                         <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">{t.partners.title}</h2>
                         <p className="text-gray-600 dark:text-gray-400 text-lg">{t.partners.subtitle}</p>
                     </div>
                     {/* Header Button now triggers Join Modal with Handshake icon */}
-                    <Button onClick={() => setIsJoinModalOpen(true)} variant="secondary" icon={Handshake}>
+                    <Button
+                        onClick={() => setIsJoinModalOpen(true)}
+                        className="bg-[#00C6A0] hover:bg-[#00A88D] text-white shadow-lg shadow-[#00C6A0]/20"
+                        icon={Handshake}
+                    >
                         Quiero ser Aliado
                     </Button>
                 </div>

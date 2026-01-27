@@ -3,12 +3,16 @@ import { X, MessageSquare, Medal, Send, CheckCircle } from 'lucide-react';
 import Button from '../shared/Button';
 
 const AddCommentModal = ({ isOpen, onClose, t }) => {
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
     const [comment, setComment] = useState('');
     const [rating, setRating] = useState(5);
     const [success, setSuccess] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
+            setName('');
+            setEmail('');
             setComment('');
             setRating(5);
             setSuccess(false);
@@ -17,6 +21,8 @@ const AddCommentModal = ({ isOpen, onClose, t }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        // Here you would typically validate name/email/comment before sending
+        console.log({ name, email, rating, comment });
         setSuccess(true);
     };
 
@@ -36,7 +42,37 @@ const AddCommentModal = ({ isOpen, onClose, t }) => {
                             </div>
                             <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{t.community.modalTitle}</h3>
                         </div>
-                        <form onSubmit={handleSubmit} className="space-y-6">
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            {/* New Fields: Name and Email */}
+                            <div className="grid grid-cols-1 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
+                                        {t.community.nameLabel || "Nombre"} <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        placeholder={t.community.namePlaceholder || "Tu nombre completo"}
+                                        className="w-full p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 outline-none text-gray-900 dark:text-white transition-all"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
+                                        {t.community.emailLabel || "Correo electrónico"} <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        placeholder={t.community.emailPlaceholder || "tu@correo.com"}
+                                        className="w-full p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 outline-none text-gray-900 dark:text-white transition-all"
+                                        required
+                                    />
+                                </div>
+                            </div>
+
                             <div>
                                 <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{t.community.medalsLabel}</label>
                                 <div className="flex justify-center gap-2">
@@ -56,7 +92,7 @@ const AddCommentModal = ({ isOpen, onClose, t }) => {
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
                                 placeholder={t.community.placeholder}
-                                className="w-full h-32 p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 outline-none resize-none text-gray-900 dark:text-white"
+                                className="w-full h-32 p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 outline-none resize-none text-gray-900 dark:text-white transition-all"
                                 required
                             />
                             <Button type="submit" className="w-full py-3" icon={Send}>{t.community.send}</Button>

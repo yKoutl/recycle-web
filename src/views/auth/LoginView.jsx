@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { LogIn, XCircle, ArrowRight } from 'lucide-react';
 import Button from '../../components/shared/Button'; // Asumo que este botón acepta className
 
@@ -28,6 +28,19 @@ const LoginView = ({ onLogin, onCancel, t }) => {
         }, 10000);
         return () => clearInterval(interval);
     }, [slides.length]);
+
+    // 3. Bubbles Configuration
+    const bubbles = useMemo(() => {
+        return Array.from({ length: 20 }).map((_, i) => ({
+            id: i,
+            left: `${Math.random() * 100}%`,
+            width: `${Math.random() * 50 + 20}px`,
+            height: `${Math.random() * 50 + 20}px`,
+            animationDuration: `${Math.random() * 10 + 15}s`,
+            animationDelay: `${Math.random() * 10}s`,
+            opacity: Math.random() * 0.3 + 0.1
+        }));
+    }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -64,12 +77,30 @@ const LoginView = ({ onLogin, onCancel, t }) => {
                     <img
                         src={slide.image}
                         alt="Background"
-                        className="w-full h-full object-cover opacity-100 transition-opacity duration-500"
+                        className="w-full h-full object-cover opacity-100 transition-opacity duration-500 blur-sm scale-105"
                     />
                     {/* Overlay: Mantiene el estilo oscuro pero permite ver la imagen */}
                     <div className="absolute inset-0 bg-gradient-to-t from-stone-900/90 via-stone-900/50 to-stone-900/30 dark:from-gray-950/90 dark:via-gray-900/50 dark:to-gray-900/30" />
                 </div>
             ))}
+
+            {/* --- BUBBLES --- */}
+            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                {bubbles.map((bubble) => (
+                    <div
+                        key={bubble.id}
+                        className="absolute top-0 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 animate-float-up"
+                        style={{
+                            left: bubble.left,
+                            width: bubble.width,
+                            height: bubble.width, // Make it a perfect circle
+                            animationDuration: bubble.animationDuration,
+                            animationDelay: bubble.animationDelay,
+                            opacity: bubble.opacity
+                        }}
+                    />
+                ))}
+            </div>
 
             {/* --- LOGIN CARD --- */}
             <div className="bg-white/95 dark:bg-gray-900/90 p-8 md:p-10 rounded-3xl shadow-2xl w-full max-w-md relative z-10 border border-white/50 dark:border-gray-800 backdrop-blur-md animate-in fade-in zoom-in duration-500">

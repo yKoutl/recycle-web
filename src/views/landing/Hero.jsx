@@ -78,23 +78,23 @@ const Hero = ({ onScrollToPrograms, t }) => {
                         key={currentSlide}
                         className="space-y-8 animate-in slide-in-from-left fade-in duration-700"
                     >
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full text-[color:var(--text-secondary-day)] dark:text-[color:var(--text-primary)] text-sm font-semibold border border-white/10 shadow-lg hover:bg-white/20 transition-colors cursor-default">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full text-[color:var(--text-secondary-day)] dark:text-[color:var(--text-primary)] text-sm border border-white/10 shadow-lg hover:bg-white/20 transition-colors cursor-default">
                             <Globe size={16} /> <span>{t.hero.tag}</span>
                         </div>
 
-                        <h1 className="text-5xl lg:text-7xl font-bold leading-tight tracking-tight text-white dark:text-[color:var(--text-primary)]">
+                        <h1 className="text-5xl lg:text-6xl uppercase leading-tight tracking-tight text-white dark:text-[color:var(--text-primary)]">
                             {activeSlide.titlePart1} <span className="text-transparent bg-clip-text bg-[image:var(--gradient-primary)]">{activeSlide.titlePart2}</span>
                         </h1>
 
-                        <p className="text-xl text-gray-200 dark:text-[color:var(--text-secondary)] max-w-lg leading-relaxed font-medium">
+                        <p className="text-lg text-gray-200 dark:text-[color:var(--text-secondary)] max-w-lg leading-relaxed">
                             {activeSlide.subtitle}
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 pt-2">
-                            <Button onClick={onScrollToPrograms} className="h-14 px-8 text-lg shadow-xl shadow-green-900/20 bg-[image:var(--gradient-primary)] text-white border-none">
+                            <Button onClick={onScrollToPrograms} className="h-12 px-6 shadow-xl shadow-green-900/20 bg-[image:var(--gradient-primary)] text-white border-none">
                                 {t.hero.btnPrimary} <ArrowRight size={20} />
                             </Button>
-                            <Button variant="outline" onClick={() => document.getElementById('about').scrollIntoView({ behavior: 'smooth' })} className="h-14 px-8 text-lg bg-transparent border-white/30 text-white dark:text-[color:var(--text-primary)] dark:border-[color:var(--text-primary)] hover:bg-white/10 shadow-sm">
+                            <Button variant="outline" onClick={() => document.getElementById('about').scrollIntoView({ behavior: 'smooth' })} className="h-12 px-6 text-base bg-transparent border-white/30 text-white dark:text-[color:var(--text-primary)] dark:border-[color:var(--text-primary)] hover:bg-white/10 shadow-sm">
                                 {t.hero.btnSecondary}
                             </Button>
                         </div>

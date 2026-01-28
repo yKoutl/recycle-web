@@ -36,20 +36,31 @@ const CommunitySection = ({ t }) => {
     };
 
     return (
-        <section className="py-20 bg-green-50/50 dark:bg-gray-900 transition-colors duration-500 relative">
+        <section className="py-24 bg-[image:var(--bg-primary-day)] dark:bg-[image:var(--bg-primary-night)] transition-colors duration-500 relative">
             <AddCommentModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} t={t} />
 
             <div className="container mx-auto px-6">
-                <div className="text-center mb-12">
-                    <span className="text-blue-600 dark:text-blue-400 font-bold tracking-wider uppercase text-sm mb-2 block">{t.community.tag}</span>
-                    <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">{t.community.title}</h2>
-                    <Button onClick={() => setIsModalOpen(true)} className="mx-auto" icon={MessageSquare}>{t.community.addComment}</Button>
+                <div className="text-center mb-16">
+                    <span className="bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 px-4 py-1.5 rounded-full text-sm font-bold tracking-wide uppercase inline-block mb-3">
+                        {t.community.tag}
+                    </span>
+                    <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-8 tracking-tight">{t.community.title}</h2>
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-8">
-                    {reviews.map((review) => (
-                        <ReviewCard key={review.id} review={review} t={t} onToggleLike={toggleLike} />
+                <div className="grid md:grid-cols-3 gap-8 mb-12">
+                    {reviews.map((review, index) => (
+                        <ReviewCard key={review.id} review={review} t={t} onToggleLike={toggleLike} index={index} />
                     ))}
+                </div>
+
+                <div className="text-center">
+                    <Button
+                        onClick={() => setIsModalOpen(true)}
+                        className="mx-auto bg-[#00C853] hover:bg-[#00A844] text-white shadow-lg shadow-green-500/30 rounded-full px-8 py-3 font-bold"
+                        icon={MessageSquare}
+                    >
+                        {t.community.addComment}
+                    </Button>
                 </div>
             </div>
         </section>

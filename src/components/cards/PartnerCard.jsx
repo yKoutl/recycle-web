@@ -4,7 +4,7 @@ const PartnerCard = ({ partner, onClick }) => {
     return (
         <div
             onClick={onClick}
-            className="group relative bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col"
+            className="group relative bg-[#D5F6ED] dark:bg-emerald-900/40 backdrop-blur-md border border-white/20 dark:border-emerald-500/30 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col"
         >
             {/* Colored Header */}
             <div className={`h-24 w-full ${partner.bgHeader || 'bg-gray-500'} relative`}>

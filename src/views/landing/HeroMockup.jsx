@@ -99,9 +99,9 @@ const HeroMockup = ({ t }) => {
                     {/* DASHBOARD (Default/Base Layer) */}
                     <div className={`h-full flex flex-col transition-all duration-500 transform ${screen === 'dashboard' ? 'opacity-100 scale-100' : 'opacity-0 scale-95 origin-center'}`}>
                         {/* Dashboard Header */}
-                        <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-6 pt-8 text-white flex justify-between items-start rounded-b-[2rem] shadow-md z-10">
+                        <div className="bg-[image:var(--gradient-primary)] p-6 pt-8 text-white flex justify-between items-start rounded-b-[2rem] shadow-md z-10">
                             <div>
-                                <div className="text-green-100 text-xs mb-1 font-medium">{t.hero.dashboard_mock.welcome}</div>
+                                <div className="text-white/80 text-xs mb-1 font-medium">{t.hero.dashboard_mock.welcome}</div>
                                 <div className="font-bold text-2xl tracking-tight">Carlos Ruiz</div>
                             </div>
                             <div className="bg-white/20 p-2.5 rounded-full backdrop-blur-sm border border-white/10">
@@ -114,18 +114,18 @@ const HeroMockup = ({ t }) => {
                             {/* Activity Header */}
                             <div className="flex items-center justify-between mb-2">
                                 <h4 className="font-bold text-gray-800 dark:text-gray-100 text-sm">{t.hero.dashboard_mock.activity}</h4>
-                                <span className="text-[10px] text-green-600 dark:text-green-400 font-bold cursor-pointer hover:underline bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded-full">{t.hero.dashboard_mock.viewAll}</span>
+                                <span className="text-[10px] text-[color:var(--text-primary-day)] dark:text-[color:var(--text-primary)] font-bold cursor-pointer hover:underline bg-[color:var(--card-accent)] dark:bg-[color:var(--card-accent)] px-2 py-1 rounded-full">{t.hero.dashboard_mock.viewAll}</span>
                             </div>
 
                             {/* List Items */}
                             <div className="space-y-3">
                                 <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-2xl border border-gray-100 dark:border-gray-700">
-                                    <div className="bg-green-100 dark:bg-green-900/40 p-2.5 rounded-full text-green-600 dark:text-green-400 shadow-sm"><CheckCircle size={20} /></div>
+                                    <div className="bg-white/50 dark:bg-black/20 p-2.5 rounded-full text-[color:var(--text-primary-day)] dark:text-[color:var(--text-primary)] shadow-sm"><CheckCircle size={20} /></div>
                                     <div className="flex-1">
                                         <div className="font-bold text-gray-800 dark:text-gray-200 text-sm">{t.hero.dashboard_mock.plastic}</div>
                                         <div className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">North Point • 2h</div>
                                     </div>
-                                    <div className="font-bold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/40 px-2.5 py-1 rounded-full text-[10px] shadow-sm">+50 pts</div>
+                                    <div className="font-bold text-[color:var(--text-primary-day)] dark:text-[color:var(--text-primary)] bg-[color:var(--card-accent)] dark:bg-[color:var(--card-accent)] px-2.5 py-1 rounded-full text-[10px] shadow-sm">+50 pts</div>
                                 </div>
 
                                 <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-2xl border border-gray-100 dark:border-gray-700">
@@ -145,7 +145,7 @@ const HeroMockup = ({ t }) => {
                                     <div className="text-[9px] text-gray-400 uppercase font-bold tracking-widest">{t.hero.dashboard_mock.points}</div>
                                 </div>
                                 <div className="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm">
-                                    <div className="text-2xl font-black text-green-600 dark:text-green-400">Lvl 5</div>
+                                    <div className="text-2xl font-black text-[color:var(--text-primary-day)] dark:text-[color:var(--text-primary)]">Lvl 5</div>
                                     <div className="text-[9px] text-gray-400 uppercase font-bold tracking-widest">{t.hero.dashboard_mock.rank}</div>
                                 </div>
                             </div>

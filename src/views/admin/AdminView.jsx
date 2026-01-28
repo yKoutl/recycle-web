@@ -4,6 +4,7 @@ import AdminSidebar from './AdminSidebar';
 import AdminHeader from './AdminHeader';
 import UsersTable from './UsersTable';
 import RequestsList from './RequestsList';
+import RewardsList from './rewards/reward-actions';
 import { MOCK_REQUESTS, MOCK_STATS } from '../../data/mockData';
 
 const AdminView = ({ onLogout, t }) => {
@@ -31,6 +32,8 @@ const AdminView = ({ onLogout, t }) => {
                 return <UsersTable t={t} />;
             case 'requests':
                 return <RequestsList requests={requests} t={t} onStatusChange={handleStatusChange} />;
+            case 'rewards':
+                return <RewardsList t={t} />;
             default: // Dashboard
                 return (
                     <div className="space-y-8 animate-in fade-in duration-300">

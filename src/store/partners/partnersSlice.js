@@ -3,23 +3,18 @@ import { createSlice } from '@reduxjs/toolkit';
 export const partnersSlice = createSlice({
     name: 'partners',
     initialState: {
-        partners: [],
-        isLoading: false,
-        error: null
+        activePartner: null, // Solo para saber cuál estamos editando/viendo en el modal
     },
     reducers: {
-        setPartners: (state, action) => {
-            state.partners = action.payload;
+        onSetActivePartner: (state, action) => {
+            state.activePartner = action.payload;
         },
-        setLoading: (state, action) => {
-            state.isLoading = action.payload;
-        },
-        setError: (state, action) => {
-            state.error = action.payload;
+        onClearActivePartner: (state) => {
+            state.activePartner = null;
         }
     }
 });
 
-export const { setPartners, setLoading, setError } = partnersSlice.actions;
+export const { onSetActivePartner, onClearActivePartner } = partnersSlice.actions;
 
 export default partnersSlice.reducer;

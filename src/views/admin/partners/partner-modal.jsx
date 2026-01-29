@@ -18,10 +18,13 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
         filterType: 'ong',
         typeLabel: 'Organización',
         logo: '',
-        mainColor: '#2E8B57', // Tu color verde por defecto
+        mainColor: '#2E8B57',
         description: '',
         environmentalCommitment: '',
-        isPinned: false
+        isPinned: false,
+        // AGREGAMOS ESTOS CAMPOS PARA QUE EL BACKEND NO DE ERROR 400
+        rewardsCount: 0,
+        usersCount: 0
     };
 
     const [formData, setFormData] = useState(initialState);
@@ -43,15 +46,28 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // --- VALIDACIÓN RÁPIDA PARA EL LOGO ---
+        // Si el usuario no puso logo, el backend dará error. 
+        // Asignamos una imagen por defecto si está vacío.
+        const payload = {
+            ...formData,
+            logo: formData.logo.trim() === ''
+                ? 'https://via.placeholder.com/150' // URL por defecto válida
+                : formData.logo
+        };
+
         try {
             if (activePartner) {
-                await updatePartner({ id: activePartner._id, ...formData }).unwrap();
+                await updatePartner({ id: activePartner._id, ...payload }).unwrap();
             } else {
-                await createPartner(formData).unwrap();
+                await createPartner(payload).unwrap();
             }
-            onClose(); // Cerrar al terminar
+            onClose();
         } catch (error) {
-            console.error("Error:", error);
+            console.error("Error al guardar:", error);
+            // Aquí podrías poner un alert o toast mostrando el error.data.message
+            alert("Error: " + JSON.stringify(error.data?.message || "Verifica los datos"));
         }
     };
 
@@ -85,7 +101,8 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
                                 <input
                                     type="text" name="name" required
                                     value={formData.name} onChange={handleChange}
-                                    className="input-field border-2 border-black dark:border-gray-800 rounded-lg px-2.5 py-1 mt-2 w-10/12" placeholder="Ej: Alianza Verde"
+                                    className="input-field border dark:border-gray-700 rounded-lg px-2.5 py-2 w-full"
+                                    placeholder="Ej: Alianza Verde"
                                 />
                             </div>
                             <div className="flex flex-col">
@@ -93,7 +110,7 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
                                 <select
                                     name="filterType"
                                     value={formData.filterType} onChange={handleChange}
-                                    className="input-field border-2 border-black dark:border-gray-800 rounded-lg px-2.5 py-1 mt-2 w-10/12"
+                                    className="input-field border dark:border-gray-700 rounded-lg px-2.5 py-2 w-full"
                                 >
                                     <option value="ong">ONG</option>
                                     <option value="financial">Financiera</option>
@@ -110,12 +127,13 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
                                 <input
                                     type="text" name="typeLabel"
                                     value={formData.typeLabel} onChange={handleChange}
-                                    className="input-field border-2 border-black dark:border-gray-800 rounded-lg px-2.5 py-1 mt-2 w-10/12" placeholder="Ej: Organización"
+                                    className="input-field border dark:border-gray-700 rounded-lg px-2.5 py-2 w-full"
+                                    placeholder="Ej: Organización"
                                 />
                             </div>
                             <div className="flex flex-col">
                                 <label className="label-text pb-1">Color Institucional</label>
-                                <div className="flex items-center gap-3 h-[46px]">
+                                <div className="flex items-center gap-3 h-[42px]">
                                     <input
                                         type="color" name="mainColor"
                                         value={formData.mainColor} onChange={handleChange}
@@ -128,19 +146,20 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
 
                         {/* Logo */}
                         <div className="flex flex-col">
-                            <label className="label-text pb-1">URL del Logo</label>
+                            <label className="label-text pb-1">URL del Logo (Obligatorio)</label>
                             <div className="relative">
                                 <UploadCloud className="absolute left-3 top-3 text-gray-400" size={20} />
                                 <input
                                     type="url" name="logo"
                                     value={formData.logo} onChange={handleChange}
-                                    className="input-field pl-10" placeholder="https://..."
+                                    className="input-field pl-10 border dark:border-gray-700 rounded-lg py-2 w-full"
+                                    placeholder="https://ejemplo.com/logo.png"
+                                    required // Hacemos que el navegador valide que no esté vacío
                                 />
                             </div>
-                            {/* Previsualización del logo */}
                             {formData.logo && (
                                 <div className="mt-3 p-2 bg-gray-50 rounded-lg inline-block border border-gray-200">
-                                    <img src={formData.logo} alt="Preview" className="h-12 object-contain" />
+                                    <img src={formData.logo} alt="Preview" className="h-12 object-contain" onError={(e) => e.target.style.display = 'none'} />
                                 </div>
                             )}
                         </div>
@@ -151,8 +170,8 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
                             <textarea
                                 name="description" rows="3"
                                 value={formData.description} onChange={handleChange}
-                                className="input-field resize-none"
-                                placeholder="Breve descripción de la organización..."
+                                className="input-field resize-none border dark:border-gray-700 rounded-lg px-2.5 py-2 w-full"
+                                placeholder="Breve descripción..."
                             ></textarea>
                         </div>
 
@@ -161,8 +180,8 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
                             <textarea
                                 name="environmentalCommitment" rows="2"
                                 value={formData.environmentalCommitment} onChange={handleChange}
-                                className="input-field bg-green-50/50 dark:bg-green-900/10 border-green-200 dark:border-green-800 focus:ring-green-500 w-10/12 "
-                                placeholder="Ej: Recuperar 5 toneladas de plástico..."
+                                className="input-field bg-green-50/50 dark:bg-green-900/10 border border-green-200 dark:border-green-800 focus:ring-green-500 rounded-lg px-2.5 py-2 w-full"
+                                placeholder="Ej: Recuperar 5 toneladas..."
                             ></textarea>
                         </div>
 
@@ -198,10 +217,9 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
                 </div>
             </div>
 
-            {/* Estilos locales rápidos para inputs */}
             <style>{`
-                .label-text { @apply block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2; }
-                .input-field { @apply w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-green-500 outline-none transition-all text-gray-900 dark:text-white; }
+                .label-text { @apply block text-sm font-semibold text-gray-700 dark:text-gray-300; }
+                .input-field { @apply bg-white dark:bg-gray-800 outline-none transition-all text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500; }
             `}</style>
         </div>
     );

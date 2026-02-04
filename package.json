@@ -10,7 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@pdf-viewer/react": "^1.16.1",
     "@reduxjs/toolkit": "^2.11.2",
+    "jspdf": "^4.1.0",
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.563.0",
     "react": "^19.2.0",

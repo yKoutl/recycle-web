@@ -8,10 +8,19 @@ import RewardsList from './rewards/reward-actions';
 import ProgramsList from './programs/program-actions';
 import PartnersList from './partners/partners-actions';
 import { MOCK_REQUESTS, MOCK_STATS } from '../../data/mockData';
+import { useDispatch } from 'react-redux'; // 1. IMPORTAR DISPATCH
+import { onLogout } from '../../store/auth/authSlice'; // 2. IMPORTAR ACCIÓN
 
-const AdminView = ({ onLogout, t }) => {
+
+const AdminView = ({ t }) => {
+    const dispatch = useDispatch();
     const [activeTab, setActiveTab] = useState('dashboard');
     const [requests, setRequests] = useState([]);
+
+
+    const handleLogout = () => {
+        dispatch(onLogout()); // Esto limpia el estado global y saca al usuario
+    };
 
     // Load requests with translations
     useEffect(() => {
@@ -148,7 +157,9 @@ const AdminView = ({ onLogout, t }) => {
                 setActiveTab={setActiveTab}
                 t={t}
                 requestsCount={requests.filter(r => r.statusKey === 'pending').length}
-                onLogout={onLogout}
+
+                // 5. PASAMOS LA NUEVA FUNCIÓN 'handleLogout'
+                onLogout={handleLogout}
             />
 
             <main className="flex-1 md:ml-72 min-h-screen transition-all duration-500">

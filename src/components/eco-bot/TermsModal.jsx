@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { X, FileText, Download, Shield, Cookie, Scale, Bot, CheckCircle, Loader } from 'lucide-react';
 import logo from '../../assets/Logo Nos Planet.png';
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 
 const TermsModal = ({ onClose, type = 'web' }) => {
@@ -38,11 +38,11 @@ const TermsModal = ({ onClose, type = 'web' }) => {
 
     const handleDownload = async () => {
         if (!contentRef.current) return;
-        
+
         try {
             setIsGenerating(true);
             const element = contentRef.current;
-            
+
             // Capturar el elemento visual exacto
             const canvas = await html2canvas(element, {
                 scale: 2, // Mejor calidad
@@ -51,28 +51,39 @@ const TermsModal = ({ onClose, type = 'web' }) => {
             });
 
             const imgData = canvas.toDataURL('image/png');
-            
+
             // Configurar PDF A4
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
-            
+
             // Calcular dimensiones para ajustar al ancho del PDF
             const imgWidth = canvas.width;
             const imgHeight = canvas.height;
             const ratio = imgWidth / imgHeight;
-            const widthInPdf = pdfWidth; 
+            const widthInPdf = pdfWidth;
             const heightInPdf = widthInPdf / ratio;
 
-            // Agregar imagen al PDF
-            pdf.addImage(imgData, 'PNG', 0, 0, widthInPdf, heightInPdf);
-            
+            // Agregar imagen al PDF con soporte multipágina
+            let heightLeft = heightInPdf;
+            let position = 0;
+
+            pdf.addImage(imgData, 'PNG', 0, position, widthInPdf, heightInPdf);
+            heightLeft -= pdfHeight;
+
+            while (heightLeft > 0) {
+                position -= pdfHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 0, position, widthInPdf, heightInPdf);
+                heightLeft -= pdfHeight;
+            }
+
             // Guardar
             pdf.save(config.fileName);
-            
+
         } catch (error) {
             console.error("Error generando PDF:", error);
-            alert("Hubo un error al generar el documento. Por favor intente nuevamente.");
+            alert(`Hubo un error al generar el documento: ${error.message || error}`);
         } finally {
             setIsGenerating(false);
         }
@@ -81,7 +92,7 @@ const TermsModal = ({ onClose, type = 'web' }) => {
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in printable-modal">
             <div className="bg-white dark:bg-gray-900 w-full max-w-3xl rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col max-h-[90vh] animate-scale-in">
-                
+
                 {/* --- HEADER --- */}
                 <div className="bg-gray-900 text-white p-3.5 flex items-center justify-between shadow-lg z-10 w-full">
                     <div className="flex items-center gap-4">
@@ -99,7 +110,7 @@ const TermsModal = ({ onClose, type = 'web' }) => {
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        <button 
+                        <button
                             onClick={handleDownload}
                             disabled={isGenerating}
                             className={`
@@ -112,7 +123,7 @@ const TermsModal = ({ onClose, type = 'web' }) => {
                             {isGenerating ? 'GENERANDO...' : 'DESCARGAR PDF'}
                         </button>
                         <div className="h-8 w-px bg-gray-700 mx-2"></div>
-                        <button 
+                        <button
                             onClick={onClose}
                             className="p-2 hover:bg-red-500/20 text-gray-400 hover:text-red-400 rounded-lg transition-colors"
                         >
@@ -123,41 +134,41 @@ const TermsModal = ({ onClose, type = 'web' }) => {
 
                 {/* --- CONTENIDO VISUAL (REF para Capture) --- */}
                 <div className="flex-1 overflow-y-auto bg-gray-100 dark:bg-black/50 p-6 sm:p-10 flex justify-center custom-scrollbar">
-                    
+
                     {/* Elemento a capturar */}
-                    <div ref={contentRef} className="bg-white w-full max-w-[21cm] min-h-[29.7cm] shadow-xl p-12 sm:p-16 relative text-gray-800 scale-on-capture origin-top">
-                        
+                    <div ref={contentRef} className="bg-[#ffffff] w-full max-w-[21cm] min-h-[29.7cm] shadow-xl p-8 sm:p-12 pt-8 relative text-[#1f2937] scale-on-capture origin-top">
+
                         {/* Marca de Agua Background */}
                         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 opacity-[0.04] pointer-events-none grayscale">
                             <img src={logo} alt="" className="w-full" />
                         </div>
 
                         {/* Encabezado Documento */}
-                        <div className="flex justify-between items-end border-b-2 border-green-600 pb-6 mb-10">
+                        <div className="flex justify-between items-end border-b-2 border-[#16a34a] pb-4 mb-6">
                             <img src={logo} alt="Nos Planet Logo" className="w-40 object-contain" />
                             <div className="text-right">
-                                <h1 className="text-2xl font-bold text-gray-900 tracking-tight uppercase">{config.titleHeader}</h1>
-                                <p className="text-green-700 font-bold text-xs uppercase tracking-widest mt-1">{config.subHeader}</p>
-                                <p className="text-gray-400 text-[10px] font-mono mt-2">REF: {config.docCode}</p>
+                                <h1 className="text-2xl font-bold text-[#111827] tracking-tight uppercase">{config.titleHeader}</h1>
+                                <p className="text-[#15803d] font-bold text-xs uppercase tracking-widest mt-1">{config.subHeader}</p>
+                                <p className="text-[#9ca3af] text-[10px] font-mono mt-2">REF: {config.docCode}</p>
                             </div>
                         </div>
 
                         {/* Introducción */}
-                        <div className="mb-10 p-5 bg-gray-50 border-l-4 border-gray-300 text-sm text-gray-600 italic leading-relaxed text-justify">
+                        <div className="mb-6 p-4 bg-[#f9fafb] border-l-4 border-[#d1d5db] text-sm text-[#4b5563] italic leading-relaxed text-justify">
                             {config.intro}
                         </div>
 
                         {/* Secciones Dinámicas */}
-                        <div className="space-y-8">
+                        <div className="space-y-6">
                             {config.sections.map((section, index) => (
                                 <section key={index}>
-                                    <div className="flex items-center gap-3 mb-3 pb-2 border-b border-gray-100">
-                                        <div className="bg-green-50 p-1.5 rounded text-green-700">
+                                    <div className="flex items-center gap-3 mb-3 pb-2 border-b border-[#f3f4f6]">
+                                        <div className="bg-[#f0fdf4] p-1.5 rounded text-[#15803d]">
                                             <section.icon size={18} />
                                         </div>
-                                        <h2 className="text-base font-bold text-gray-900 uppercase tracking-wide">{section.title}</h2>
+                                        <h2 className="text-base font-bold text-[#111827] uppercase tracking-wide">{section.title}</h2>
                                     </div>
-                                    <p className="text-sm text-gray-600 leading-7 text-justify pl-1">
+                                    <p className="text-sm text-[#4b5563] leading-7 text-justify pl-1">
                                         {section.body}
                                     </p>
                                 </section>
@@ -165,16 +176,16 @@ const TermsModal = ({ onClose, type = 'web' }) => {
                         </div>
 
                         {/* Pie de Página Documento */}
-                        <div className="mt-24 pt-8 border-t border-gray-200 flex flex-col items-center text-center">
+                        <div className="mt-12 pt-6 border-t border-[#e5e7eb] flex flex-col items-center text-center">
                             <div className="w-full flex justify-center mb-6">
-                                <div className="border-2 border-dashed border-gray-300 w-56 h-20 flex items-center justify-center relative rounded-sm">
-                                    <span className="absolute -top-2.5 bg-white px-2 text-[10px] text-gray-400 font-bold tracking-widest">SELLO DIGITAL</span>
+                                <div className="border-2 border-dashed border-[#d1d5db] w-56 h-20 flex items-center justify-center relative rounded-sm">
+                                    <span className="absolute -top-2.5 bg-[#ffffff] px-2 text-[10px] text-[#9ca3af] font-bold tracking-widest">SELLO DIGITAL</span>
                                     <img src={logo} alt="" className="h-10 opacity-30 grayscale" />
                                 </div>
                             </div>
-                            <p className="text-xs font-bold text-gray-800 tracking-wide">NOS PLANET SAC</p>
-                            <p className="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">Av. Los Álamos 123, Lima, Perú</p>
-                            <p className="text-[10px] text-green-600/70 mt-4 font-mono">
+                            <p className="text-xs font-bold text-[#1f2937] tracking-wide">NOS PLANET SAC</p>
+                            <p className="text-[10px] text-[#6b7280] mt-1 uppercase tracking-wider">Av. Los Álamos 123, Lima, Perú</p>
+                            <p className="text-[10px] text-[#16a34a] opacity-70 mt-4 font-mono">
                                 DOCUMENTO GENERADO AUTOMÁTICAMENTE | {new Date().getFullYear()}
                             </p>
                         </div>

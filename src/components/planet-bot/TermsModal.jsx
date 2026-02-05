@@ -11,13 +11,13 @@ const TermsModal = ({ onClose, type = 'web' }) => {
 
     // CONFIGURACIÓN DE CONTENIDO
     const config = isBot ? {
-        titleHeader: "TÉRMINOS DE SERVICIO ECOBOT",
+        titleHeader: "TÉRMINOS DE SERVICIO PLANET BOT",
         subHeader: "ASISTENTE VIRTUAL - NOS PLANET SAC",
-        fileName: "Terminos_EcoBot_NosPlanet.pdf",
+        fileName: "Terminos_PlanetBot_NosPlanet.pdf",
         docCode: "DOC-BOT-2026",
-        intro: "Este documento establece las condiciones de uso del asistente virtual EcoBot. Al interactuar con el bot, usted acepta estas condiciones.",
+        intro: "Este documento establece las condiciones de uso del asistente virtual Planet Bot. Al interactuar con el bot, usted acepta estas condiciones.",
         sections: [
-            { title: "1. PROPÓSITO DEL ASISTENTE", icon: Bot, body: "EcoBot es una herramienta educativa e informativa diseñada para orientar sobre prácticas de reciclaje y gestión de residuos. No reemplaza el asesoramiento técnico profesional en situaciones de riesgo." },
+            { title: "1. PROPÓSITO DEL ASISTENTE", icon: Bot, body: "Planet Bot es una herramienta educativa e informativa diseñada para orientar sobre prácticas de reciclaje y gestión de residuos. No reemplaza el asesoramiento técnico profesional en situaciones de riesgo." },
             { title: "2. INTERACCIÓN Y USO", icon: CheckCircle, body: "El usuario se compromete a realizar consultas respetuosas. Nos Planet SAC se reserva el derecho de limitar el acceso al bot ante usos abusivos o spam." },
             { title: "3. LIMITACIÓN DE IA", icon: Scale, body: "Las respuestas son generadas por Inteligencia Artificial y pueden contener imprecisiones. Verifique siempre la información crítica con normativas locales vigentes." },
             { title: "4. PRIVACIDAD EN CHAT", icon: Shield, body: "Las conversaciones pueden ser procesadas para mejorar la calidad del servicio. No comparta información personal sensible (DNI, tarjetas, etc.) a través del chat." }
@@ -103,7 +103,7 @@ const TermsModal = ({ onClose, type = 'web' }) => {
                             <h3 className="font-semibold text-sm text-gray-100 tracking-wide">{config.fileName}</h3>
                             <div className="flex items-center gap-2 text-[11px] text-gray-400 mt-0.5">
                                 <span className={`w-2 h-2 rounded-full ${isBot ? 'bg-green-500' : 'bg-blue-500'}`}></span>
-                                <span>{isBot ? 'Documentación EcoBot' : 'Legal Sitio Web'}</span>
+                                <span>{isBot ? 'Documentación Planet Bot' : 'Legal Sitio Web'}</span>
                                 <span className="text-gray-600">•</span>
                                 <span>Vista Previa</span>
                             </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import logoNosPlanet from '../../assets/Logo Nos Planet.png';
-import TermsModal from '../eco-bot/TermsModal'; // Reutilizamos el modal de estilo PDF
+import TermsModal from '../planet-bot/TermsModal'; // Reutilizamos el modal de estilo PDF
 
 const Footer = ({ t }) => {
     const [showTerms, setShowTerms] = useState(false);

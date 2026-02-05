@@ -3,7 +3,7 @@ import { TRANSLATIONS } from './data/translations';
 import LandingView from './views/landing/LandingView';
 import LoginView from './views/auth/LoginView';
 import AdminView from './views/admin/AdminView';
-import EcoBot from './components/eco-bot/EcoBot';
+import PlanetBot from './components/planet-bot/PlanetBot';
 
 const App = () => {
   const [view, setView] = useState('landing'); // 'landing', 'login', 'admin'
@@ -45,7 +45,7 @@ const App = () => {
         )}
 
       </div>
-      <EcoBot />
+      <PlanetBot />
     </div>
   );
 };

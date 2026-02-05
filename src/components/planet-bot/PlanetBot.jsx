@@ -15,13 +15,13 @@ const ECO_TIPS = [
     "🛢️ El aceite usado se puede convertir en biodiesel."
 ];
 
-const EcoBot = () => {
+const PlanetBot = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [showTerms, setShowTerms] = useState(false);
     const [messages, setMessages] = useState([
         {
             id: 1,
-            text: "¡Hola! Soy EcoBot 🌿. Estoy aquí para ayudarte a reciclar mejor. Selecciona una pregunta de arriba o escribe la tuya.",
+            text: "¡Hola! Soy Planet Bot 🌿. Estoy aquí para ayudarte a reciclar mejor. Selecciona una pregunta de arriba o escribe la tuya.",
             sender: 'bot',
             timestamp: new Date()
         }
@@ -114,7 +114,7 @@ const EcoBot = () => {
             });
 
             const systemPrompt = `
-                Eres EcoBot, el asistente virtual oficial de NOS PLANET SAC.
+                Eres Planet Bot, el asistente virtual oficial de NOS PLANET SAC.
                 CONTEXTO DE LA EMPRESA:
                 - NOS PLANET SAC es una empresa peruana líder en gestión integral de residuos y sostenibilidad.
                 - Misión: Promover la economía circular y educar sobre reciclaje.
@@ -224,12 +224,12 @@ const EcoBot = () => {
                         <div className="flex items-center gap-3">
                             <div className="relative">
                                 <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center overflow-hidden">
-                                    <img src={botImage} alt="EcoBot" className="w-full h-full object-cover" />
+                                    <img src={botImage} alt="Planet Bot" className="w-full h-full object-cover" />
                                 </div>
                                 <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 border-2 border-green-600 rounded-full animate-pulse"></span>
                             </div>
                             <div>
-                                <h3 className="font-bold text-lg leading-tight tracking-wide">EcoBot</h3>
+                                <h3 className="font-bold text-lg leading-tight tracking-wide">Planet Bot</h3>
                                 <p className="text-[11px] text-green-50 font-medium flex items-center gap-1 opacity-90">
                                     <Leaf size={10} /> Asistente Planetario
                                 </p>
@@ -350,4 +350,4 @@ const EcoBot = () => {
     );
 };
 
-export default EcoBot;
+export default PlanetBot;

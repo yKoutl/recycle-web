@@ -1,95 +1,355 @@
-import React from 'react';
-import { Globe, Heart, Sparkles as SparkleIcon } from 'lucide-react';
-import Button from '../../components/shared/Button';
+import React, { useState, useRef } from 'react';
+import { Apple, Play, QrCode, Heart, Sparkles, Leaf, TrendingUp } from 'lucide-react';
+import qrImage from '../../assets/QR NOS PLANET.png';
 
-const Sparkles = () => (
-    <div className="absolute top-0 right-0 w-full h-full pointer-events-none overflow-hidden z-0">
-        {/* Large Stars */}
-        <svg className="absolute top-10 right-[10%] w-12 h-12 text-green-400/60 dark:text-emerald-300/50 animate-bounce" style={{ animationDuration: '3s' }} viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" />
-        </svg>
-        <svg className="absolute top-40 right-[5%] w-8 h-8 text-green-300/50 dark:text-emerald-200/40 animate-pulse" style={{ animationDuration: '4s' }} viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" />
-        </svg>
-        <svg className="absolute bottom-20 right-[15%] w-10 h-10 text-green-500/40 dark:text-emerald-400/30 animate-ping-once" style={{ animationDuration: '5s', animationIterationCount: 'infinite' }} viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" />
-        </svg>
+const AboutSection = ({ t }) => {
+    const [isPhoneHovered, setIsPhoneHovered] = useState(false);
+    const [isFlipped, setIsFlipped] = useState(false);
+    const [rotation, setRotation] = useState({ x: 0, y: 0 });
+    const containerRef = useRef(null);
 
-        {/* Small Dots */}
-        <div className="absolute top-20 right-[20%] w-2 h-2 bg-green-200 dark:bg-emerald-100 rounded-full animate-ping" style={{ animationDuration: '2s' }}></div>
-        <div className="absolute top-60 right-[8%] w-1.5 h-1.5 bg-green-400 dark:bg-emerald-300 rounded-full animate-pulse"></div>
-        <div className="absolute top-1/2 right-[2%] w-3 h-3 bg-green-300/40 dark:bg-emerald-200/30 rounded-full blur-sm"></div>
-        <div className="absolute bottom-40 right-[12%] w-2 h-2 bg-green-100 dark:bg-emerald-50 rounded-full animate-bounce" style={{ animationDuration: '4s' }}></div>
+    const handleMouseMove = (e) => {
+        if (!containerRef.current) return;
+        const rect = containerRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
 
-        {/* Extra distant stars */}
-        <svg className="absolute top-1/4 right-[25%] w-4 h-4 text-green-200/30 dark:text-emerald-100/20 animate-pulse" style={{ animationDuration: '6s' }} viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" />
-        </svg>
-    </div>
-);
+        // Calculate rotation (max 15 degrees for subtler feel)
+        const xRot = ((y / rect.height) - 0.5) * -30;
+        const yRot = ((x / rect.width) - 0.5) * 30;
 
-const AboutSection = ({ t }) => (
-    <section className="py-24 bg-gradient-to-br from-[#018F64] to-[#015C42] dark:bg-gradient-to-br dark:from-emerald-950 dark:via-green-950 dark:to-gray-950 relative overflow-hidden transition-colors duration-500 text-white">
-        {/* Background elements */}
-        <div className="absolute top-0 right-0 w-2/3 h-full bg-gradient-to-l from-white/40 to-transparent dark:from-white/5 dark:to-transparent pointer-events-none"></div>
-        <Sparkles />
+        setRotation({ x: xRot, y: yRot });
+    };
 
-        <div className="container mx-auto px-6 relative z-10">
-            <div className="grid lg:grid-cols-2 gap-20 items-center">
-                <div>
-                    <span className="text-green-200 dark:text-emerald-400 font-bold tracking-wider uppercase text-sm mb-2 block animate-pulse">{t.about.tag}</span>
-                    <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight text-white dark:text-white drop-shadow-md">{t.about.title}</h2>
-                    <p className="text-green-50/90 dark:text-gray-300 text-lg leading-relaxed mb-8">
-                        {t.about.subtitle}
-                    </p>
+    const handleMouseLeave = () => {
+        setIsPhoneHovered(false);
+        setRotation({ x: 0, y: 0 });
+    };
 
-                    <div className="grid sm:grid-cols-2 gap-6 mb-8">
-                        <div className="bg-[#D5F6ED] dark:bg-emerald-900/40 backdrop-blur-md border border-white/20 dark:border-emerald-500/30 p-6 rounded-2xl shadow-xl hover:bg-[#c2f0e4] dark:hover:bg-white/20 transition-all duration-300 group">
-                            <div className="text-[#018F64] dark:text-emerald-400 mb-3 drop-shadow transition-transform group-hover:scale-110"><Globe size={32} strokeWidth={1.5} /></div>
-                            <h4 className="font-bold text-xl mb-2 text-gray-800 dark:text-white">{t.about.global.title}</h4>
-                            <p className="text-sm text-gray-600 dark:text-emerald-100/70 leading-snug">{t.about.global.desc}</p>
+    return (
+        <section id="about" className="pt-24 pb-12 relative overflow-hidden bg-[#FEFDFB] dark:bg-[#020617] transition-colors duration-500">
+            {/* Architectural Grid Background - Synced with Programs */}
+            <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none"
+                style={{ backgroundImage: `linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)`, backgroundSize: '60px 60px' }} />
+
+            <div className="container mx-auto px-6 relative z-10">
+                {/* Header Intro */}
+                <div className="max-w-4xl mb-12 lg:mb-16 space-y-8 relative z-50 ml-auto text-right">
+                    <div className="flex items-center gap-3 justify-end">
+                        <div className="w-16 h-[2px] bg-gradient-to-l from-[#018F64] to-transparent dark:from-[#10B981]" />
+                        <p className="text-[10px] font-black text-[#018F64] dark:text-[#10B981] uppercase tracking-[0.4em]">NUESTRO ENFOQUE</p>
+                    </div>
+                    <h2 className="text-4xl lg:text-6xl font-black text-gray-900 dark:text-white leading-[0.9] tracking-tighter">
+                        CONSTRUYENDO UN <span className="text-emerald-500 italic relative">FUTURO<span className="absolute -bottom-1 left-0 w-full h-1 bg-emerald-500/10 rounded-full" /></span> <br /> CIRCULAR Y SOSTENIBLE.
+                    </h2>
+                </div>
+
+                {/* Main Split Layout */}
+                <div className="relative">
+                    <div className="grid lg:grid-cols-[0.8fr_1.2fr] gap-12 lg:gap-16 items-center relative z-20">
+
+                        {/* LEFT SIDE: HYPER-INTERACTIVE 3D SMARTPHONE */}
+                        <div
+                            ref={containerRef}
+                            className="relative flex justify-center items-center perspective-3000 py-6 lg:py-8 lg:order-1 -translate-y-4 lg:-translate-y-48"
+                            onMouseMove={handleMouseMove}
+                            onMouseEnter={() => setIsPhoneHovered(true)}
+                            onMouseLeave={handleMouseLeave}
+                        >
+                            {/* Subtle Ambient Glows */}
+                            <div className={`absolute inset-0 bg-emerald-500/5 dark:bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none transition-all duration-1000 ${isPhoneHovered ? 'opacity-100' : 'opacity-0'}`} />
+                            {/* DYNAMIC SHADOW */}
+                            <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-72 h-8 bg-gray-900/40 dark:bg-black/95 blur-2xl rounded-full transition-all duration-700 ${isPhoneHovered ? 'scale-150 opacity-90 blur-[50px] translate-y-8' : 'scale-100 opacity-40'}`} />
+
+                            {/* Smartphone Container with Click-to-Flip */}
+                            <div
+                                onClick={() => setIsFlipped(!isFlipped)}
+                                className="relative shrink-0 w-[280px] h-[560px] lg:w-[340px] lg:h-[680px] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] preserve-3d cursor-pointer z-[60]"
+                                style={{ transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y + (isFlipped ? 180 : 0)}deg)` }}
+                            >
+                                {/* FRONT FACE */}
+                                <div className="absolute inset-0 bg-gray-950 rounded-[4rem] border-[7px] border-white/10 p-3.5 backface-hidden overflow-hidden shadow-[0_80px_180px_-40px_rgba(0,0,0,1)]">
+
+                                    {/* Depth Effect Frame */}
+                                    <div className="absolute inset-x-0 inset-y-0 rounded-[3.5rem] border-t-2 border-l-2 border-white/10 pointer-events-none z-40" />
+                                    <div className="absolute inset-0 rounded-[4rem] shadow-[inset_0_0_100px_rgba(0,0,0,1)] pointer-events-none z-30" />
+
+                                    {/* Screen Content */}
+                                    <div className="h-full w-full bg-[#00A884] rounded-[3.4rem] flex flex-col relative overflow-y-auto scrollbar-hide font-sans select-none scroll-smooth scroll-content pointer-events-auto z-40">
+                                        {/* Specular Highlight */}
+                                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 pointer-events-none z-20 transition-transform duration-200"
+                                            style={{ transform: `translateX(${rotation.y * 1.5}px) translateY(${rotation.x * 1.5}px)` }} />
+
+                                        <div className="p-6 pt-10 space-y-6 relative z-10">
+                                            <div className="flex items-center justify-between">
+                                                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white backdrop-blur-md">
+                                                    <div className="w-5 h-0.5 bg-white mb-1.5 shadow-[0_4px_0_white,0_-4px_0_white]" />
+                                                </div>
+                                                <div className="w-10 h-10 rounded-full border-2 border-white/50 overflow-hidden shadow-xl">
+                                                    <img src="https://i.pravatar.cc/100?img=11" alt="avatar" className="w-full h-full object-cover" />
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-1.5">
+                                                <p className="text-[11px] font-bold text-white/90">Hola, Juan David</p>
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-9 h-9 bg-yellow-400 rounded-xl flex items-center justify-center text-white shadow-lg">
+                                                        <Heart size={18} fill="currentColor" />
+                                                    </div>
+                                                    <h5 className="text-2xl font-black text-white leading-none tracking-tight">Tienda de Premios</h5>
+                                                </div>
+                                                <p className="text-[10px] font-black text-yellow-300/90 tracking-widest uppercase">Canjea tus EcoPuntos</p>
+                                            </div>
+
+                                            {/* Points White Card */}
+                                            <div className="bg-white/95 backdrop-blur-xl rounded-[2.2rem] p-5 shadow-2xl space-y-4">
+                                                <div className="flex items-center gap-2 text-[9px] font-black text-gray-400 uppercase tracking-widest">
+                                                    <div className="w-4 h-4 rounded bg-emerald-600 flex items-center justify-center text-white">
+                                                        <Leaf size={10} />
+                                                    </div>
+                                                    Tus EcoPuntos
+                                                </div>
+                                                <div className="flex items-center justify-center gap-3 py-1">
+                                                    <Leaf size={22} className="text-emerald-500 fill-emerald-500 animate-pulse" />
+                                                    <span className="text-4xl font-black text-emerald-800 tracking-tighter">330</span>
+                                                    <span className="text-[14px] font-black text-gray-300">pts</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="px-6 flex gap-3 mt-1">
+                                            <div className="px-4 py-2.5 rounded-full bg-emerald-800 text-white text-[10px] font-black flex items-center gap-2 shadow-lg border border-white/10">
+                                                <Heart size={12} fill="currentColor" /> Todos
+                                            </div>
+                                            <div className="px-4 py-2.5 rounded-full bg-white/20 backdrop-blur-md text-white text-[10px] font-black flex items-center gap-2 border border-white/20">
+                                                <TrendingUp size={12} /> Convenios
+                                            </div>
+                                        </div>
+
+                                        {/* Product Section */}
+                                        <div className="mt-8 space-y-6 pb-10">
+                                            {/* Product Section */}
+                                            <div className="mx-4 bg-white rounded-[2.5rem] p-5 space-y-4 shadow-xl border border-gray-100">
+                                                <div className="h-40 rounded-[2rem] overflow-hidden relative">
+                                                    <div className="absolute top-3 left-3 z-20 px-2 py-1 bg-white/90 backdrop-blur-md rounded-full border border-gray-100 flex items-center gap-1 shadow-sm">
+                                                        <TrendingUp size={10} className="text-emerald-500" />
+                                                        <span className="text-[9px] font-black text-gray-900 uppercase">Popular</span>
+                                                    </div>
+                                                    <img src="https://plus.unsplash.com/premium_photo-1664527305901-db3d4e724d15" className="w-full h-full object-cover" alt="product" />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <p className="text-lg font-black text-gray-900 leading-tight italic">Botella de Agua Reutilizable</p>
+                                                    <p className="text-[10px] text-gray-400 font-bold leading-tight">
+                                                        Botella térmica de acero inoxidable, 500ml. Mantiene bebidas frías 24h y calientes 12h.
+                                                    </p>
+                                                    <div className="flex items-center gap-2 mt-2">
+                                                        <div className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-md text-[8px] font-black uppercase tracking-wider">Eco-Friendly</div>
+                                                        <span className="text-[10px] text-gray-500 font-bold">250 pts</span>
+                                                    </div>
+                                                </div>
+                                                <button className="w-full py-3.5 bg-[#00A884] text-white text-xs font-black rounded-xl shadow-lg hover:bg-emerald-600 transition-all active:scale-95">
+                                                    Canjear
+                                                </button>
+                                            </div>
+
+                                            {/* Dynamic Reward: Municipal Workshops */}
+                                            <div className="mx-4 bg-white rounded-[2.5rem] p-5 space-y-4 shadow-xl border border-gray-100">
+                                                <div className="h-40 rounded-[2rem] overflow-hidden relative">
+                                                    <div className="absolute top-3 left-3 z-20 px-2.5 py-1 bg-red-500 text-white rounded-full flex items-center gap-1 shadow-md">
+                                                        <Sparkles size={9} fill="currentColor" />
+                                                        <span className="text-[8px] font-black uppercase tracking-widest">Convenio</span>
+                                                    </div>
+                                                    <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09" className="w-full h-full object-cover" alt="taller" />
+                                                </div>
+                                                <div className="space-y-1 text-center">
+                                                    <span className="text-[9px] font-black text-red-400 uppercase tracking-widest leading-none">MUNICIPALIDAD</span>
+                                                    <p className="text-lg font-black text-gray-900 leading-tight">Descuento 50% en Talleres Municipales</p>
+                                                    <p className="text-[10px] text-gray-400 font-bold leading-tight">Medio precio en talleres ambientales de tu municipalidad.</p>
+                                                </div>
+                                                <button className="w-full py-3.5 bg-red-500 text-white text-xs font-black rounded-xl shadow-lg hover:bg-red-600 transition-all active:scale-95">
+                                                    Canjear 280 pts
+                                                </button>
+                                            </div>
+
+                                            {/* Dynamic Reward: Premium Month */}
+                                            <div className="mx-4 bg-white rounded-[2.5rem] p-5 space-y-4 shadow-xl border border-gray-100">
+                                                <div className="h-40 rounded-[2rem] overflow-hidden relative">
+                                                    <div className="absolute top-3 left-3 z-20 px-2.5 py-1 bg-emerald-500 text-white rounded-full flex items-center gap-1 shadow-md">
+                                                        <Sparkles size={9} fill="currentColor" />
+                                                        <span className="text-[8px] font-black uppercase tracking-widest">Premium</span>
+                                                    </div>
+                                                    <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e" className="w-full h-full object-cover" alt="premium" />
+                                                </div>
+                                                <div className="space-y-1 text-center">
+                                                    <p className="text-lg font-black text-gray-900 leading-tight">Suscripción Premium 1 Mes</p>
+                                                    <p className="text-[10px] text-gray-400 font-bold leading-tight">Acceso a contenido exclusivo, estadísticas avanzadas y prioridad en eventos.</p>
+                                                </div>
+                                                <button className="w-full py-3.5 bg-[#00A884] text-white text-xs font-black rounded-xl shadow-lg hover:bg-emerald-600 transition-all active:scale-95">
+                                                    Canjear 350 pts
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Physical Detail: Notch */}
+                                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-36 h-9 bg-gray-950 rounded-b-[2rem] z-50 flex items-center justify-center border-x border-b border-white/5">
+                                        <div className="w-12 h-1.5 bg-white/5 rounded-full" />
+                                    </div>
+                                </div>
+
+                                {/* BACK FACE: BRANDING */}
+                                <div className="absolute inset-0 bg-gray-950 rounded-[4rem] border-[7px] border-white/10 overflow-hidden backface-hidden rotate-y-180 flex flex-col items-center justify-center p-8 shadow-[0_80px_180px_-40px_rgba(0,0,0,1)]">
+                                    {/* Elegant Glass Highlight */}
+                                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.06)_0%,transparent_60%)] pointer-events-none" />
+
+                                    {/* Camera Module Mockup */}
+                                    <div className="absolute top-12 left-10 w-24 h-24 bg-gray-900 rounded-[2.5rem] border border-white/10 flex flex-wrap p-3 gap-2 shadow-inner">
+                                        <div className="w-8 h-8 rounded-full bg-black border border-white/10 flex items-center justify-center shadow-lg">
+                                            <div className="w-4 h-4 rounded-full bg-blue-900/30" />
+                                        </div>
+                                        <div className="w-8 h-8 rounded-full bg-black border border-white/10 shadow-lg" />
+                                        <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 shadow-lg" />
+                                    </div>
+
+                                    {/* Center Branding & Phrase */}
+                                    <div className="relative z-10 flex flex-col items-center space-y-8 max-w-xs px-6">
+                                        <div className="w-24 h-24 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 border border-emerald-500/20 shadow-[0_0_50px_rgba(16,185,129,0.2)]">
+                                            <Leaf size={48} className="fill-emerald-500/10" />
+                                        </div>
+                                        <div className="text-center space-y-2">
+                                            <h4 className="text-3xl font-black text-white tracking-[0.2em] uppercase italic leading-none">NOS PLANET</h4>
+                                            <div className="w-12 h-1 bg-emerald-500 mx-auto rounded-full" />
+                                        </div>
+                                        <p className="text-xl font-medium text-emerald-100/90 text-center italic leading-relaxed">
+                                            "Transformamos tus residuos en oportunidades para un mundo mejor."
+                                        </p>
+                                    </div>
+
+                                    {/* Regulatory markings */}
+                                    <div className="absolute bottom-12 opacity-20 flex flex-col items-center space-y-1.5">
+                                        <div className="w-10 h-0.5 bg-white/30 rounded-full" />
+                                        <p className="text-[8px] font-black text-white uppercase tracking-[0.2em]">Recycle App v2.0</p>
+                                    </div>
+                                </div>
+                            </div>
+
+
                         </div>
-                        <div className="bg-[#D5F6ED] dark:bg-emerald-900/40 backdrop-blur-md border border-white/20 dark:border-emerald-500/30 p-6 rounded-2xl shadow-xl hover:bg-[#c2f0e4] dark:hover:bg-white/20 transition-all duration-300 group">
-                            <div className="text-[#018F64] dark:text-emerald-400 mb-3 drop-shadow transition-transform group-hover:scale-110"><Heart size={32} strokeWidth={1.5} /></div>
-                            <h4 className="font-bold text-xl mb-2 text-gray-800 dark:text-white">{t.about.passion.title}</h4>
-                            <p className="text-sm text-gray-600 dark:text-emerald-100/70 leading-snug">{t.about.passion.desc}</p>
+
+                        {/* RIGHT SIDE (Swapped to Left): REFINED MASTER PANEL */}
+                        <div className="relative h-full transition-all duration-700 lg:order-2 opacity-100">
+                            <div className="bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/10 rounded-[3rem] p-6 lg:p-8 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.1)] dark:shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] backdrop-blur-md relative overflow-hidden group/card">
+                                {/* Cyber Grid Texture for the Master Card */}
+                                <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none"
+                                    style={{ backgroundImage: `linear-gradient(#00CC88 1px, transparent 1px), linear-gradient(90deg, #00CC88 1px, transparent 1px)`, backgroundSize: '40px 40px' }} />
+
+
+
+                                <div className="relative space-y-6">
+                                    {/* Purpose - Horizontal Layout to save height */}
+
+                                    <div className="space-y-1.5">
+                                        <h3 className="text-2xl lg:text-3xl font-black text-gray-900 dark:text-white tracking-tight uppercase italic leading-none">Nuestro Propósito</h3>
+                                        <div className="w-16 h-1 bg-yellow-400 rounded-full mb-1 shadow-[0_0_15px_rgba(250,204,21,0.5)]" />
+                                        <p className="text-sm font-bold text-gray-500 dark:text-gray-300/80 leading-relaxed max-w-xl">
+                                            {t.about.subtitle}
+                                        </p>
+                                    </div>
+
+                                    {/* App Ecosystem Dock */}
+                                    <div className="relative group/ecosystem">
+                                        {/* Cinematic Background Glow */}
+                                        <div className="absolute -inset-10 bg-emerald-500/20 blur-[120px] opacity-0 group-hover/ecosystem:opacity-100 transition duration-1000" />
+
+                                        <div className="relative bg-gray-950 dark:bg-black/60 rounded-[2.8rem] p-5 lg:p-8 overflow-hidden border border-white/10 shadow-[0_60px_120px_-30px_rgba(0,0,0,0.8)] backdrop-blur-2xl">
+                                            {/* Technological Hex-Grid Overlay */}
+                                            <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
+                                                style={{ backgroundImage: `radial-gradient(#00CC88 0.8px, transparent 0.8px)`, backgroundSize: '24px 24px' }} />
+
+                                            {/* Prismatic Light Effects */}
+                                            <div className="absolute top-0 right-0 w-full h-full bg-[conic-gradient(from_0deg_at_50%_50%,rgba(16,185,129,0.05)_0deg,transparent_60deg,rgba(16,185,129,0.05)_120deg,transparent_180deg)] pointer-events-none animate-[spin_20s_linear_infinite]" />
+                                            <div className="absolute -top-32 -left-32 w-80 h-80 bg-emerald-500/10 blur-[90px] rounded-full" />
+
+                                            <div className="flex flex-col xl:flex-row items-center gap-10 relative z-10">
+                                                <div className="flex-1 space-y-8 text-center xl:text-left">
+                                                    <div className="space-y-4">
+                                                        <h4 className="text-4xl lg:text-6xl font-black text-white leading-[0.85] tracking-tight uppercase italic">
+                                                            Tu App <br /> de <span className="text-yellow-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.3)]">Vida</span>
+                                                        </h4>
+
+                                                        <p className="text-[13px] font-bold text-white/60 leading-relaxed italic max-w-sm mx-auto xl:mx-0">
+                                                            Transformamos el reciclaje en una experiencia digital de alto impacto. Gestión inteligente desde tu dispositivo.
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Cyber-Glass Store Buttons */}
+                                                    <div className="flex flex-row items-center justify-center xl:justify-start gap-4">
+                                                        {[
+                                                            { icon: Apple, label: 'App Store', sub: 'Descargar', size: 20 },
+                                                            { icon: Play, label: 'Google Play', sub: 'Obtener', size: 18 }
+                                                        ].map((btn, i) => (
+                                                            <div key={i} className="relative group/btn px-6 py-4 bg-white/5 hover:bg-emerald-500 text-white hover:text-emerald-950 border border-white/10 rounded-2xl shadow-2xl transition-all duration-500 cursor-pointer flex items-center gap-3 overflow-hidden group/btn">
+                                                                <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover/btn:opacity-100 transition-opacity" />
+                                                                <btn.icon size={btn.size} fill="currentColor" />
+                                                                <div className="text-left leading-none">
+                                                                    <p className="text-[8px] font-black opacity-50 uppercase tracking-tighter">{btn.label}</p>
+                                                                    <p className="text-[11px] font-black uppercase tracking-tight">{btn.sub}</p>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                {/* Futuristic Hologram QR Disc */}
+                                                <div className="relative shrink-0 group/qr-box z-20">
+
+
+                                                    <div className="relative p-5 bg-black/10 backdrop-blur-sm rounded-[2rem] border border-emerald-500/30 overflow-hidden">
+                                                        <div className="absolute inset-x-0 h-[2px] bg-emerald-400 shadow-[0_0_15px_#10b981] top-0 animate-[scan_3s_linear_infinite] pointer-events-none z-30" />
+                                                        <div className="bg-white p-2 rounded-xl text-center flex items-center justify-center">
+                                                            <img
+                                                                src={qrImage}
+                                                                alt="QR NOS PLANET"
+                                                                className="w-[120px] h-[120px] lg:w-[140px] lg:h-[140px] object-contain"
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    <Button className="bg-white text-[#018F64] hover:bg-green-50 shadow-lg shadow-black/10 px-8 py-4 font-bold text-lg rounded-full dark:bg-emerald-500 dark:text-white dark:hover:bg-emerald-400 transition-transform hover:-translate-y-1">{t.about.btn}</Button>
-                </div>
-                <div className="grid grid-cols-2 gap-8 relative px-4">
-                    {/* Image 1: Top Left */}
-                    <img
-                        src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&q=80&w=400"
-                        className="rounded-2xl shadow-lg transform hover:scale-105 transition-transform duration-500 object-cover h-48 w-full rotate-2 hover:rotate-0"
-                        alt="Team work"
-                    />
-                    {/* Image 2: Top Right - Offset */}
-                    <img
-                        src="https://images.unsplash.com/photo-1591522810850-58128c5fb089?auto=format&fit=crop&q=80&w=400"
-                        className="rounded-2xl shadow-lg transform translate-y-8 hover:translate-y-6 hover:scale-105 transition-transform duration-500 object-cover h-48 w-full -rotate-2 hover:rotate-0"
-                        alt="Community recycling"
-                    />
-                    {/* Image 3: Bottom Left - Offset */}
-                    <img
-                        src="https://images.unsplash.com/photo-1621451537084-482c73073a0f?auto=format&fit=crop&q=80&w=400"
-                        className="rounded-2xl shadow-lg transform -translate-y-4 hover:-translate-y-6 hover:scale-105 transition-transform duration-500 object-cover h-48 w-full -rotate-1 hover:rotate-0"
-                        alt="Recycling bin"
-                    />
-                    {/* Image 4: Bottom Right */}
-                    <img
-                        src="https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?auto=format&fit=crop&q=80&w=400"
-                        className="rounded-2xl shadow-lg transform translate-y-4 hover:translate-y-2 hover:scale-105 transition-transform duration-500 object-cover h-48 w-full rotate-1 hover:rotate-0"
-                        alt="Nature forest"
-                    />
-
-                    {/* Extra decoration behind images */}
-                    <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-green-200/20 dark:bg-emerald-400/10 rounded-full blur-3xl animate-pulse"></div>
                 </div>
             </div>
-        </div>
-    </section>
-);
+
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                @keyframes scan {
+                    0%, 100% { top: 0%; opacity: 0; }
+                    10% { opacity: 1; }
+                    90% { opacity: 1; }
+                    100% { top: 100%; opacity: 0; }
+                }
+                .perspective-3000 { perspective: 3000px; }
+                .preserve-3d { transform-style: preserve-3d; }
+                .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+                .rotate-y-180 { transform: rotateY(180deg); }
+                @keyframes bounce-slow {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-20px); }
+                }
+                .animate-bounce-slow { animation: bounce-slow 5s ease-in-out infinite; }
+                .scrollbar-hide::-webkit-scrollbar { display: none; }
+                .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+            `}} />
+        </section >
+    );
+};
 
 export default AboutSection;

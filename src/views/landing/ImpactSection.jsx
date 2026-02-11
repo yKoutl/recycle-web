@@ -1,68 +1,167 @@
-import React from 'react';
-import { CheckCircle, BarChart3, Recycle, Droplets, CloudSun } from 'lucide-react';
-import Button from '../../components/shared/Button';
+import React, { useState } from 'react';
+import { Recycle, Droplets, CloudSun, Zap } from 'lucide-react';
 
-const ImpactSection = ({ t }) => (
-    <section className="py-24 bg-white dark:bg-gray-950 transition-colors duration-500">
-        <div className="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
-            <div className="order-2 md:order-1 relative">
-                <div className="absolute -left-10 -top-10 w-40 h-40 bg-[#D5F6ED] dark:bg-[#109A71]/20 rounded-full blur-3xl"></div>
-                <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-[#B7ECDC] dark:bg-[#109A71]/20 rounded-full blur-3xl"></div>
-                <div className="relative bg-white/50 dark:bg-gray-900 rounded-3xl p-8 border border-gray-100 dark:border-gray-800 shadow-xl backdrop-blur-sm">
-                    <div className="grid grid-cols-2 gap-6">
-                        {/* Card 1: Recovered - #D5F6ED */}
-                        <div className="bg-[#D5F6ED] dark:bg-emerald-900/30 p-6 rounded-2xl border border-transparent dark:border-emerald-800 shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col items-center justify-center text-center h-full">
-                            <div className="mb-4 p-3 bg-white/60 dark:bg-[#109A71]/30 text-[#109A71] dark:text-emerald-400 rounded-full group-hover:scale-110 transition-transform duration-300">
-                                <Recycle size={28} strokeWidth={1.5} />
-                            </div>
-                            <div className="text-4xl font-extrabold text-[#109A71] dark:text-white mb-2 tracking-tight">85%</div>
-                            <div className="text-xs font-bold text-[#109A71]/80 dark:text-emerald-200/80 uppercase tracking-widest">{t.impact.stats.recovered}</div>
-                        </div>
+const ImpactSection = ({ t }) => {
+    const [hoveredMetric, setHoveredMetric] = useState(null);
 
-                        {/* Card 2: Water - #B7ECDC */}
-                        <div className="bg-[#B7ECDC] dark:bg-emerald-900/30 p-6 rounded-2xl border border-transparent dark:border-emerald-800 shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col items-center justify-center text-center h-full">
-                            <div className="mb-4 p-3 bg-white/60 dark:bg-[#109A71]/30 text-[#109A71] dark:text-emerald-400 rounded-full group-hover:scale-110 transition-transform duration-300">
-                                <Droplets size={28} strokeWidth={1.5} />
-                            </div>
-                            <div className="text-4xl font-extrabold text-[#109A71] dark:text-white mb-2 tracking-tight">12M</div>
-                            <div className="text-xs font-bold text-[#109A71]/80 dark:text-emerald-200/80 uppercase tracking-widest">{t.impact.stats.water}</div>
-                        </div>
+    const metrics = [
+        {
+            value: '85%',
+            label: 'Residuos Recuperados',
+            desc: 'Eficiencia en nuestra red de recolección.',
+            icon: Recycle,
+            color: '#10B981',
+            image: 'https://plus.unsplash.com/premium_photo-1663089270259-5e23b75bfb99?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+        },
+        {
+            value: '12M',
+            label: 'Litros de Agua',
+            desc: 'Ahorro masivo en procesos industriales.',
+            icon: Droplets,
+            color: '#3B82F6',
+            image: 'https://images.unsplash.com/photo-1553564552-02656d6a2390?q=80&w=715&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+        },
+        {
+            value: '450T',
+            label: 'CO2 Evitado',
+            desc: 'Reducción de huella en logística.',
+            icon: CloudSun,
+            color: '#F59E0B',
+            image: 'https://images.unsplash.com/photo-1444491741275-3747c53c99b4?q=80&w=2000&auto=format&fit=crop'
+        }
+    ];
 
-                        {/* Card 3: CO2 - Mint Green Tint */}
-                        <div className="bg-[#F0FDF4] dark:bg-gray-800 p-8 rounded-2xl border-2 border-[#D5F6ED] dark:border-emerald-900 shadow-sm hover:shadow-md hover:border-[#109A71] dark:hover:border-emerald-600 transition-all duration-300 group col-span-2 flex items-center justify-between">
-                            <div className="text-left">
-                                <div className="text-5xl font-extrabold text-[#109A71] dark:text-white mb-2 tracking-tight">450 Ton</div>
-                                <div className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">{t.impact.stats.co2}</div>
+    const defaultImage = "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2000&auto=format&fit=crop";
+
+    return (
+        <section id="impact" className="relative py-20 lg:py-28 bg-[#0a1a16] dark:bg-[#020617] overflow-hidden group transition-colors duration-1000">
+
+            {/* 1. DYNAMIC BACKGROUND LAYERS - High Contrast and Moody for both modes */}
+            <div className="absolute inset-0 z-0 overflow-hidden">
+                {/* Default Background */}
+                <img
+                    src={defaultImage}
+                    alt="Default Landscape"
+                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 
+                        ${hoveredMetric !== null ? 'opacity-0' : 'opacity-40 dark:opacity-20 lg:opacity-50'}`}
+                />
+
+                {/* Metric Specific Backgrounds */}
+                {metrics.map((metric, idx) => (
+                    <img
+                        key={idx}
+                        src={metric.image}
+                        alt={metric.label}
+                        className={`absolute inset-0 w-full h-full object-cover transition-all duration-1000 scale-105
+                            ${hoveredMetric === idx ? 'opacity-50 dark:opacity-30 lg:opacity-60 scale-100' : 'opacity-0'}`}
+                    />
+                ))}
+
+                {/* Overlays - Dark cinematic feel for both day and night */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a1a16] via-transparent to-[#0a1a16]/40 dark:from-[#020617] dark:via-transparent dark:to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#0a1a16] via-transparent to-[#0a1a16] dark:from-[#020617] dark:to-[#020617]" />
+
+                {/* Extra darkening for day mode to maintain night-like contrast */}
+                <div className="absolute inset-0 bg-black/20 dark:hidden" />
+            </div>
+
+            <div className="container mx-auto px-6 relative z-10">
+
+                {/* 2. HEADER - Always white text for impact */}
+                <div className="max-w-3xl mb-16 lg:mb-20">
+
+
+                    <h2 className="text-4xl md:text-5xl lg:text-7xl font-black text-white tracking-tighter leading-[0.9] mb-6 text-shadow-sm">
+                        Resultados <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#10B981] to-[#B0EEDE]">
+                            que transforman
+                        </span>
+                    </h2>
+
+                    <p className="text-gray-300 dark:text-gray-400 text-lg lg:text-xl font-medium max-w-xl leading-relaxed">
+                        Gestionamos datos reales para un compromiso sólido con la Tierra, integrando tecnología y consciencia.
+                    </p>
+                </div>
+
+                {/* 3. SUBTLE QUOTE AT TOP RIGHT */}
+                <div className="absolute top-12 right-8 lg:right-16 opacity-30 select-none pointer-events-none hidden lg:block">
+                    <span className="text-sm lg:text-lg font-bold text-white italic tracking-widest whitespace-nowrap">
+                        "El impacto real lo generas tú" — NOS PLANET
+                    </span>
+                </div>
+
+                {/* 4. COMPACT GLASS PILLARS - Dark theme even in day mode */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+
+                    {metrics.map((metric, idx) => (
+                        <div
+                            key={idx}
+                            onMouseEnter={() => setHoveredMetric(idx)}
+                            onMouseLeave={() => setHoveredMetric(null)}
+                            className="relative group/card"
+                        >
+                            {/* The Glass Card - Dark Glass specifically refined for Day Mode */}
+                            <div className={`relative h-full bg-black/40 dark:bg-white/[0.03] backdrop-blur-xl rounded-[2.5rem] p-8 border border-white/10 transition-all duration-500 overflow-hidden
+                                ${hoveredMetric === idx ? 'bg-black/60 dark:bg-white/[0.07] -translate-y-2 border-white/20' : 'grayscale-[20%]'}`}
+                            >
+                                {/* Context Image Preview */}
+                                <div className={`absolute inset-0 -z-10 transition-opacity duration-700 pointer-events-none opacity-0 
+                                    ${hoveredMetric === idx ? 'opacity-10 dark:opacity-20' : ''}`}
+                                >
+                                    <img src={metric.image} alt="" className="w-full h-full object-cover" />
+                                </div>
+
+                                {/* Icon Circle */}
+                                <div
+                                    className="w-12 h-12 rounded-2xl flex items-center justify-center text-white mb-8 shadow-xl transition-all duration-500 
+                                        group-hover/card:scale-110 group-hover/card:rotate-6 shadow-black/30"
+                                    style={{ backgroundColor: metric.color }}
+                                >
+                                    <metric.icon size={24} strokeWidth={2.5} />
+                                </div>
+
+                                {/* Value */}
+                                <div className="space-y-1 mb-4">
+                                    <div className="text-6xl font-black text-white tracking-tighter leading-none">
+                                        {metric.value}
+                                    </div>
+                                    <div className="text-[11px] font-black uppercase tracking-widest" style={{ color: metric.color }}>
+                                        {metric.label}
+                                    </div>
+                                </div>
+
+                                {/* Description */}
+                                <p className="text-gray-300 dark:text-gray-400 text-base font-medium leading-relaxed group-hover/card:text-white transition-colors">
+                                    {metric.desc}
+                                </p>
                             </div>
-                            <div className="p-4 bg-[#D5F6ED] dark:bg-emerald-900/30 text-[#109A71] dark:text-emerald-400 rounded-full group-hover:scale-110 transition-transform duration-300">
-                                <CloudSun size={36} strokeWidth={1.5} />
-                            </div>
+
+                            {/* Outer Glow */}
+                            <div
+                                className={`absolute inset-0 -z-20 rounded-[2.5rem] blur-2xl opacity-0 transition-opacity duration-500
+                                ${hoveredMetric === idx ? 'opacity-20' : ''}`}
+                                style={{ backgroundColor: metric.color }}
+                            />
                         </div>
-                    </div>
+                    ))}
                 </div>
             </div>
-            <div className="order-1 md:order-2">
-                <span className="bg-[#D5F6ED] dark:bg-emerald-900/40 text-[#109A71] dark:text-emerald-400 px-4 py-1.5 rounded-full text-sm font-bold tracking-wide uppercase inline-block mb-3">
-                    {t.impact.tag}
-                </span>
-                <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">{t.impact.title}</h2>
-                <p className="text-gray-600 dark:text-gray-400 text-lg mb-6 leading-relaxed">
-                    {t.impact.desc}
-                </p>
-                <ul className="space-y-4 mb-8">
-                    {t.impact.list.map((item, idx) => (
-                        <li key={idx} className="flex items-center gap-3">
-                            <div className="w-6 h-6 rounded-full bg-[#D5F6ED] dark:bg-emerald-900/40 flex items-center justify-center text-[#109A71] dark:text-emerald-400">
-                                <CheckCircle size={14} />
-                            </div>
-                            <span className="text-gray-700 dark:text-gray-300">{item}</span>
-                        </li>
-                    ))}
-                </ul>
-                <Button icon={BarChart3}>{t.impact.btn}</Button>
-            </div>
-        </div>
-    </section>
-);
+
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                .text-shadow-sm {
+                    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                }
+                @keyframes bounce-soft {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-4px); }
+                }
+                .animate-bounce-soft {
+                    animation: bounce-soft 3s ease-in-out infinite;
+                }
+            `}} />
+        </section>
+    );
+};
 
 export default ImpactSection;

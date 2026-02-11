@@ -7,6 +7,7 @@ import ImpactSection from './ImpactSection';
 import CommunitySection from './CommunitySection';
 import PartnersSection from './PartnersSection';
 import AboutSection from './AboutSection';
+import ContactSection from './ContactSection';
 
 const LandingView = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t }) => {
     return (
@@ -22,11 +23,11 @@ const LandingView = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t }) 
             <div id="home">
                 <Hero onScrollToPrograms={() => document.getElementById('programs').scrollIntoView({ behavior: 'smooth' })} t={t} />
             </div>
+            <div id="about">
+                <AboutSection t={t} />
+            </div>
             <div id="programs">
                 <ProgramsSection t={t} />
-            </div>
-            <div id="impact">
-                <ImpactSection t={t} />
             </div>
             <div id="community">
                 <CommunitySection t={t} />
@@ -34,8 +35,11 @@ const LandingView = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t }) 
             <div id="partners">
                 <PartnersSection t={t} />
             </div>
-            <div id="about">
-                <AboutSection t={t} />
+            <div id="impact">
+                <ImpactSection t={t} />
+            </div>
+            <div id="contact">
+                <ContactSection t={t} />
             </div>
             <Footer t={t} />
         </>

@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { TRANSLATIONS } from './data/translations';
 import LandingView from './views/landing/LandingView';
 import LoginView from './views/auth/LoginView';
-import AdminView from './views/admin/AdminView';
+import AdminView from './views/admin/dashboard/AdminView';
 import PlanetBot from './components/planet-bot/PlanetBot';
-import { onLogin, onLogout } from './store/auth/authSlice';
+import { onLogin, onLogout, useCheckStatusQuery } from './store/auth';
 import { useSelector, useDispatch } from 'react-redux';
 
 const App = () => {
@@ -14,20 +14,36 @@ const App = () => {
 
   const dispatch = useDispatch();
   const { status } = useSelector((state) => state.auth);
+  const token = localStorage.getItem('token');
+
+  // Recuperar datos reales del usuario si hay token
+  const { data: userData, isSuccess, isError } = useCheckStatusQuery(undefined, {
+    skip: !token
+  });
 
   // Helper for translation
   const t = TRANSLATIONS[lang];
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      // Si hay token guardado, recuperamos la sesión
-      dispatch(onLogin({ token, user: { name: 'Admin Recuperado' } }));
-    } else {
-      // Si no hay token, aseguramos que esté fuera
+    if (!token) {
       dispatch(onLogout());
     }
-  }, [dispatch]);
+  }, [token, dispatch]);
+
+  useEffect(() => {
+    if (isSuccess && userData) {
+      dispatch(onLogin({
+        token,
+        user: userData.user || userData
+      }));
+    }
+  }, [isSuccess, userData, token, dispatch]);
+
+  useEffect(() => {
+    if (isError) {
+      dispatch(onLogout());
+    }
+  }, [isError, dispatch]);
 
   // Determine current view for PlanetBot
   const currentView = status === 'authenticated' ? 'admin' : (isLoginOpen ? 'login' : 'landing');
@@ -36,7 +52,11 @@ const App = () => {
     return (
       <div className={darkMode ? 'dark' : ''}>
         <div className="font-sans text-gray-800 bg-white dark:bg-gray-950 transition-colors duration-500">
-          <AdminView t={t} />
+          <AdminView
+            t={t}
+            darkMode={darkMode}
+            setDarkMode={setDarkMode}
+          />
         </div>
         <PlanetBot currentView="admin" />
       </div>

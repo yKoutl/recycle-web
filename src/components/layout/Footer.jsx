@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Instagram, Twitter, Linkedin, Github, Facebook, Youtube, Send, ArrowUpRight } from 'lucide-react';
-import logoNosPlanet from '../../assets/Logo Nos Planet.png';
+import logoNosPlanet from '../../assets/logo_nos_planet.webp';
 import TermsModal from '../planet-bot/TermsModal';
 
 const Footer = ({ t }) => {

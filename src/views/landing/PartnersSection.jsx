@@ -119,13 +119,21 @@ const PartnersSection = ({ t }) => {
                                         key={idx}
                                         onClick={() => setCurrentIndex(idx)}
                                         style={{ backgroundColor: idx === currentIndex ? p.hex : 'transparent' }}
-                                        className={`w-12 h-12 lg:w-20 lg:h-20 rounded-full flex items-center justify-center shrink-0 transition-all duration-700 cubic-bezier(0.16, 1, 0.3, 1)
+                                        className={`w-12 h-12 lg:w-20 lg:h-20 rounded-full flex items-center justify-center shrink-0 transition-all duration-700 cubic-bezier(0.16, 1, 0.3, 1) overflow-hidden
                                             ${idx === currentIndex
                                                 ? 'text-white shadow-2xl ring-4 ring-gray-500/10 scale-110'
                                                 : 'text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5'
                                             }`}
                                     >
-                                        {getPartnerIcon(idx, isMobile ? 20 : 26)}
+                                        {p.logo ? (
+                                            <img
+                                                src={p.logo}
+                                                alt={p.name}
+                                                className={`w-full h-full object-cover ${p.id === 1 ? 'scale-110' : 'p-2'}`}
+                                            />
+                                        ) : (
+                                            getPartnerIcon(idx, isMobile ? 20 : 26)
+                                        )}
                                     </button>
                                 ))}
                             </div>
@@ -179,14 +187,20 @@ const PartnersSection = ({ t }) => {
                                                     className={`transition-all duration-1000 cubic-bezier(0.23, 1, 0.32, 1) ${isCenter ? 'h-24 lg:h-36' : 'h-10 lg:h-16'} relative flex items-center justify-center shrink-0`}
                                                 >
                                                     <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
-                                                    <div className={`rounded-full border-[4px] lg:border-[6px] ring-2 lg:ring-4 ring-white/15 shadow-xl flex items-center justify-center text-white transition-all duration-1000 cubic-bezier(0.23, 1, 0.32, 1)
+                                                    <div className={`rounded-full border-[4px] lg:border-[6px] ring-2 lg:ring-4 ring-white/15 shadow-xl flex items-center justify-center text-white transition-all duration-1000 cubic-bezier(0.23, 1, 0.32, 1) overflow-hidden
                                                         ${isCenter ? 'w-16 h-16 lg:w-24 lg:h-24' : 'w-8 h-8 lg:w-12 lg:h-12 opacity-30 shadow-none'}`}
                                                         style={{ backgroundColor: partner.hex, borderColor: partner.hex }}
                                                     >
-                                                        {index % 4 === 0 && <Target size={isCenter ? (isMobile ? 30 : 48) : 16} />}
-                                                        {index % 4 === 1 && <Star size={isCenter ? (isMobile ? 30 : 48) : 16} />}
-                                                        {index % 4 === 2 && <Zap size={isCenter ? (isMobile ? 30 : 48) : 16} />}
-                                                        {index % 4 === 3 && <Sparkles size={isCenter ? (isMobile ? 30 : 48) : 16} />}
+                                                        {partner.logo ? (
+                                                            <img src={partner.logo} alt={partner.name} className="w-full h-full object-cover" />
+                                                        ) : (
+                                                            <>
+                                                                {index % 4 === 0 && <Target size={isCenter ? (isMobile ? 30 : 48) : 16} />}
+                                                                {index % 4 === 1 && <Star size={isCenter ? (isMobile ? 30 : 48) : 16} />}
+                                                                {index % 4 === 2 && <Zap size={isCenter ? (isMobile ? 30 : 48) : 16} />}
+                                                                {index % 4 === 3 && <Sparkles size={isCenter ? (isMobile ? 30 : 48) : 16} />}
+                                                            </>
+                                                        )}
                                                     </div>
                                                 </div>
 
@@ -245,4 +259,4 @@ const PartnersSection = ({ t }) => {
     );
 };
 
-export default PartnersSection;
+export default React.memo(PartnersSection);

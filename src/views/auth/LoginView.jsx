@@ -1,27 +1,19 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { LogIn, XCircle, ArrowRight } from 'lucide-react';
-import Button from '../../components/shared/Button'; // Asumo que este botón acepta className
+import { LogIn, XCircle, ArrowRight, ShieldCheck, Mail, Lock } from 'lucide-react';
+import logoNosPlanet from '../../assets/logo_nos_planet.webp';
 
 const LoginView = ({ onLogin, onCancel, t }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    // 1. Configuración del Slider
+    // --- LOGIC FROM PREVIOUS VERSION ---
     const [currentSlide, setCurrentSlide] = useState(0);
-
     const slides = [
-        {
-            id: 0,
-            image: '/src/assets/hero_nature_v2.png',
-        },
-        {
-            id: 1,
-            image: '/src/assets/hero_environment.jpg',
-        }
+        { id: 0, image: '/src/assets/hero_nature_v2.png' },
+        { id: 1, image: '/src/assets/hero_environment.jpg' }
     ];
 
-    // 2. Auto-play
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
@@ -29,16 +21,14 @@ const LoginView = ({ onLogin, onCancel, t }) => {
         return () => clearInterval(interval);
     }, [slides.length]);
 
-    // 3. Bubbles Configuration
     const bubbles = useMemo(() => {
-        return Array.from({ length: 20 }).map((_, i) => ({
+        return Array.from({ length: 15 }).map((_, i) => ({
             id: i,
             left: `${Math.random() * 100}%`,
-            width: `${Math.random() * 50 + 20}px`,
-            height: `${Math.random() * 50 + 20}px`,
+            width: `${Math.random() * 40 + 20}px`,
             animationDuration: `${Math.random() * 10 + 15}s`,
             animationDelay: `${Math.random() * 10}s`,
-            opacity: Math.random() * 0.3 + 0.1
+            opacity: Math.random() * 0.2 + 0.1
         }));
     }, []);
 
@@ -51,24 +41,24 @@ const LoginView = ({ onLogin, onCancel, t }) => {
         }
     };
 
-    // Estilos comunes para los inputs para mantener consistencia con App.js
+    // Card Input Styles (Restored and Refined)
     const inputClasses = `
-        w-full px-4 py-3 
-        rounded-xl outline-none 
-        border border-gray-200 dark:border-gray-700 
-        bg-gray-50/50 dark:bg-gray-800/50 
+        w-full px-5 py-3.5 
+        rounded-2xl outline-none 
+        border border-gray-100 dark:border-white/10 
+        bg-white/50 dark:bg-white/5 
         text-gray-900 dark:text-white 
-        placeholder-gray-400 dark:placeholder-gray-500
-        transition-all duration-500 
-        focus:bg-white dark:focus:bg-gray-800
-        focus:border-green-500 dark:focus:border-green-400
-        focus:ring-4 focus:ring-green-100 dark:focus:ring-green-900/40
+        placeholder-gray-400 dark:placeholder-gray-600
+        transition-all duration-300 
+        focus:bg-white dark:focus:bg-white/10
+        focus:border-[#018F64] dark:focus:border-emerald-500
+        focus:ring-4 focus:ring-[#018F64]/10 dark:focus:ring-emerald-500/10
     `;
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-stone-900 dark:bg-gray-950 transition-colors duration-500">
+        <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-stone-900 transition-colors duration-500">
 
-            {/* --- FONDO ANIMADO --- */}
+            {/* --- RESTORED BACKGROUND SLIDER --- */}
             {slides.map((slide, index) => (
                 <div
                     key={slide.id}
@@ -77,14 +67,13 @@ const LoginView = ({ onLogin, onCancel, t }) => {
                     <img
                         src={slide.image}
                         alt="Background"
-                        className="w-full h-full object-cover opacity-100 transition-opacity duration-500 blur-sm scale-105"
+                        className="w-full h-full object-cover blur-[2px] scale-105"
                     />
-                    {/* Overlay: Mantiene el estilo oscuro pero permite ver la imagen */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-stone-900/90 via-stone-900/50 to-stone-900/30 dark:from-gray-950/90 dark:via-gray-900/50 dark:to-gray-900/30" />
+                    <div className="absolute inset-0 bg-stone-900/60 dark:bg-black/70" />
                 </div>
             ))}
 
-            {/* --- BUBBLES --- */}
+            {/* --- RESTORED BUBBLES --- */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
                 {bubbles.map((bubble) => (
                     <div
@@ -93,7 +82,7 @@ const LoginView = ({ onLogin, onCancel, t }) => {
                         style={{
                             left: bubble.left,
                             width: bubble.width,
-                            height: bubble.width, // Make it a perfect circle
+                            height: bubble.width,
                             animationDuration: bubble.animationDuration,
                             animationDelay: bubble.animationDelay,
                             opacity: bubble.opacity
@@ -102,71 +91,90 @@ const LoginView = ({ onLogin, onCancel, t }) => {
                 ))}
             </div>
 
-            {/* --- LOGIN CARD --- */}
-            <div className="bg-white/95 dark:bg-gray-900/90 p-8 md:p-10 rounded-3xl shadow-2xl w-full max-w-md relative z-10 border border-white/50 dark:border-gray-800 backdrop-blur-md animate-in fade-in zoom-in duration-500">
+            {/* --- REFINED PREMIUM CARD --- */}
+            <div className="w-full max-w-md relative z-10 animate-in fade-in zoom-in duration-700 px-2">
+                <div className="bg-white/95 dark:bg-gray-950/40 p-10 rounded-[2.5rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border border-white/50 dark:border-white/5 backdrop-blur-2xl relative overflow-hidden text-left">
 
-                {/* Header Icon & Title */}
-                <div className="text-center mb-8">
+                    {/* Architectural Grid pattern inside card (About section style) */}
+                    <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none"
+                        style={{ backgroundImage: `linear-gradient(#018F64 1px, transparent 1px), linear-gradient(90deg, #018F64 1px, transparent 1px)`, backgroundSize: '40px 40px' }} />
 
-                    <h2 className="text-3xl text-gray-900 dark:text-white tracking-tight">{t.admin.portalTitle}</h2>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">{t.admin.portalSubtitle}</p>
-                </div>
+                    <div className="relative">
+                        <div className="text-center mb-10">
+                            <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter uppercase italic leading-none">
+                                {t.admin.portalTitle}
+                            </h2>
+                            <p className="text-gray-500 dark:text-gray-400 text-sm mt-3 font-medium">
+                                {t.admin.portalSubtitle}
+                            </p>
+                            <div className="w-12 h-1 bg-[#018F64] mx-auto mt-4 rounded-full" />
+                        </div>
 
-                {/* Error Message */}
-                {error && (
-                    <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-xl text-sm mb-6 flex items-center gap-3 animate-in shake border border-red-100 dark:border-red-900/50">
-                        <XCircle size={18} /> {error}
+                        {error && (
+                            <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-xl text-xs font-bold mb-6 flex items-center gap-3 animate-in shake border border-red-100 dark:border-red-900/50">
+                                <XCircle size={18} /> {error}
+                            </div>
+                        )}
+
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-black text-gray-700 dark:text-gray-300 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                    <Mail size={14} className="text-[#018F64]" /> {t.admin.emailLabel}
+                                </label>
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className={inputClasses}
+                                    placeholder="admin@recycle.com"
+                                    required
+                                />
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-black text-gray-700 dark:text-gray-300 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                    <Lock size={14} className="text-[#018F64]" /> {t.admin.passLabel}
+                                </label>
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className={inputClasses}
+                                    placeholder="••••••••"
+                                    required
+                                />
+                            </div>
+
+                            <button
+                                type="submit"
+                                className="w-full h-14 mt-4 bg-[#018F64] text-white rounded-2xl flex items-center justify-center gap-3 font-black text-sm uppercase tracking-widest shadow-xl shadow-[#018F64]/20 transition-all hover:scale-[1.02] hover:bg-[#05835D] active:scale-95"
+                            >
+                                {t.admin.loginBtn}
+                                <ArrowRight size={18} />
+                            </button>
+                        </form>
+
+                        <div className="mt-8 text-center pt-2">
+                            <button
+                                onClick={onCancel}
+                                className="text-[10px] font-black text-gray-400 hover:text-[#018F64] uppercase tracking-widest flex items-center justify-center gap-2 mx-auto transition-colors"
+                            >
+                                <ArrowRight size={14} className="rotate-180" /> {t.admin.backBtn}
+                            </button>
+                        </div>
                     </div>
-                )}
-
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="space-y-5">
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 ml-1">
-                            {t.admin.emailLabel}
-                        </label>
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className={inputClasses}
-                            placeholder="admin@recycle.com"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 ml-1">
-                            {t.admin.passLabel}
-                        </label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className={inputClasses}
-                            placeholder="••••••••"
-                            required
-                        />
-                    </div>
-
-                    {/* Botón con transición y colores ajustados */}
-                    <button
-                        type="submit"
-                        className="w-full flex items-center justify-center gap-2 py-3.5 px-4 mt-2 text-base font-medium text-white bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-500 rounded-xl shadow-lg shadow-green-600/20 transition-all duration-300 transform active:scale-[0.98]"
-                    >
-                        {t.admin.loginBtn}
-                    </button>
-                </form>
-
-                {/* Back Button */}
-                <div className="mt-8 text-center border-t border-gray-100 dark:border-gray-800 pt-6">
-                    <button
-                        onClick={onCancel}
-                        className="text-sm text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 font-medium flex items-center justify-center gap-2 mx-auto transition-colors duration-300"
-                    >
-                        <ArrowRight size={14} className="rotate-180" /> {t.admin.backBtn}
-                    </button>
                 </div>
             </div>
+
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                @keyframes float-up {
+                    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+                    20% { opacity: 1; }
+                    100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
+                }
+                .animate-float-up { animation: float-up linear infinite; }
+            `}} />
         </div>
     );
 };

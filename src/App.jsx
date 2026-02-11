@@ -45,7 +45,7 @@ const App = () => {
         )}
 
       </div>
-      <PlanetBot />
+      <PlanetBot currentView={view} />
     </div>
   );
 };

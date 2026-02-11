@@ -53,7 +53,7 @@ const Hero = ({ onScrollToPrograms, t }) => {
             ))}
 
             {/* Floating Shapes */}
-            <div className={`absolute top-20 right-20 w-96 h-96 bg-[image:var(--gradient-primary)] opacity-20 rounded-full blur-[100px] animate-pulse transition-all duration-1000 ${currentSlide === 1 ? 'left-20 bg-blue-500/10' : ''}`}></div>
+            <div className={`absolute top-20 right-20 w-96 h-96 bg-[image:var(--gradient-primary)] opacity-10 rounded-full blur-[100px] transition-all duration-1000 ${currentSlide === 1 ? 'left-20 bg-blue-500/10' : ''}`}></div>
 
             {/* Dots Navigation (Right Side) */}
             <div className="absolute right-8 bottom-10 z-30 flex gap-3 md:flex-col md:top-1/2 md:bottom-auto md:-translate-y-1/2">
@@ -89,7 +89,7 @@ const Hero = ({ onScrollToPrograms, t }) => {
                         <div className="flex flex-col sm:flex-row gap-5 pt-4">
                             <Button
                                 onClick={onScrollToPrograms}
-                                className="h-14 px-10 rounded-2xl bg-[#FF6B6B] text-white hover:bg-[#FF5252] transition-all shadow-2xl shadow-[#FF6B6B]/30 border-none font-bold text-lg"
+                                className="h-14 px-10 rounded-2xl bg-[#018F64] text-white hover:bg-[#05835D] transition-all shadow-xl shadow-emerald-900/40 border-none font-bold text-lg hover:translate-y-[-2px] active:translate-y-0"
                                 icon={ArrowRight}
                             >
                                 {t.hero.btnPrimary}

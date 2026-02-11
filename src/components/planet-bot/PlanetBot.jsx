@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { X, Send, Leaf, Info } from 'lucide-react';
-import botImage from '../../assets/bot nos planet v1.png';
+import botImage from '../../assets/bot_nos_planet_v1.webp';
 import SuggestedQuestions, { QUESTIONS_DATA } from './SuggestedQuestions';
 import TermsModal from './TermsModal';
 
@@ -15,7 +15,7 @@ const ECO_TIPS = [
     "🛢️ El aceite usado se puede convertir en biodiesel."
 ];
 
-const PlanetBot = () => {
+const PlanetBot = ({ currentView }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [showTerms, setShowTerms] = useState(false);
     const [messages, setMessages] = useState([
@@ -41,9 +41,15 @@ const PlanetBot = () => {
 
     // Lógica para notificaciones periódicas
     useEffect(() => {
+        // Notificación especial para Login
+        if (currentView === 'login') {
+            setNotification("🔒 Esta área es exclusiva para administradores y funcionarios de Nos Planet SAC.");
+            return;
+        }
+
         // Intervalo para mostrar notificaciones cada 12 segundos si el chat está cerrado
         const intervalId = setInterval(() => {
-            if (!isOpen && !notification) {
+            if (!isOpen && !notification && currentView === 'landing') {
                 const randomTip = ECO_TIPS[Math.floor(Math.random() * ECO_TIPS.length)];
                 setNotification(randomTip);
 
@@ -55,7 +61,7 @@ const PlanetBot = () => {
         }, 12000); // 12000 ms = 12 segundos
 
         return () => clearInterval(intervalId);
-    }, [isOpen, notification]);
+    }, [isOpen, notification, currentView]);
 
 
     const handleSendMessage = async (textOrObj) => {
@@ -176,19 +182,20 @@ const PlanetBot = () => {
                 {/* Notificación (Burbuja Flotante) - Estilo Llamativo (Balanceado) */}
                 {!isOpen && notification && (
                     <div className="mb-4 mr-2 max-w-xs animate-fade-in origin-bottom-right z-50">
-                        <div className="
-                            bg-white dark:bg-gray-800 
-                            text-gray-800 dark:text-gray-100 p-3.5 rounded-2xl rounded-tr-none 
-                            shadow-[0_8px_16px_rgba(0,0,0,0.1)] 
-                            border border-green-200 dark:border-green-700
+                        <div className={`
+                            ${currentView === 'login'
+                                ? 'bg-red-500 text-white border-red-400 animate-bounce-soft shadow-red-500/20'
+                                : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border-green-200 dark:border-green-700 shadow-[0_8px_16px_rgba(0,0,0,0.1)]'}
+                            p-3.5 rounded-2xl rounded-tr-none 
+                            border
                             relative
                             transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl
-                        ">
+                        `}>
                             <div className="flex gap-2.5 items-start">
-                                <div className="bg-green-100 dark:bg-green-900/40 p-1 rounded-full shrink-0">
-                                    <span className="text-base">💡</span>
+                                <div className={`${currentView === 'login' ? 'bg-white/20' : 'bg-green-100 dark:bg-green-900/40'} p-1 rounded-full shrink-0`}>
+                                    <span className="text-base">{currentView === 'login' ? '⚠️' : '💡'}</span>
                                 </div>
-                                <p className="text-sm font-medium leading-snug pt-0.5" style={{ textWrap: 'balance' }}>
+                                <p className="text-sm font-black leading-snug pt-0.5" style={{ textWrap: 'balance' }}>
                                     {notification}
                                 </p>
                             </div>
@@ -199,14 +206,14 @@ const PlanetBot = () => {
                                     e.preventDefault();
                                     setNotification(null);
                                 }}
-                                className="pointer-events-auto absolute -top-3 -right-3 w-8 h-8 bg-white dark:bg-gray-800 text-gray-400 dark:text-gray-300 rounded-full flex items-center justify-center shadow-lg border border-gray-100 dark:border-gray-700 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30 dark:hover:text-red-400 transition-all active:scale-90 group/close z-[60]"
+                                className={`pointer-events-auto absolute -top-3 -right-3 w-8 h-8 ${currentView === 'login' ? 'bg-white text-red-500' : 'bg-white dark:bg-gray-800 text-gray-400 dark:text-gray-300'} rounded-full flex items-center justify-center shadow-lg border border-gray-100 dark:border-gray-700 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30 dark:hover:text-red-400 transition-all active:scale-90 group/close z-[60]`}
                                 aria-label="Cerrar notificación"
                             >
                                 <X size={16} className="group-hover/close:rotate-90 transition-transform" />
                             </button>
 
                             {/* Triángulo speech bubble */}
-                            <div className="absolute -bottom-1.5 right-5 w-3 h-3 bg-white dark:bg-gray-800 rotate-45 border-b border-r border-green-200 dark:border-green-700"></div>
+                            <div className={`absolute -bottom-1.5 right-5 w-3 h-3 ${currentView === 'login' ? 'bg-red-500 border-red-400' : 'bg-white dark:bg-gray-800 border-green-200 dark:border-green-700'} rotate-45 border-b border-r`}></div>
                         </div>
                     </div>
                 )}

@@ -8,6 +8,7 @@ import CommunitySection from './CommunitySection';
 import PartnersSection from './PartnersSection';
 import AboutSection from './AboutSection';
 import ContactSection from './ContactSection';
+import LazySection from '../../components/shared/LazySection';
 
 const LandingView = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t }) => {
     return (
@@ -29,18 +30,18 @@ const LandingView = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t }) 
             <div id="programs">
                 <ProgramsSection t={t} />
             </div>
-            <div id="community">
+            <LazySection id="community">
                 <CommunitySection t={t} />
-            </div>
-            <div id="partners">
+            </LazySection>
+            <LazySection id="partners">
                 <PartnersSection t={t} />
-            </div>
-            <div id="impact">
+            </LazySection>
+            <LazySection id="impact">
                 <ImpactSection t={t} />
-            </div>
-            <div id="contact">
+            </LazySection>
+            <LazySection id="contact">
                 <ContactSection t={t} />
-            </div>
+            </LazySection>
             <Footer t={t} />
         </>
     );

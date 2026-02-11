@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Bell, CheckCircle, Recycle, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import Lottie from 'lottie-react';
 import recycleAnimation from '../../assets/Recycle.json';
-import logoNosPlanet from '../../assets/reciclaje.png'; // Assuming this exists or using a substitute
+import logoNosPlanet from '../../assets/reciclaje.webp'; // Assuming this exists or using a substitute
 
 const HeroMockup = ({ t }) => {
     const [screen, setScreen] = useState('loading'); // loading, login, dashboard

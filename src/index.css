@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Space+Grotesk:wght@500;700&display=swap');
 
 /* Visible Premium Custom Scrollbar */
 ::-webkit-scrollbar {
@@ -64,8 +64,8 @@
   /* Crema Cálido */
   --color-sand: #F5F3EF;
   /* Arena Suave */
-  --color-coral: #FF6B6B;
-  /* Coral para CTAs */
+  --color-coral: #018F64;
+  /* Cambiado a Verde para evitar rojo */
   --color-ocean: #00B894;
   /* Océano Vibrante */
 }
@@ -77,7 +77,7 @@
   --color-primary: #018F64;
   --color-primary-dark: #05835D;
   --color-accent: #B0EEDE;
-  --color-highlight: #FF6B6B;
+  --color-highlight: #018F64;
   --bg-cream: #FEFDFB;
 
   --gradient-primary: linear-gradient(135deg, #05835D 0%, #018F64 50%, #00B894 100%);
@@ -102,7 +102,9 @@ h6 {
 
 /* Modern Clean Utilities */
 .glass-pill {
-  @apply bg-white/90 backdrop-blur-md border border-[#018F64]/10 shadow-lg shadow-[#018F64]/5;
+  @apply bg-white/90 border border-[#018F64]/10 shadow-lg shadow-[#018F64]/5;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .card-fresh {

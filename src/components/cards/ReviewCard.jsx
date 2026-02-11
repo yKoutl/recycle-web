@@ -54,8 +54,8 @@ const ReviewCard = ({ review, t, onToggleLike, index }) => {
                 <button
                     onClick={() => onToggleLike(review.id)}
                     className={`flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${review.liked
-                            ? 'bg-[#FF6B6B] text-white'
-                            : 'bg-white/50 dark:bg-white/5 text-gray-500'
+                        ? 'bg-[#018F64] text-white'
+                        : 'bg-white/50 dark:bg-white/5 text-gray-500'
                         }`}
                 >
                     <Heart size={10} fill={review.liked ? "currentColor" : "none"} />

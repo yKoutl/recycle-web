@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Sun, Moon, Languages, LogIn, X, Menu, ChevronRight, Home, Sprout, Globe, Users, Handshake, Leaf, Mail } from 'lucide-react';
 import Button from '../shared/Button';
-import logoNosPlanet from '../../assets/Logo Nos Planet.png';
+import logoNosPlanet from '../../assets/logo_nos_planet.webp';
 
 const Navbar = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t }) => {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -166,4 +166,4 @@ const Navbar = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t }) => {
     );
 };
 
-export default Navbar;
+export default React.memo(Navbar);

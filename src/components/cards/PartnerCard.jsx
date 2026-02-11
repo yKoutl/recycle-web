@@ -9,8 +9,14 @@ const PartnerCard = ({ partner, onClick }) => {
         >
             {/* Top Row: Logo & Category */}
             <div className="flex justify-between items-start mb-8">
-                <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-100 shadow-sm transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
-                    <span className="text-xl font-black text-slate-900">{partner.logo}</span>
+                <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-100 shadow-sm transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 overflow-hidden">
+                    {typeof partner.logo === 'string' && !partner.logo.includes('/') ? (
+                        <span className="text-xl font-black text-slate-900">{partner.logo}</span>
+                    ) : partner.logo ? (
+                        <img src={partner.logo} alt={partner.name} className="w-full h-full object-cover p-2" />
+                    ) : (
+                        <span className="text-xl font-black text-slate-900">{partner.name[0]}</span>
+                    )}
                 </div>
                 <span className="px-3 py-1 rounded-lg bg-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest border border-slate-100">
                     {partner.category}

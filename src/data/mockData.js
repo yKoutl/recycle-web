@@ -5,6 +5,11 @@ import {
     MapPin
 } from 'lucide-react';
 
+import logoYape from '../assets/logo_yape_c.webp';
+import logoBCP from '../assets/logo_bpc_c.webp';
+import logoNosPlanet from '../assets/logo_nos_planet.webp';
+import logoAgroMarket from '../assets/Logo_agromarket.png';
+
 export const MOCK_STATS = (t) => [
     { label: t.admin.stats.activeUsers, value: '1,234', icon: Users, color: 'text-blue-500', bg: 'bg-blue-100 dark:bg-blue-900/30' },
     { label: t.admin.stats.recycled, value: '5,678', icon: Recycle, color: 'text-green-500', bg: 'bg-green-100 dark:bg-green-900/30' },
@@ -112,7 +117,7 @@ export const MOCK_PARTNERS = (t) => [
         id: 1,
         name: 'Nos Planét',
         category: 'Plataforma',
-        logo: 'NP', // Using text for now as placeholder, or icon
+        logo: logoNosPlanet,
         bgHeader: 'bg-emerald-600',
         hex: '#018F64',
         textColor: 'text-emerald-600',
@@ -127,7 +132,7 @@ export const MOCK_PARTNERS = (t) => [
         id: 2,
         name: 'Yape',
         category: 'Fintech',
-        logo: 'YP',
+        logo: logoYape,
         bgHeader: 'bg-violet-600',
         hex: '#7c3aed',
         textColor: 'text-violet-600',
@@ -142,7 +147,7 @@ export const MOCK_PARTNERS = (t) => [
         id: 3,
         name: 'BCP',
         category: 'Banco',
-        logo: 'BCP',
+        logo: logoBCP,
         bgHeader: 'bg-blue-800',
         hex: '#1e40af',
         textColor: 'text-blue-800',
@@ -155,9 +160,9 @@ export const MOCK_PARTNERS = (t) => [
     },
     {
         id: 4,
-        name: 'EcoTienda',
-        category: 'Marketplace',
-        logo: 'ET',
+        name: 'AgroMarket',
+        category: 'EcoTienda',
+        logo: logoAgroMarket,
         bgHeader: 'bg-green-500',
         hex: '#10b981',
         textColor: 'text-green-500',

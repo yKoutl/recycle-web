@@ -73,33 +73,25 @@ const CommunitySection = ({ t }) => {
                         </p>
                     </div>
 
-                    <div className="lg:text-right">
-                        {/* CTA Card with NEW focused community image */}
-                        <div className="relative bg-white/40 dark:bg-white/5 backdrop-blur-md p-8 rounded-[2rem] border-2 border-dashed border-[#B0EEDE]/50 dark:border-white/10 overflow-hidden group cursor-pointer shadow-xl shadow-[#018F64]/5"
-                            onClick={() => setIsModalOpen(true)}>
-
-                            {/* NEW Focused Community Image */}
-                            <div className="absolute inset-0 z-0">
-                                <img
-                                    src="https://plus.unsplash.com/premium_photo-1681885032909-8d645ac23be4?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                    alt="Active Community"
-                                    className="w-full h-full object-cover opacity-20 group-hover:opacity-60 transition-all duration-700 group-hover:scale-110"
-                                />
-                                <div className="absolute inset-0 bg-white/60 dark:bg-[#020617]/60 group-hover:bg-transparent transition-colors duration-700"></div>
-                            </div>
-
-                            <div className="relative z-10">
-                                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                                    ¿Tu también quieres ser parte?
-                                </h3>
+                    <div className="relative lg:text-right py-6">
+                        <div className="relative inline-block rotate-[3deg] hover:rotate-0 transition-transform duration-700">
+                            <h3 className="text-3xl md:text-4xl lg:text-5xl font-black text-[#018F64] dark:text-[#10B981] leading-[0.9] mb-6 tracking-tighter">
+                                COMPARTE TU <br />
+                                <span className="text-gray-900 dark:text-white italic">ECO-HISTORIA</span><br />
+                                <span className="text-xl lg:text-2xl">¿CÓMO RECICLAS TÚ?</span>
+                            </h3>
+                            <div className="flex justify-end pr-4">
                                 <Button
-                                    className="h-14 px-10 rounded-2xl text-lg font-bold bg-[#FF6B6B] hover:bg-[#FF5252] text-white shadow-xl shadow-[#FF6B6B]/20 border-none transition-all hover:scale-105 active:scale-95 flex items-center gap-3 lg:ml-auto"
+                                    className="h-12 px-8 rounded-xl text-base font-black bg-[#018F64] hover:bg-[#05835D] text-white border-none transition-all hover:scale-105 active:scale-95 flex items-center gap-3 shadow-xl shadow-emerald-900/20"
+                                    onClick={() => setIsModalOpen(true)}
                                     icon={MessageSquare}
                                 >
                                     {t.community.addComment}
                                 </Button>
                             </div>
-                            <Sparkles className="absolute -bottom-4 -right-4 w-24 h-24 text-[#D4F6ED] dark:text-white/10 opacity-50 group-hover:rotate-12 transition-transform duration-700" />
+                            <div className="absolute -bottom-2 -left-8 rotate-[-12deg] opacity-20 dark:opacity-10 pointer-events-none">
+                                <Leaf size={80} className="text-[#018F64]" fill="currentColor" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -134,4 +126,4 @@ const CommunitySection = ({ t }) => {
     );
 };
 
-export default CommunitySection;
+export default React.memo(CommunitySection);

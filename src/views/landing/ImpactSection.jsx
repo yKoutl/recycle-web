@@ -11,7 +11,7 @@ const ImpactSection = ({ t }) => {
             desc: 'Eficiencia en nuestra red de recolección.',
             icon: Recycle,
             color: '#10B981',
-            image: 'https://plus.unsplash.com/premium_photo-1663089270259-5e23b75bfb99?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            image: 'https://plus.unsplash.com/premium_photo-1663089270259-5e23b75bfb99?w=1200&q=75&auto=format&fit=crop'
         },
         {
             value: '12M',
@@ -19,7 +19,7 @@ const ImpactSection = ({ t }) => {
             desc: 'Ahorro masivo en procesos industriales.',
             icon: Droplets,
             color: '#3B82F6',
-            image: 'https://images.unsplash.com/photo-1553564552-02656d6a2390?q=80&w=715&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            image: 'https://images.unsplash.com/photo-1553564552-02656d6a2390?w=1200&q=75&auto=format&fit=crop'
         },
         {
             value: '450T',
@@ -27,11 +27,11 @@ const ImpactSection = ({ t }) => {
             desc: 'Reducción de huella en logística.',
             icon: CloudSun,
             color: '#F59E0B',
-            image: 'https://images.unsplash.com/photo-1444491741275-3747c53c99b4?q=80&w=2000&auto=format&fit=crop'
+            image: 'https://images.unsplash.com/photo-1444491741275-3747c53c99b4?w=1200&q=75&auto=format&fit=crop'
         }
     ];
 
-    const defaultImage = "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2000&auto=format&fit=crop";
+    const defaultImage = "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&q=75&auto=format&fit=crop";
 
     return (
         <section id="impact" className="relative py-20 lg:py-28 bg-[#0a1a16] dark:bg-[#020617] overflow-hidden group transition-colors duration-1000">
@@ -164,4 +164,4 @@ const ImpactSection = ({ t }) => {
     );
 };
 
-export default ImpactSection;
+export default React.memo(ImpactSection);

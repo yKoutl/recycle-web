@@ -95,4 +95,4 @@ const ProgramsSection = ({ t }) => {
     );
 };
 
-export default ProgramsSection;
+export default React.memo(ProgramsSection);

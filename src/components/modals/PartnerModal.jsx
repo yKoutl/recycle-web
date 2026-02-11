@@ -23,18 +23,20 @@ const PartnerModal = ({ isOpen, onClose, partner }) => {
             <style dangerouslySetInnerHTML={{
                 __html: `
                 .custom-scrollbar-${partner.id}::-webkit-scrollbar {
-                    width: 6px;
+                    width: 8px;
                 }
                 .custom-scrollbar-${partner.id}::-webkit-scrollbar-track {
-                    background: transparent;
+                    background: rgba(0,0,0,0.02);
                 }
                 .custom-scrollbar-${partner.id}::-webkit-scrollbar-thumb {
-                    background: ${brandColor}40;
+                    background: ${brandColor};
                     border-radius: 10px;
-                    transition: background 0.3s ease;
+                    border: 2px solid transparent;
+                    background-clip: content-box;
                 }
                 .custom-scrollbar-${partner.id}::-webkit-scrollbar-thumb:hover {
-                    background: ${brandColor}80;
+                    background: ${brandColor};
+                    background-clip: padding-box;
                 }
                 @keyframes slide-in-left {
                     from { transform: translateX(-100%); opacity: 0; }
@@ -105,79 +107,94 @@ const PartnerModal = ({ isOpen, onClose, partner }) => {
                     </button>
                     <div
                         style={{ backgroundColor: brandColor }}
-                        className="w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg"
+                        className={`w-12 h-12 flex items-center justify-center text-white shadow-lg overflow-hidden ${partner.id === 1 ? 'rounded-full' : 'rounded-2xl'}`}
                     >
-                        <span className="text-xl font-black">{partner.logo || partner.name[0]}</span>
+                        {typeof partner.logo === 'string' && !partner.logo.includes('/') ? (
+                            <span className="text-xl font-black">{partner.logo}</span>
+                        ) : partner.logo ? (
+                            <img
+                                src={partner.logo}
+                                alt={partner.name}
+                                className={`w-full h-full object-cover ${partner.id === 1 ? 'scale-110' : 'p-1'}`}
+                            />
+                        ) : (
+                            <span className="text-xl font-black">{partner.name[0]}</span>
+                        )}
                     </div>
                 </div>
 
-                {/* Main Content Area */}
-                <div className={`flex-1 overflow-y-auto px-12 lg:pr-16 lg:pl-24 flex flex-col justify-start pt-8 lg:pt-12 custom-scrollbar-${partner.id}`}>
-                    <div className="space-y-12 w-full py-4 pb-20">
-                        {/* Title Section */}
-                        <div>
-                            <span
-                                className="inline-flex px-3 py-1 rounded-lg bg-gray-50 dark:bg-white/5 text-[9px] font-black uppercase tracking-widest mb-4"
-                                style={{ color: brandColor }}
-                            >
-                                {partner.category}
-                            </span>
-                            <h3 className="text-5xl lg:text-6xl font-black text-gray-900 dark:text-white leading-tight tracking-tighter">
-                                {partner.name}
-                            </h3>
-                            <p className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400 dark:text-gray-500 mt-2">
-                                ALIADO ESTRATÉGICO CONFIRMADO
-                            </p>
-                        </div>
-
-                        {/* Description */}
-                        <div className="space-y-4">
-                            <h4
-                                className="text-[10px] font-black uppercase tracking-widest flex items-center gap-3"
-                                style={{ color: brandColor }}
-                            >
-                                <Target size={14} strokeWidth={3} />
-                                <span>Misión & Propósito</span>
-                            </h4>
-                            <p className="text-gray-600 dark:text-gray-400 text-lg font-medium leading-relaxed bg-gray-50/50 dark:bg-white/5 p-8 rounded-[2rem] border border-gray-100 dark:border-white/5">
-                                {partner.details?.desc || 'Comprometidos con la transformación ambiental y la creación de valor sostenible para toda nuestra comunidad.'}
-                            </p>
-                        </div>
-
-                        {/* Stats / Impact */}
-                        <div className="grid grid-cols-2 gap-4">
-                            {[
-                                { icon: Gift, value: partner.stats?.prizes || '10+', label: 'Premios' },
-                                { icon: Users2, value: partner.stats?.exchanges || '500+', label: 'Canjes' }
-                            ].map((stat, i) => (
-                                <div key={i} className="p-6 bg-white dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
-                                    <div
-                                        className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
-                                        style={{ backgroundColor: `${brandColor}15`, color: brandColor }}
-                                    >
-                                        <stat.icon size={20} strokeWidth={2.5} />
-                                    </div>
-                                    <div className="text-2xl font-black text-gray-900 dark:text-white leading-none">{stat.value}</div>
-                                    <div className="text-[9px] uppercase font-bold tracking-widest text-gray-400 mt-1">{stat.label}</div>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Engagement Block (Only visible on Mobile) */}
-                        <div
-                            style={{ backgroundColor: brandColor }}
-                            className="p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden group shadow-lg md:hidden"
-                        >
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-3xl rounded-full" />
-                            <div className="flex items-center gap-3 mb-4 relative z-10">
-                                <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center">
-                                    <Heart size={20} className="fill-white" />
-                                </div>
-                                <h4 className="text-[11px] font-black uppercase tracking-[0.2em]">Compromiso Verde</h4>
+                {/* Main Content Area - Scroll on LEFT */}
+                <div
+                    className={`flex-1 overflow-y-auto custom-scrollbar-${partner.id} flex flex-col`}
+                    style={{ direction: 'rtl' }}
+                >
+                    <div style={{ direction: 'ltr' }} className="px-12 lg:pr-16 lg:pl-24 py-4 pb-20">
+                        <div className="space-y-12 w-full">
+                            {/* Title Section */}
+                            <div>
+                                <span
+                                    className="inline-flex px-3 py-1 rounded-lg bg-gray-50 dark:bg-white/5 text-[9px] font-black uppercase tracking-widest mb-4"
+                                    style={{ color: brandColor }}
+                                >
+                                    {partner.category}
+                                </span>
+                                <h3 className="text-5xl lg:text-6xl font-black text-gray-900 dark:text-white leading-tight tracking-tighter">
+                                    {partner.name}
+                                </h3>
+                                <p className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400 dark:text-gray-500 mt-2">
+                                    ALIADO ESTRATÉGICO CONFIRMADO
+                                </p>
                             </div>
-                            <p className="text-emerald-50 text-base leading-relaxed font-medium relative z-10 opacity-90">
-                                {partner.details?.about || 'Estamos redefiniendo el impacto social a través de acciones climáticas directas y tecnología responsable.'}
-                            </p>
+
+                            {/* Description */}
+                            <div className="space-y-4">
+                                <h4
+                                    className="text-[10px] font-black uppercase tracking-widest flex items-center gap-3"
+                                    style={{ color: brandColor }}
+                                >
+                                    <Target size={14} strokeWidth={3} />
+                                    <span>Misión & Propósito</span>
+                                </h4>
+                                <p className="text-gray-600 dark:text-gray-400 text-lg font-medium leading-relaxed bg-gray-50/50 dark:bg-white/5 p-8 rounded-[2rem] border border-gray-100 dark:border-white/5">
+                                    {partner.details?.desc || 'Comprometidos con la transformación ambiental y la creación de valor sostenible para toda nuestra comunidad.'}
+                                </p>
+                            </div>
+
+                            {/* Stats / Impact */}
+                            <div className="grid grid-cols-2 gap-4">
+                                {[
+                                    { icon: Gift, value: partner.stats?.prizes || '10+', label: 'Premios' },
+                                    { icon: Users2, value: partner.stats?.exchanges || '500+', label: 'Canjes' }
+                                ].map((stat, i) => (
+                                    <div key={i} className="p-6 bg-white dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
+                                        <div
+                                            className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
+                                            style={{ backgroundColor: `${brandColor}15`, color: brandColor }}
+                                        >
+                                            <stat.icon size={20} strokeWidth={2.5} />
+                                        </div>
+                                        <div className="text-2xl font-black text-gray-900 dark:text-white leading-none">{stat.value}</div>
+                                        <div className="text-[9px] uppercase font-bold tracking-widest text-gray-400 mt-1">{stat.label}</div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Engagement Block (Only visible on Mobile) */}
+                            <div
+                                style={{ backgroundColor: brandColor }}
+                                className="p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden group shadow-lg md:hidden"
+                            >
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-3xl rounded-full" />
+                                <div className="flex items-center gap-3 mb-4 relative z-10">
+                                    <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center">
+                                        <Heart size={20} className="fill-white" />
+                                    </div>
+                                    <h4 className="text-[11px] font-black uppercase tracking-[0.2em]">Compromiso Verde</h4>
+                                </div>
+                                <p className="text-emerald-50 text-base leading-relaxed font-medium relative z-10 opacity-90">
+                                    {partner.details?.about || 'Estamos redefiniendo el impacto social a través de acciones climáticas directas y tecnología responsable.'}
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>

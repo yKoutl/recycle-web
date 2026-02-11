@@ -1,156 +1,198 @@
-import React, { useState } from 'react';
-import { X, Handshake, CheckCircle, Mail, Phone, Globe, ArrowRight, Send } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Handshake, CheckCircle, Mail, User, ArrowLeft, Send, Sparkles, Leaf, Briefcase, Globe, MessageSquare } from 'lucide-react';
 import Button from '../shared/Button';
 
 const JoinPartnerModal = ({ isOpen, onClose }) => {
-    const [step, setStep] = useState(1); // 1: Form, 2: Success
+    const [success, setSuccess] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
+        category: '',
         comment: ''
     });
 
-    if (!isOpen) return null;
-
-    const benefits = [
-        "Visibilidad en nuestra plataforma global",
-        "Conexión con comunidad eco-consciente",
-        "Promoción de productos sostenibles",
-        "Contribuye al cuidado del planeta"
-    ];
+    useEffect(() => {
+        if (isOpen) {
+            setFormData({ name: '', email: '', category: '', comment: '' });
+            setSuccess(false);
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => { document.body.style.overflow = 'unset'; };
+    }, [isOpen]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Basic validation
-        if (!formData.name || !formData.email) return;
-
-        // Simulate API call
-        setTimeout(() => {
-            setStep(2);
-        }, 500);
+        setSuccess(true);
     };
 
-    const handleClose = () => {
-        setStep(1);
-        setFormData({ name: '', email: '', comment: '' });
-        onClose();
-    };
+    if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-md animate-in fade-in duration-300" onClick={handleClose}></div>
+        <div className="fixed inset-0 z-[100] flex justify-end overflow-hidden outline-none">
+            {/* Backdrop with Eco Image and Blur (Consistent with AddCommentModal) */}
+            <div className="absolute inset-0 z-0 overflow-hidden flex items-center justify-start pointer-events-none">
+                <img
+                    src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=1600"
+                    alt="Eco background"
+                    className="absolute inset-0 w-full h-full object-cover opacity-[0.12] scale-105"
+                />
 
-            <div className="relative w-full max-w-4xl bg-white dark:bg-gray-900 rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col md:flex-row h-auto max-h-[90vh]">
+                {/* Author Quote Area */}
+                <div className="relative z-10 ml-12 lg:ml-24 max-w-lg p-12 bg-white/5 backdrop-blur-sm rounded-[3rem] border border-white/10 hidden md:block text-left">
+                    <Sparkles size={40} className="text-[#018F64] dark:text-[#B0EEDE] mb-6 opacity-30" />
+                    <p className="text-2xl lg:text-3xl font-black text-gray-800 dark:text-gray-100 leading-tight italic tracking-tighter">
+                        "El futuro pertenece a quienes creen en la belleza de sus sueños sostenibles."
+                    </p>
+                    <p className="mt-4 text-[11px] font-black uppercase tracking-[0.4em] text-[#018F64] dark:text-[#B0EEDE]">
+                        — UNIÓN POR EL PLANETA
+                    </p>
+                </div>
 
-                {/* Visual Side (Left) */}
-                <div className="hidden md:flex md:w-2/5 bg-emerald-600 p-8 text-white relative flex-col justify-between overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-full bg-white/10 pattern-circuit opacity-20"></div>
+                <div
+                    className="absolute inset-0 bg-gray-100/40 dark:bg-[#020617]/90 backdrop-blur-md transition-opacity duration-500 pointer-events-auto"
+                    onClick={onClose}
+                />
+            </div>
 
-                    <div className="relative z-10">
-                        <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6 border border-white/30">
-                            <Handshake size={32} />
-                        </div>
-                        <h2 className="text-3xl font-bold mb-4 leading-tight">Únete a nuestra rede de aliados</h2>
-                        <p className="text-emerald-50 mb-8 opacity-90">
-                            Conecta tu empresa con miles de usuarios comprometidos con el medio ambiente.
-                        </p>
+            {/* Side Panel - Media Luna Style */}
+            <div className="relative z-10 w-full max-w-xl bg-white dark:bg-[#0f172a] h-full shadow-[-30px_0_60px_rgba(0,0,0,0.3)] animate-slide-in-right flex flex-col border-none">
 
-                        <div className="space-y-4">
-                            <h3 className="font-bold border-b border-white/20 pb-2 mb-4 text-sm uppercase tracking-wider opacity-80">Beneficios</h3>
-                            <ul className="space-y-3">
-                                {benefits.map((item, idx) => (
-                                    <li key={idx} className="flex items-start gap-3 text-sm">
-                                        <div className="mt-0.5 min-w-[18px] h-[18px] bg-emerald-500/50 rounded-full flex items-center justify-center">
-                                            <CheckCircle size={12} />
-                                        </div>
-                                        {item}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
+                {/* Vertical Phrase on the Right Edge */}
+                <div className="absolute right-0 top-0 bottom-0 w-12 flex items-center justify-center pointer-events-none hidden lg:flex">
+                    <p className="whitespace-nowrap rotate-90 text-[10px] font-black text-gray-200 dark:text-gray-800 uppercase tracking-[0.6em]">
+                        CONSTRUYENDO ALIANZAS VERDES
+                    </p>
+                </div>
 
-                    <div className="relative z-10 mt-8 pt-6 border-t border-white/10 text-xs opacity-70">
-                        <p>¿Dudas? Contáctanos:</p>
-                        <p className="font-bold mt-1">convenios@nosplanet.pe</p>
+                {/* SVG Media Luna Edge */}
+                <div className="absolute top-0 bottom-0 -left-[63px] w-[64px] pointer-events-none hidden lg:block overflow-hidden">
+                    <svg width="64" height="100%" viewBox="0 0 64 1024" preserveAspectRatio="none" className="block translate-x-[1px]">
+                        <path
+                            d="M64 0C64 0 0 150 0 512C0 874 64 1024 64 1024V0Z"
+                            fill="currentColor"
+                            className="text-white dark:text-[#0f172a]"
+                        />
+                    </svg>
+                </div>
+
+                {/* Header Section */}
+                <div className="px-12 pt-12 flex items-center justify-between z-20">
+                    <button
+                        onClick={onClose}
+                        className="flex items-center gap-3 text-gray-400 dark:text-gray-500 hover:text-[#018F64] transition-all group"
+                    >
+                        <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+                        <span className="text-[11px] font-black uppercase tracking-[0.2em] font-ui">VOLVER ATRÁS</span>
+                    </button>
+                    <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                        <Handshake size={20} />
                     </div>
                 </div>
 
-                {/* Form Side (Right) */}
-                <div className="w-full md:w-3/5 bg-white dark:bg-gray-900 flex flex-col">
-                    <div className="flex justify-end p-4">
-                        <button onClick={handleClose} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-                            <X size={20} />
-                        </button>
-                    </div>
+                {/* Main Content Area */}
+                <div className="flex-1 overflow-y-auto px-12 lg:pl-16 lg:pr-24 flex flex-col justify-start pt-8 lg:pt-12 custom-scrollbar">
+                    {!success ? (
+                        <div className="space-y-10 w-full py-4">
+                            {/* Title Section */}
+                            <div>
+                                <h3 className="text-4xl lg:text-5xl font-black text-gray-900 dark:text-white leading-tight mb-2 tracking-tighter">
+                                    Únete como <br /><span className="text-[#018F64] dark:text-[#B0EEDE]">Aliado</span>
+                                </h3>
+                                <p className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400 dark:text-gray-500">
+                                    IMPULSA TU IMPACTO AMBIENTAL
+                                </p>
+                            </div>
 
-                    <div className="px-8 pb-8 overflow-y-auto custom-scrollbar flex-1">
-                        {step === 1 ? (
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                <div>
-                                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Solicitud de alianza</h3>
-                                    <p className="text-gray-500 text-sm">Completa tus datos y nos pondremos en contacto.</p>
+                            <form onSubmit={handleSubmit} className="space-y-8 pb-10">
+                                {/* Form Inputs - Soft backgrounds, NO LINES */}
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-[#018F64] dark:text-[#B0EEDE] flex items-center gap-3 ml-1">
+                                        <Briefcase size={14} strokeWidth={3} />
+                                        <span>NOMBRE DE LA EMPRESA</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        placeholder="Ej: EcoSolutions SAC"
+                                        className="w-full bg-gray-50/60 dark:bg-white/5 border-none rounded-2xl py-4 px-6 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all text-base font-bold dark:text-white shadow-sm"
+                                    />
                                 </div>
 
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Nombre o Razón Social</label>
-                                        <input
-                                            type="text"
-                                            required
-                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 outline-none transition-all dark:text-white"
-                                            placeholder="Ej. EcoSolutions SAC"
-                                            value={formData.name}
-                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Correo Corporativo</label>
-                                        <input
-                                            type="email"
-                                            required
-                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 outline-none transition-all dark:text-white"
-                                            placeholder="contacto@empresa.com"
-                                            value={formData.email}
-                                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Comentario o Mensaje</label>
-                                        <textarea
-                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 outline-none transition-all min-h-[100px] dark:text-white resize-none"
-                                            placeholder="Cuéntanos brevemente sobre tu empresa y por qué te gustaría ser aliado..."
-                                            value={formData.comment}
-                                            onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
-                                        ></textarea>
-                                    </div>
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-[#018F64] dark:text-[#B0EEDE] flex items-center gap-3 ml-1">
+                                        <Mail size={14} strokeWidth={3} />
+                                        <span>CORREO CORPORATIVO</span>
+                                    </label>
+                                    <input
+                                        type="email"
+                                        required
+                                        value={formData.email}
+                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                        placeholder="empresa@contacto.com"
+                                        className="w-full bg-gray-50/60 dark:bg-white/5 border-none rounded-2xl py-4 px-6 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all text-base font-bold dark:text-white shadow-sm"
+                                    />
                                 </div>
 
-                                <Button type="submit" className="w-full py-4 text-lg justify-center shadow-lg shadow-emerald-500/20" icon={Send}>
-                                    Enviar Solicitud
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-[#018F64] dark:text-[#B0EEDE] flex items-center gap-3 ml-1">
+                                        <Globe size={14} strokeWidth={3} />
+                                        <span>PÁGINA WEB / REDES</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={formData.category}
+                                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                        placeholder="www.tusitio.com"
+                                        className="w-full bg-gray-50/60 dark:bg-white/5 border-none rounded-2xl py-4 px-6 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all text-base font-bold dark:text-white shadow-sm"
+                                    />
+                                </div>
+
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-[#018F64] dark:text-[#B0EEDE] flex items-center gap-3 ml-1">
+                                        <MessageSquare size={14} strokeWidth={3} />
+                                        <span>MENSAJE</span>
+                                    </label>
+                                    <textarea
+                                        required
+                                        value={formData.comment}
+                                        onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
+                                        placeholder="Cuéntanos sobre tu empresa..."
+                                        className="w-full h-32 bg-gray-50/60 dark:bg-white/5 border-none rounded-[2.5rem] p-8 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all text-base font-medium dark:text-gray-200 resize-none shadow-inner"
+                                    />
+                                </div>
+
+                                <Button
+                                    type="submit"
+                                    className="w-full h-18 rounded-[2.5rem] text-xl font-black bg-[#018F64] dark:bg-[#B0EEDE] dark:text-[#020617] text-white shadow-2xl shadow-emerald-600/30 border-none transition-all hover:scale-[1.02] flex items-center justify-center gap-3"
+                                    icon={Send}
+                                >
+                                    Enviar Postulación
                                 </Button>
                             </form>
-                        ) : (
-                            <div className="h-full flex flex-col items-center justify-center text-center py-12 animate-in slide-in-from-right-5 duration-500">
-                                <div className="w-24 h-24 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-full flex items-center justify-center mb-6 animate-bounce-once">
-                                    <CheckCircle size={48} />
-                                </div>
-                                <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">¡Solicitud Recibida!</h3>
-                                <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-2xl max-w-sm mx-auto mb-8 border border-gray-100 dark:border-gray-700">
-                                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm">
-                                        Gracias <strong>{formData.name}</strong>. Hemos enviado un correo de confirmación a <strong>{formData.email}</strong>.
-                                        <br /><br />
-                                        Nuestro equipo comercial revisará tu perfil y te contactará en las próximas 24 horas.
-                                    </p>
-                                </div>
-                                <Button onClick={handleClose} variant="outline" className="px-8">
-                                    Volver al inicio
-                                </Button>
+                        </div>
+                    ) : (
+                        <div className="h-full flex flex-col items-center justify-center text-center py-12 animate-in zoom-in duration-500">
+                            <div className="w-24 h-24 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-3xl flex items-center justify-center mb-8 shadow-xl">
+                                <CheckCircle size={48} />
                             </div>
-                        )}
-                    </div>
+                            <h3 className="text-4xl font-black text-gray-900 dark:text-white mb-4">¡Solicitud Enviada!</h3>
+                            <p className="text-gray-500 dark:text-gray-400 mb-10 max-w-xs mx-auto font-medium">
+                                Nuestro equipo revisará tu perfil y te contactará en menos de 24 horas.
+                            </p>
+                            <Button onClick={onClose} className="px-12 h-16 rounded-2xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold">
+                                Volver al inicio
+                            </Button>
+                        </div>
+                    )}
+                </div>
+
+                {/* Footer Decor */}
+                <div className="py-12 text-center mt-auto">
+                    <p className="text-[10px] font-black text-gray-200 dark:text-gray-800 uppercase tracking-[1em] lg:mr-8">RECYCLEAPP PARTNERS</p>
                 </div>
             </div>
         </div>

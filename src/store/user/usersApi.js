@@ -1,9 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { API_URLS } from '../../api/config';
 
 export const usersApi = createApi({
     reducerPath: 'usersApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:3000/api/users',
+        baseUrl: API_URLS.USERS,
         // --- ESTO ES CRUCIAL PARA RUTAS PROTEGIDAS ---
         prepareHeaders: (headers, { getState }) => {
             // Intentamos sacar el token del estado de Redux primero

@@ -1,9 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { API_URLS } from '../../api/config';
 
 export const programsApi = createApi({
     reducerPath: 'programsApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:3000/api', // Ajusta si tu puerto es diferente
+        baseUrl: API_URLS.BASE,
     }),
     tagTypes: ['Programs'], // Etiqueta para el caché
 

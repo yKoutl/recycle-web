@@ -41,6 +41,12 @@ const PlanetBot = ({ currentView }) => {
 
     // Lógica para notificaciones periódicas
     useEffect(() => {
+        // En Admin, forzamos que no haya frases/notificaciones
+        if (currentView === 'admin') {
+            setNotification(null);
+            return;
+        }
+
         // Notificación especial para Login
         if (currentView === 'login') {
             setNotification("🔒 Esta área es exclusiva para administradores y funcionarios de Nos Planet SAC.");
@@ -177,7 +183,10 @@ const PlanetBot = ({ currentView }) => {
         <>
             {showTerms && <TermsModal type="bot" onClose={() => setShowTerms(false)} />}
 
-            <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end pointer-events-none sm:bottom-6 sm:right-6">
+            <div className={`fixed z-50 flex flex-col pointer-events-none transition-all duration-500 
+                ${currentView === 'admin'
+                    ? 'right-6 top-1/2 -translate-y-1/2 items-end'
+                    : 'bottom-4 right-4 sm:bottom-6 sm:right-6 items-end'}`}>
 
                 {/* Notificación (Burbuja Flotante) - Estilo Llamativo (Balanceado) */}
                 {!isOpen && notification && (
@@ -336,9 +345,11 @@ const PlanetBot = ({ currentView }) => {
                     onClick={() => setIsOpen(!isOpen)}
                     className="pointer-events-auto group relative flex items-center justify-center outline-none"
                 >
-                    <div className={`absolute inset-0 bg-green-500 rounded-full animate-ping opacity-20 duration-1000 group-hover:duration-700 ${isOpen ? 'hidden' : 'block'}`}></div>
+                    <div className={`absolute inset-0 bg-green-500 rounded-full animate-ping opacity-20 duration-1000 group-hover:duration-700 
+                        ${(isOpen || currentView === 'admin') ? 'hidden' : 'block'}`}></div>
                     <div className={`
-            w-14 h-14 sm:w-16 sm:h-16 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] 
+            w-14 h-14 sm:w-16 sm:h-16 rounded-full 
+            ${currentView === 'admin' ? '' : 'shadow-[0_8px_30px_rgba(0,0,0,0.12)]'}
             flex items-center justify-center transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) cursor-pointer
             bg-gradient-to-tr from-green-500 to-emerald-600 text-white border-4 border-white dark:border-gray-800 z-10
             ${isOpen ? 'rotate-90 scale-90 bg-gray-700' : 'hover:scale-110 hover:-translate-y-1'}

@@ -114,6 +114,8 @@ export const MOCK_PARTNERS = (t) => [
         category: 'Plataforma',
         logo: 'NP', // Using text for now as placeholder, or icon
         bgHeader: 'bg-emerald-600',
+        hex: '#018F64',
+        textColor: 'text-emerald-600',
         stats: { prizes: 1, exchanges: 5234 },
         details: {
             desc: 'Beneficios exclusivos en la plataforma. Suscripciones y más.',
@@ -127,6 +129,8 @@ export const MOCK_PARTNERS = (t) => [
         category: 'Fintech',
         logo: 'YP',
         bgHeader: 'bg-violet-600',
+        hex: '#7c3aed',
+        textColor: 'text-violet-600',
         stats: { prizes: 2, exchanges: 1245 },
         details: {
             desc: 'Beneficios en recargas y cashback directo. Canjea tus puntos por saldo.',
@@ -140,6 +144,8 @@ export const MOCK_PARTNERS = (t) => [
         category: 'Banco',
         logo: 'BCP',
         bgHeader: 'bg-blue-800',
+        hex: '#1e40af',
+        textColor: 'text-blue-800',
         stats: { prizes: 2, exchanges: 856 },
         details: {
             desc: 'Descuentos exclusivos en servicios bancarios y bonos de apertura.',
@@ -153,6 +159,8 @@ export const MOCK_PARTNERS = (t) => [
         category: 'Marketplace',
         logo: 'ET',
         bgHeader: 'bg-green-500',
+        hex: '#10b981',
+        textColor: 'text-green-500',
         stats: { prizes: 5, exchanges: 310 },
         details: {
             desc: 'Productos ecológicos con descuento especial por tus puntos de reciclaje.',

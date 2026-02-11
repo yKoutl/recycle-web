@@ -194,10 +194,15 @@ const PlanetBot = () => {
                             </div>
 
                             <button
-                                onClick={() => setNotification(null)}
-                                className="absolute -top-2 -left-2 bg-white dark:bg-gray-700 text-gray-400 rounded-full p-0.5 shadow-md border hover:bg-red-50 hover:text-red-500 transition-colors"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setNotification(null);
+                                }}
+                                className="pointer-events-auto absolute -top-3 -right-3 w-8 h-8 bg-white dark:bg-gray-800 text-gray-400 dark:text-gray-300 rounded-full flex items-center justify-center shadow-lg border border-gray-100 dark:border-gray-700 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30 dark:hover:text-red-400 transition-all active:scale-90 group/close z-[60]"
+                                aria-label="Cerrar notificación"
                             >
-                                <X size={12} />
+                                <X size={16} className="group-hover/close:rotate-90 transition-transform" />
                             </button>
 
                             {/* Triángulo speech bubble */}

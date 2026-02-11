@@ -7,6 +7,7 @@ export const TRANSLATIONS = {
             community: 'Comunidad',
             partners: 'Aliados',
             about: 'Nosotros',
+            contact: 'Contacto',
             login: 'Ingresar',
             logout: 'Cerrar Sesión',
             backToSite: 'Volver al Sitio'
@@ -100,7 +101,7 @@ export const TRANSLATIONS = {
         about: {
             tag: 'Sobre Nosotros',
             title: 'Innovando para un Planeta Sostenible',
-            subtitle: 'RecycleApp nace con el propósito de conectar ciudadanos conscientes con una red eficiente de reciclaje. Creemos que la tecnología es el puente hacia un futuro sostenible y circular.',
+            subtitle: 'RecycleApp nace con el objetivo de conectar ciudadanos conscientes con una red eficiente de reciclaje. Creemos que la tecnología es el puente hacia un futuro sostenible y circular.',
             global: {
                 title: 'Alcance Global',
                 desc: 'Impactando comunidades en más de 15 países.'
@@ -167,6 +168,24 @@ export const TRANSLATIONS = {
                 status: 'Estado',
                 actions: 'Acciones'
             }
+        },
+        contact: {
+            tag: 'Contacto',
+            title: 'Hablemos de Sostenibilidad',
+            subtitle: '¿Tienes alguna duda o quieres colaborar? Escríbenos y nuestro equipo te responderá lo antes posible.',
+            form: {
+                name: 'Nombre Completo',
+                email: 'Correo Electrónico',
+                subject: 'Asunto',
+                message: 'Mensaje',
+                send: 'Enviar Mensaje'
+            },
+            info: {
+                title: 'Información de Contacto',
+                address: 'Calle de la Sostenibilidad 123, CP 28001',
+                phone: '+34 900 000 000',
+                email: 'hola@nosplanet.com'
+            }
         }
     },
     en: {
@@ -177,6 +196,7 @@ export const TRANSLATIONS = {
             community: 'Community',
             partners: 'Partners',
             about: 'About Us',
+            contact: 'Contact',
             login: 'Login',
             logout: 'Logout',
             backToSite: 'Back to Site'
@@ -336,6 +356,24 @@ export const TRANSLATIONS = {
                 role: 'Role',
                 status: 'Status',
                 actions: 'Actions'
+            }
+        },
+        contact: {
+            tag: 'Contact',
+            title: 'Let\'s Talk Sustainability',
+            subtitle: 'Do you have any questions or want to collaborate? Write to us and our team will get back to you as soon as possible.',
+            form: {
+                name: 'Full Name',
+                email: 'Email Address',
+                subject: 'Subject',
+                message: 'Message',
+                send: 'Send Message'
+            },
+            info: {
+                title: 'Contact Information',
+                address: 'Sustainability Street 123, 28001',
+                phone: '+34 900 000 000',
+                email: 'hello@nosplanet.com'
             }
         }
     }

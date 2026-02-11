@@ -131,7 +131,7 @@ export const TRANSLATIONS = {
             passLabel: 'Contraseña',
             loginBtn: 'Iniciar Sesión',
             backBtn: 'Volver al inicio',
-            welcome: 'Hola, Administrador',
+            welcome: 'Hola,',
             welcomeSub: 'Aquí está lo que sucede hoy en la plataforma.',
             exportBtn: 'Exportar Datos',
             reportBtn: 'Nuevo Reporte',

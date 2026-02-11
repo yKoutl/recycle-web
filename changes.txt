@@ -1,0 +1,24 @@
+ M src/components/cards/PartnerCard.jsx
+ M src/components/cards/ProgramCard.jsx
+ M src/components/cards/ReviewCard.jsx
+ M src/components/layout/Footer.jsx
+ M src/components/layout/Navbar.jsx
+ M src/components/modals/AddCommentModal.jsx
+ M src/components/modals/JoinPartnerModal.jsx
+ M src/components/modals/PartnerModal.jsx
+ M src/components/modals/ProgramModal.jsx
+ M src/components/planet-bot/PlanetBot.jsx
+ M src/components/shared/Button.jsx
+ M src/data/mockData.js
+ M src/data/translations.js
+ M src/index.css
+ M src/views/landing/AboutSection.jsx
+ M src/views/landing/CommunitySection.jsx
+ M src/views/landing/Hero.jsx
+ M src/views/landing/ImpactSection.jsx
+ M src/views/landing/LandingView.jsx
+ M src/views/landing/PartnersSection.jsx
+ M src/views/landing/ProgramsSection.jsx
+?? changes.txt
+?? "src/assets/QR NOS PLANET.png"
+?? src/views/landing/ContactSection.jsx

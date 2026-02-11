@@ -1,13 +1,17 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { LogIn, XCircle, ArrowRight, ShieldCheck, Mail, Lock } from 'lucide-react';
-import logoNosPlanet from '../../assets/logo_nos_planet.webp';
+import { useDispatch } from 'react-redux';
+import { LogIn, XCircle, ArrowRight, ShieldCheck, Mail, Lock, Loader2 } from 'lucide-react';
+import { useLoginMutation, onLogin as setAuthCredentials } from '../../store/auth';
 
 const LoginView = ({ onLogin, onCancel, t }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    // --- LOGIC FROM PREVIOUS VERSION ---
+    const dispatch = useDispatch();
+    const [loginApi, { isLoading }] = useLoginMutation();
+
+    // Background Slider Logic
     const [currentSlide, setCurrentSlide] = useState(0);
     const slides = [
         { id: 0, image: '/src/assets/hero_nature_v2.png' },
@@ -32,16 +36,24 @@ const LoginView = ({ onLogin, onCancel, t }) => {
         }));
     }, []);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (email === 'admin@recycle.com' && password === 'admin123') {
+        setError('');
+
+        try {
+            const result = await loginApi({ email, password }).unwrap();
+            dispatch(setAuthCredentials({
+                user: result.user || result,
+                token: result.access_token || result.token
+            }));
             onLogin();
-        } else {
-            setError('Credenciales incorrectas (Usa: admin@recycle.com / admin123)');
+        } catch (err) {
+            console.error("Error login:", err);
+            const errorMsg = err.data?.message || 'Error de conexión o credenciales inválidas';
+            setError(Array.isArray(errorMsg) ? errorMsg[0] : errorMsg);
         }
     };
 
-    // Card Input Styles (Restored and Refined)
     const inputClasses = `
         w-full px-5 py-3.5 
         rounded-2xl outline-none 
@@ -53,12 +65,13 @@ const LoginView = ({ onLogin, onCancel, t }) => {
         focus:bg-white dark:focus:bg-white/10
         focus:border-[#018F64] dark:focus:border-emerald-500
         focus:ring-4 focus:ring-[#018F64]/10 dark:focus:ring-emerald-500/10
+        disabled:opacity-50 disabled:cursor-not-allowed
     `;
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-stone-900 transition-colors duration-500">
 
-            {/* --- RESTORED BACKGROUND SLIDER --- */}
+            {/* BACKGROUND SLIDER */}
             {slides.map((slide, index) => (
                 <div
                     key={slide.id}
@@ -73,7 +86,7 @@ const LoginView = ({ onLogin, onCancel, t }) => {
                 </div>
             ))}
 
-            {/* --- RESTORED BUBBLES --- */}
+            {/* BUBBLES */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
                 {bubbles.map((bubble) => (
                     <div
@@ -91,11 +104,10 @@ const LoginView = ({ onLogin, onCancel, t }) => {
                 ))}
             </div>
 
-            {/* --- REFINED PREMIUM CARD --- */}
+            {/* PREMIUM CARD */}
             <div className="w-full max-w-md relative z-10 animate-in fade-in zoom-in duration-700 px-2">
                 <div className="bg-white/95 dark:bg-gray-950/40 p-10 rounded-[2.5rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border border-white/50 dark:border-white/5 backdrop-blur-2xl relative overflow-hidden text-left">
 
-                    {/* Architectural Grid pattern inside card (About section style) */}
                     <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none"
                         style={{ backgroundImage: `linear-gradient(#018F64 1px, transparent 1px), linear-gradient(90deg, #018F64 1px, transparent 1px)`, backgroundSize: '40px 40px' }} />
 
@@ -128,6 +140,7 @@ const LoginView = ({ onLogin, onCancel, t }) => {
                                     className={inputClasses}
                                     placeholder="admin@recycle.com"
                                     required
+                                    disabled={isLoading}
                                 />
                             </div>
 
@@ -142,22 +155,34 @@ const LoginView = ({ onLogin, onCancel, t }) => {
                                     className={inputClasses}
                                     placeholder="••••••••"
                                     required
+                                    disabled={isLoading}
                                 />
                             </div>
 
                             <button
                                 type="submit"
-                                className="w-full h-14 mt-4 bg-[#018F64] text-white rounded-2xl flex items-center justify-center gap-3 font-black text-sm uppercase tracking-widest shadow-xl shadow-[#018F64]/20 transition-all hover:scale-[1.02] hover:bg-[#05835D] active:scale-95"
+                                disabled={isLoading}
+                                className="w-full h-14 mt-4 bg-[#018F64] text-white rounded-2xl flex items-center justify-center gap-3 font-black text-sm uppercase tracking-widest shadow-xl shadow-[#018F64]/20 transition-all hover:scale-[1.02] hover:bg-[#05835D] active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
                             >
-                                {t.admin.loginBtn}
-                                <ArrowRight size={18} />
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="animate-spin" size={20} />
+                                        Iniciando sesión...
+                                    </>
+                                ) : (
+                                    <>
+                                        {t.admin.loginBtn}
+                                        <ArrowRight size={18} />
+                                    </>
+                                )}
                             </button>
                         </form>
 
                         <div className="mt-8 text-center pt-2">
                             <button
                                 onClick={onCancel}
-                                className="text-[10px] font-black text-gray-400 hover:text-[#018F64] uppercase tracking-widest flex items-center justify-center gap-2 mx-auto transition-colors"
+                                disabled={isLoading}
+                                className="text-[10px] font-black text-gray-400 hover:text-[#018F64] uppercase tracking-widest flex items-center justify-center gap-2 mx-auto transition-colors disabled:opacity-50"
                             >
                                 <ArrowRight size={14} className="rotate-180" /> {t.admin.backBtn}
                             </button>
@@ -174,6 +199,12 @@ const LoginView = ({ onLogin, onCancel, t }) => {
                     100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
                 }
                 .animate-float-up { animation: float-up linear infinite; }
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                    20%, 40%, 60%, 80% { transform: translateX(5px); }
+                }
+                .animate-in.shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
             `}} />
         </div>
     );

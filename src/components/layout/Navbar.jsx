@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, Moon, Languages, LogIn, X, Menu, ChevronRight } from 'lucide-react';
+import { Sun, Moon, Languages, LogIn, X, Menu, ChevronRight, Home, Sprout, Globe, Users, Handshake, Leaf, Mail } from 'lucide-react';
 import Button from '../shared/Button';
 import logoNosPlanet from '../../assets/Logo Nos Planet.png';
 
@@ -22,118 +22,140 @@ const Navbar = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t }) => {
     };
 
     const navLinks = [
-        { name: t.nav.home, id: 'home' },
-        { name: t.nav.programs, id: 'programs' },
-        { name: t.nav.impact, id: 'impact' },
-        { name: t.nav.community, id: 'community' },
-        { name: t.nav.partners, id: 'partners' },
-        { name: t.nav.about, id: 'about' },
+        { name: t.nav.home, id: 'home', icon: Home },
+        { name: t.nav.about, id: 'about', icon: Leaf },
+        { name: t.nav.programs, id: 'programs', icon: Sprout },
+        { name: t.nav.community, id: 'community', icon: Users },
+        { name: t.nav.partners, id: 'partners', icon: Handshake },
+        { name: t.nav.contact, id: 'contact', icon: Mail },
     ];
 
     return (
-        <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${isScrolled
-            ? 'bg-white/90 dark:bg-gray-950/90 backdrop-blur-md shadow-sm border-b border-gray-100 dark:border-gray-800 py-3'
-            : 'bg-transparent py-5'
-            }`}>
-            <div className="container mx-auto px-6 flex justify-between items-center">
-                {/* Logo */}
-                <div
-                    className="flex items-center gap-2.5 cursor-pointer group"
-                    onClick={() => scrollToSection('home')}
-                >
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-white shadow-lg transition-transform group-hover:rotate-12`}>
-                        <img src={logoNosPlanet} alt="Logo" className="w-8 h-8 object-contain" />
+        <nav className={`fixed top-0 w-full z-50 transition-all duration-500 px-6 ${isScrolled ? 'pt-4' : 'pt-6'}`}>
+            <div className={`container mx-auto max-w-7xl transition-all duration-500 ${isScrolled
+                ? 'bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl shadow-2xl shadow-emerald-900/10 border border-white/20 dark:border-white/5 rounded-[2.5rem] py-3 px-8'
+                : 'bg-transparent py-2 px-4'
+                }`}>
+                <div className="flex justify-between items-center">
+                    {/* Logo */}
+                    <div
+                        className="flex items-center gap-3 cursor-pointer group"
+                        onClick={() => scrollToSection('home')}
+                    >
+                        <div className={`w-11 h-11 rounded-2xl flex items-center justify-center bg-white shadow-xl transition-all duration-500 group-hover:rotate-12 group-hover:scale-110`}>
+                            <img src={logoNosPlanet} alt="Logo" className="w-9 h-9 object-contain" />
+                        </div>
+                        <div className="flex flex-col leading-none">
+                            <span className={`text-xl font-extrabold tracking-tight ${isScrolled ? 'text-gray-900 dark:text-white' : 'text-white'}`}>
+                                Recycle<span className="text-[#018F64]">App</span>
+                            </span>
+                            <span className={`text-[0.6rem] font-bold uppercase tracking-[0.2em] transition-opacity duration-500 ${isScrolled ? 'text-[#05835D] opacity-100' : 'text-white/60 opacity-0'}`}>
+                                Nos Planet
+                            </span>
+                        </div>
                     </div>
-                    <span className={`text-2xl font-bold tracking-tight ${isScrolled ? 'text-gray-900 dark:text-white' : 'text-white drop-shadow-md'}`}>
-                        Recycle<span className={isScrolled ? 'text-primary-day dark:text-primary-night' : 'text-primary-day dark:text-primary-night'}>App</span>
-                    </span>
-                </div>
 
-                {/* Desktop Menu */}
-                <div className="hidden xl:flex items-center gap-1">
-                    <div className="flex items-center gap-1 mr-4 bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-white/10">
-                        {navLinks.map((link) => (
+                    {/* Desktop Menu */}
+                    <div className="hidden xl:flex items-center gap-1 ml-6">
+                        <div className="flex items-center gap-1">
+                            {navLinks.map((link) => (
+                                <button
+                                    key={link.id}
+                                    onClick={() => scrollToSection(link.id)}
+                                    className={`px-3 py-2.5 rounded-2xl text-[0.85rem] font-semibold transition-all duration-300 flex items-center gap-2 group/link ${isScrolled
+                                        ? 'text-gray-700 dark:text-gray-400 hover:text-[#018F64] dark:hover:text-emerald-400 hover:bg-[#018F64]/5 dark:hover:bg-emerald-900/20'
+                                        : 'text-white/90 hover:text-white hover:bg-white/10'
+                                        }`}
+                                >
+                                    <link.icon size={18} className="transition-transform group-hover/link:scale-110" />
+                                    {link.name}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className={`h-8 w-px mx-2 ${isScrolled ? 'bg-gray-200 dark:bg-gray-800' : 'bg-white/20'}`}></div>
+
+                        {/* Toggles & Login */}
+                        <div className="flex items-center gap-2">
                             <button
-                                key={link.id}
-                                onClick={() => scrollToSection(link.id)}
-                                className={`px-4 py-2 rounded-2xl text-sm font-medium transition-all duration-300 ${isScrolled
-                                    ? 'text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                    : 'text-white/90 hover:text-white hover:bg-white/10'
-                                    }`}
+                                onClick={() => setDarkMode(!darkMode)}
+                                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${isScrolled ? 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300' : 'hover:bg-white/20 text-white'}`}
                             >
-                                {link.name}
+                                {darkMode ? <Sun size={20} /> : <Moon size={20} />}
                             </button>
-                        ))}
+
+                            <button
+                                onClick={() => setLang(lang === 'es' ? 'en' : 'es')}
+                                className={`h-10 px-3 rounded-xl transition-all duration-300 flex items-center gap-2 font-semibold text-xs uppercase tracking-widest ${isScrolled ? 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300' : 'hover:bg-white/20 text-white'}`}
+                            >
+                                <Languages size={18} /> {lang}
+                            </button>
+
+                            <Button
+                                variant={isScrolled ? 'primary' : 'outline'}
+                                onClick={onLoginClick}
+                                className={`rounded-xl font-bold text-sm h-11 px-6 shadow-lg transition-all duration-500 scale-100 hover:scale-105 active:scale-95 ${!isScrolled ? 'border-white/40 hover:bg-white hover:text-[#018F64]' : 'bg-[#018F64] border-[#018F64] hover:bg-[#05835D] text-white shadow-[#018F64]/20'}`}
+                                icon={LogIn}
+                            >
+                                {t.nav.login}
+                            </Button>
+                        </div>
                     </div>
 
-                    <div className={`h-6 w-px mx-2 ${isScrolled ? 'bg-gray-200 dark:bg-gray-700' : 'bg-white/20'}`}></div>
-
-                    {/* Toggles & Login */}
-                    <div className="flex items-center gap-2 ml-2">
-                        <button
-                            onClick={() => setDarkMode(!darkMode)}
-                            className={`p-2.5 rounded-full transition-all duration-300 ${isScrolled ? 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300' : 'hover:bg-white/20 text-white'}`}
-                        >
-                            {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-                        </button>
-
-                        <button
-                            onClick={() => setLang(lang === 'es' ? 'en' : 'es')}
-                            className={`p-2.5 rounded-full transition-all duration-300 flex items-center gap-1 font-medium text-xs ${isScrolled ? 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300' : 'hover:bg-white/20 text-white'}`}
-                        >
-                            <Languages size={20} /> {lang.toUpperCase()}
-                        </button>
-
-                        <Button
-                            variant={isScrolled ? 'primary' : 'outline'}
-                            onClick={onLoginClick}
-                            className="px-5 text-sm ml-2"
-                            icon={LogIn}
-                        >
-                            {t.nav.login}
-                        </Button>
-                    </div>
+                    {/* Mobile Menu Toggle */}
+                    <button
+                        className={`xl:hidden w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 ${isScrolled ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white' : 'bg-white/10 text-white'}`}
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    >
+                        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                    </button>
                 </div>
-
-                {/* Mobile Menu Toggle */}
-                <button
-                    className="xl:hidden p-2 rounded-lg hover:bg-white/10 dark:hover:bg-gray-800 transition-colors"
-                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                >
-                    {isMobileMenuOpen
-                        ? <X className={isScrolled ? 'text-gray-800 dark:text-white' : 'text-white'} />
-                        : <Menu className={isScrolled ? 'text-gray-800 dark:text-white' : 'text-white'} />
-                    }
-                </button>
             </div>
 
             {/* Mobile Menu */}
             {isMobileMenuOpen && (
-                <div className="xl:hidden absolute top-full left-0 w-full bg-white dark:bg-gray-900 shadow-xl border-t border-gray-100 dark:border-gray-800 animate-in slide-in-from-top-5 duration-300 h-screen overflow-y-auto pb-24">
-                    <div className="flex flex-col p-4 space-y-2">
-                        {navLinks.map((link) => (
-                            <button
-                                key={link.id}
-                                onClick={() => scrollToSection(link.id)}
-                                className="text-left px-4 py-3 text-gray-600 dark:text-gray-300 font-medium hover:bg-green-50 dark:hover:bg-gray-800 hover:text-green-700 dark:hover:text-green-400 rounded-lg transition-colors flex items-center justify-between text-lg"
-                            >
-                                {link.name}
-                                <ChevronRight size={16} className="text-gray-300 dark:text-gray-600" />
-                            </button>
-                        ))}
-                        <div className="h-px bg-gray-100 dark:bg-gray-800 my-4"></div>
-
-                        <div className="grid grid-cols-2 gap-3">
-                            <button onClick={() => setDarkMode(!darkMode)} className="flex items-center justify-center gap-2 p-4 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-transparent hover:border-green-200 dark:hover:border-green-800 transition-all">
-                                {darkMode ? <Sun size={20} /> : <Moon size={20} />} {darkMode ? 'Claro' : 'Oscuro'}
-                            </button>
-                            <button onClick={() => setLang(lang === 'es' ? 'en' : 'es')} className="flex items-center justify-center gap-2 p-4 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-transparent hover:border-green-200 dark:hover:border-green-800 transition-all">
-                                <Languages size={20} /> {lang === 'es' ? 'English' : 'Español'}
+                <div className="xl:hidden fixed inset-0 z-[60] bg-white dark:bg-gray-950 animate-in fade-in zoom-in-95 duration-300">
+                    <div className="flex flex-col h-full">
+                        <div className="flex justify-between items-center p-6 border-b border-gray-100 dark:border-gray-900">
+                            <div className="flex items-center gap-3">
+                                <img src={logoNosPlanet} alt="Logo" className="w-8 h-8 object-contain" />
+                                <span className="text-xl font-extrabold dark:text-white">Recycle<span className="text-emerald-500">App</span></span>
+                            </div>
+                            <button onClick={() => setIsMobileMenuOpen(false)} className="w-12 h-12 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center dark:text-white">
+                                <X size={24} />
                             </button>
                         </div>
 
-                        <div className="mt-4 pt-4">
-                            <Button onClick={() => { onLoginClick(); setIsMobileMenuOpen(false); }} className="w-full justify-center py-4 text-lg" icon={LogIn}>
+                        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                            {navLinks.map((link) => (
+                                <button
+                                    key={link.id}
+                                    onClick={() => scrollToSection(link.id)}
+                                    className="w-full flex items-center justify-between p-4 rounded-2xl bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-all hover:bg-emerald-50 dark:hover:bg-emerald-900/20 group"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 shadow-sm flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
+                                            <link.icon size={20} />
+                                        </div>
+                                        <span className="font-bold text-lg">{link.name}</span>
+                                    </div>
+                                    <ChevronRight size={20} className="text-gray-400" />
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="p-6 border-t border-gray-100 dark:border-gray-900 bg-gray-50/50 dark:bg-gray-900/50">
+                            <div className="grid grid-cols-2 gap-4 mb-6">
+                                <button onClick={() => setDarkMode(!darkMode)} className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-300">
+                                    {darkMode ? <Sun size={24} /> : <Moon size={24} />}
+                                    <span className="text-xs font-bold uppercase">{darkMode ? 'Claro' : 'Oscuro'}</span>
+                                </button>
+                                <button onClick={() => setLang(lang === 'es' ? 'en' : 'es')} className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-300">
+                                    <Languages size={24} />
+                                    <span className="text-xs font-bold uppercase">{lang === 'es' ? 'English' : 'Español'}</span>
+                                </button>
+                            </div>
+                            <Button onClick={() => { onLoginClick(); setIsMobileMenuOpen(false); }} className="w-full h-14 rounded-2xl text-lg font-extrabold shadow-xl shadow-emerald-500/20" icon={LogIn}>
                                 {t.nav.login}
                             </Button>
                         </div>

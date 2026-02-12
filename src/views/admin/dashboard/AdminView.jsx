@@ -13,16 +13,24 @@ import { useDispatch, useSelector } from 'react-redux';
 import { onLogout } from '../../../store/auth/authSlice';
 
 
+import StatusModal from '../../../components/shared/StatusModal';
+
+
 const AdminView = ({ t, darkMode, setDarkMode }) => {
     const dispatch = useDispatch();
     const { user } = useSelector(state => state.auth);
     const [activeTab, setActiveTab] = useState('dashboard');
     const [requests, setRequests] = useState([]);
     const [isRewardModalOpen, setIsRewardModalOpen] = useState(false);
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
 
 
     const handleLogout = () => {
-        dispatch(onLogout());
+        setShowLogoutModal(true);
+        // Pequeño delay para mostrar el logo de cargando como pidió el usuario
+        setTimeout(() => {
+            dispatch(onLogout());
+        }, 2000);
     };
 
     // Load requests with translations
@@ -259,6 +267,11 @@ const AdminView = ({ t, darkMode, setDarkMode }) => {
                     onClose={() => setIsRewardModalOpen(false)}
                 />
             </main>
+
+            <StatusModal
+                status={showLogoutModal ? "loading" : null}
+                message="Cerrando sesión de forma segura..."
+            />
         </div>
     );
 };

@@ -35,10 +35,10 @@ const StatusModal = ({ status, message, onClose }) => {
     const current = config[status];
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300" onClick={status === 'error' ? onClose : undefined} />
+        <div className={`fixed inset-0 z-[9999] flex items-center justify-center p-4 ${status === 'loading' ? 'cursor-wait' : ''}`}>
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-md animate-in fade-in duration-500" onClick={status === 'error' ? onClose : undefined} />
 
-            <div className={`relative w-full max-w-sm ${current.bgColor} rounded-[2.5rem] p-8 shadow-2xl border border-white/10 animate-in zoom-in duration-300 text-center space-y-4`}>
+            <div className={`relative w-full max-w-sm ${current.bgColor} rounded-[3rem] p-10 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border border-white/10 animate-in zoom-in duration-300 text-center space-y-6`}>
                 {status === 'error' && (
                     <button
                         onClick={onClose}

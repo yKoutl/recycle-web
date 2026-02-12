@@ -32,7 +32,7 @@ const AdminHeader = ({ t, darkMode, setDarkMode }) => {
             </header>
 
             {/* Desktop Header Info */}
-            <div className="hidden md:flex justify-end items-center px-12 h-24 bg-[#FAFCF9]/80 dark:bg-gray-950/80 backdrop-blur-xl border-b border-gray-100 dark:border-white/5 sticky top-0 z-40 transition-all duration-500">
+            <div className="hidden md:flex justify-end items-center px-12 h-24 bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl border-b border-gray-100 dark:border-white/5 sticky top-0 z-40 transition-all duration-500">
                 <div className="flex items-center gap-5">
                     <button
                         onClick={() => setDarkMode(!darkMode)}

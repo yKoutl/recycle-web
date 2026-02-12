@@ -10,7 +10,7 @@ import { useSelector, useDispatch } from 'react-redux';
 const App = () => {
   const [lang, setLang] = useState('es');
   const [darkMode, setDarkMode] = useState(false);
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [activeView, setActiveView] = useState('landing'); // 'landing' | 'admin' | 'login'
 
   const dispatch = useDispatch();
   const { status } = useSelector((state) => state.auth);
@@ -27,11 +27,12 @@ const App = () => {
   useEffect(() => {
     if (!token) {
       dispatch(onLogout());
+      setActiveView('landing');
     }
   }, [token, dispatch]);
 
   useEffect(() => {
-    if (isSuccess && userData) {
+    if (isSuccess && userData && token) {
       dispatch(onLogin({
         token,
         user: userData.user || userData
@@ -42,51 +43,61 @@ const App = () => {
   useEffect(() => {
     if (isError) {
       dispatch(onLogout());
+      setActiveView('landing');
     }
   }, [isError, dispatch]);
 
   // Determine current view for PlanetBot
-  const currentView = status === 'authenticated' ? 'admin' : (isLoginOpen ? 'login' : 'landing');
+  const botContext = activeView === 'admin' ? 'admin' : (activeView === 'login' ? 'login' : 'landing');
 
-  if (status === 'authenticated') {
+  // RENDER LOGIC
+  const renderCurrentView = () => {
+    if (status === 'authenticated' && activeView === 'admin') {
+      return (
+        <AdminView
+          t={t}
+          darkMode={darkMode}
+          setDarkMode={setDarkMode}
+          onBackToLanding={() => setActiveView('landing')}
+        />
+      );
+    }
+
+    if (activeView === 'login') {
+      return (
+        <LoginView
+          onLogin={() => setActiveView('admin')}
+          onCancel={() => setActiveView('landing')}
+          t={t}
+        />
+      );
+    }
+
     return (
-      <div className={darkMode ? 'dark' : ''}>
-        <div className="font-sans text-gray-800 bg-white dark:bg-gray-950 transition-colors duration-500">
-          <AdminView
-            t={t}
-            darkMode={darkMode}
-            setDarkMode={setDarkMode}
-          />
-        </div>
-        <PlanetBot currentView="admin" />
-      </div>
+      <LandingView
+        onLoginClick={() => {
+          if (status === 'authenticated') {
+            setActiveView('admin');
+          } else {
+            setActiveView('login');
+          }
+        }}
+        lang={lang}
+        setLang={setLang}
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+        t={t}
+        isAuthenticated={status === 'authenticated'}
+      />
     );
-  }
+  };
 
   return (
     <div className={darkMode ? 'dark' : ''}>
       <div className="font-sans text-gray-800 bg-white dark:bg-gray-950 transition-colors duration-500">
-        {isLoginOpen ? (
-          <LoginView
-            onLogin={() => {
-              // LoginView ya hace el dispatch interno.
-              // Redux cambiará el status y se activará el bloque de arriba.
-            }}
-            onCancel={() => setIsLoginOpen(false)}
-            t={t}
-          />
-        ) : (
-          <LandingView
-            onLoginClick={() => setIsLoginOpen(true)}
-            lang={lang}
-            setLang={setLang}
-            darkMode={darkMode}
-            setDarkMode={setDarkMode}
-            t={t}
-          />
-        )}
+        {renderCurrentView()}
       </div>
-      <PlanetBot currentView={currentView} />
+      <PlanetBot currentView={botContext} />
     </div>
   );
 };

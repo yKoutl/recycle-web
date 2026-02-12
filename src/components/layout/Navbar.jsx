@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, Moon, Languages, LogIn, X, Menu, ChevronRight, Home, Sprout, Globe, Users, Handshake, Leaf, Mail } from 'lucide-react';
+import { Sun, Moon, Languages, LogIn, X, Menu, ChevronRight, Home, Sprout, Globe, Users, Handshake, Leaf, Mail, ShieldCheck } from 'lucide-react';
 import Button from '../shared/Button';
 import logoNosPlanet from '../../assets/logo_nos_planet.webp';
 
-const Navbar = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t }) => {
+const Navbar = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t, isAuthenticated }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -95,9 +95,9 @@ const Navbar = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t }) => {
                                 variant={isScrolled ? 'primary' : 'outline'}
                                 onClick={onLoginClick}
                                 className={`rounded-xl font-bold text-sm h-11 px-6 shadow-lg transition-all duration-500 scale-100 hover:scale-105 active:scale-95 ${!isScrolled ? 'border-white/40 hover:bg-white hover:text-[#018F64]' : 'bg-[#018F64] border-[#018F64] hover:bg-[#05835D] text-white shadow-[#018F64]/20'}`}
-                                icon={LogIn}
+                                icon={isAuthenticated ? ShieldCheck : LogIn}
                             >
-                                {t.nav.login}
+                                {isAuthenticated ? 'Panel Admin' : t.nav.login}
                             </Button>
                         </div>
                     </div>
@@ -155,8 +155,12 @@ const Navbar = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t }) => {
                                     <span className="text-xs font-bold uppercase">{lang === 'es' ? 'English' : 'Español'}</span>
                                 </button>
                             </div>
-                            <Button onClick={() => { onLoginClick(); setIsMobileMenuOpen(false); }} className="w-full h-14 rounded-2xl text-lg font-extrabold shadow-xl shadow-emerald-500/20" icon={LogIn}>
-                                {t.nav.login}
+                            <Button
+                                onClick={() => { onLoginClick(); setIsMobileMenuOpen(false); }}
+                                className="w-full h-14 rounded-2xl text-lg font-extrabold shadow-xl shadow-emerald-500/20"
+                                icon={isAuthenticated ? ShieldCheck : LogIn}
+                            >
+                                {isAuthenticated ? 'Panel Admin' : t.nav.login}
                             </Button>
                         </div>
                     </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Users, FileText, LogOut, Gift, MapPin, Users2 } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, LogOut, Gift, MapPin, Users2, MessageCircle } from 'lucide-react';
 import logoNosPlanet from '../../assets/Logo Nos Planet.png';
 
 const AdminSidebar = ({ activeTab, setActiveTab, t, requestsCount, onLogout }) => {
@@ -59,6 +59,13 @@ const AdminSidebar = ({ activeTab, setActiveTab, t, requestsCount, onLogout }) =
                 >
                     <Users2 size={20} /> Socios {/* O usa t.admin.menu.partners */}
                 </button>
+                <button
+                    onClick={() => setActiveTab('forum')}
+                    className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'forum' ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white'}`}
+                >
+                    <MessageCircle size={20} /> Foro {/* O usa t.admin.menu.foro */}
+                </button>
+
             </div>
 
             <div className="p-5 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50">

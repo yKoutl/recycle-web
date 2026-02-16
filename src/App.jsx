@@ -5,6 +5,7 @@ import LoginView from './views/auth/LoginView';
 import AdminView from './views/admin/AdminView';
 import { onLogin, onLogout } from './store/auth/authSlice';
 import { useSelector, useDispatch } from 'react-redux';
+import EcoBot from './components/eco-bot/EcoBot';
 
 const App = () => {
   const [view, setView] = useState('landing'); // 'landing', 'login', 'admin'

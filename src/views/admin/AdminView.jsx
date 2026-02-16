@@ -7,6 +7,7 @@ import RequestsList from './RequestsList';
 import RewardsList from './rewards/reward-actions';
 import ProgramsList from './programs/program-actions';
 import PartnersList from './partners/partners-actions';
+import ForumView from './forums/forum-actions';
 import { MOCK_REQUESTS, MOCK_STATS } from '../../data/mockData';
 import { useDispatch } from 'react-redux'; // 1. IMPORTAR DISPATCH
 import { onLogout } from '../../store/auth/authSlice'; // 2. IMPORTAR ACCIÓN
@@ -49,6 +50,8 @@ const AdminView = ({ t }) => {
                 return <ProgramsList t={t} />;
             case 'partners':
                 return <PartnersList t={t} />;
+            case 'forum':
+                return <ForumView t={t} />;
 
             default: // Dashboard
                 return (

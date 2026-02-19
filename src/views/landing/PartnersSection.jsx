@@ -4,6 +4,7 @@ import Button from '../../components/shared/Button';
 import PartnerModal from '../../components/modals/PartnerModal';
 import JoinPartnerModal from '../../components/modals/JoinPartnerModal';
 import { MOCK_PARTNERS } from '../../data/mockData';
+import { useGetPartnersQuery } from '../../store/partners';
 
 const PartnersSection = ({ t }) => {
     const [selectedPartner, setSelectedPartner] = useState(null);
@@ -11,6 +12,8 @@ const PartnersSection = ({ t }) => {
     const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isMobile, setIsMobile] = useState(false);
+
+    const { data: dbPartners = [], isLoading } = useGetPartnersQuery();
 
     // Reactive check for mobile
     useEffect(() => {
@@ -20,13 +23,30 @@ const PartnersSection = ({ t }) => {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    const partners = MOCK_PARTNERS(t);
+    // Combinar Mock (Nos Planet) con data Real (DB)
+    const partners = [
+        MOCK_PARTNERS(t)[0], // Nos Planet siempre primero
+        ...dbPartners
+            .filter(p => p.isVisible) // Solo los que activaste con el "ojito"
+            .map(p => ({
+                id: p._id,
+                name: p.name,
+                category: p.typeLabel || 'Aliado',
+                logo: p.logo,
+                hex: p.mainColor || '#018F64',
+                textColor: 'text-emerald-600',
+                details: {
+                    desc: p.description,
+                    about: p.description
+                }
+            }))
+    ];
 
     // Configuration constants
-    const cardHeight = isMobile ? 320 : 420; // Increased desktop height slightly
+    const cardHeight = isMobile ? 320 : 420;
     const smallCardHeight = isMobile ? 80 : 130;
     const gap = 24;
-    const containerHeight = isMobile ? 450 : 680; // Adjusted container to match
+    const containerHeight = isMobile ? 360 : 680;
 
     const nextSlide = () => {
         setCurrentIndex((prev) => (prev + 1) % partners.length);
@@ -109,19 +129,19 @@ const PartnersSection = ({ t }) => {
                     </div>
 
                     {/* RIGHT SIDE */}
-                    <div className="w-full lg:w-[58%] flex flex-col lg:flex-row items-center justify-center lg:justify-end gap-6 lg:gap-8 min-h-[500px] lg:min-h-[750px] relative mt-12 lg:mt-0">
+                    <div className="w-full lg:w-[58%] flex flex-col lg:flex-row items-center justify-center lg:justify-end gap-4 lg:gap-8 min-h-[500px] lg:min-h-[750px] relative mt-4 lg:mt-0">
 
                         {/* 1. ICON PILL INDICATORS */}
-                        <div className="w-full lg:w-auto flex justify-center lg:order-3 mb-6 lg:mb-0 lg:ml-2 shrink-0">
-                            <div className="bg-white dark:bg-[#0f172a] rounded-full lg:rounded-[3rem] p-2 lg:p-4 lg:py-10 shadow-xl border border-gray-100 dark:border-white/5 flex flex-row lg:flex-col gap-3 lg:gap-6 overflow-x-auto no-scrollbar lg:overflow-visible max-w-full">
+                        <div className="w-full lg:w-auto flex justify-center lg:order-3 mb-2 lg:mb-0 lg:ml-6 shrink-0 z-30">
+                            <div className="bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-xl rounded-[2rem] lg:rounded-[3rem] p-3 lg:p-5 shadow-2xl border border-gray-100 dark:border-white/5 grid grid-rows-2 grid-cols-5 lg:grid-cols-2 lg:grid-rows-5 lg:grid-flow-col gap-3 lg:gap-4 transition-all duration-700">
                                 {partners.map((p, idx) => (
                                     <button
                                         key={idx}
                                         onClick={() => setCurrentIndex(idx)}
                                         style={{ backgroundColor: idx === currentIndex ? p.hex : 'transparent' }}
-                                        className={`w-12 h-12 lg:w-20 lg:h-20 rounded-full flex items-center justify-center shrink-0 transition-all duration-700 cubic-bezier(0.16, 1, 0.3, 1) overflow-hidden
+                                        className={`w-10 h-10 lg:w-14 lg:h-14 rounded-full flex items-center justify-center shrink-0 transition-all duration-700 cubic-bezier(0.16, 1, 0.3, 1) overflow-hidden
                                             ${idx === currentIndex
-                                                ? 'text-white shadow-2xl ring-4 ring-gray-500/10 scale-110'
+                                                ? 'text-white shadow-2xl ring-4 ring-gray-400/10 scale-110'
                                                 : 'text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5'
                                             }`}
                                     >
@@ -132,7 +152,7 @@ const PartnersSection = ({ t }) => {
                                                 className={`w-full h-full object-cover ${p.id === 1 ? 'scale-110' : 'p-2'}`}
                                             />
                                         ) : (
-                                            getPartnerIcon(idx, isMobile ? 20 : 26)
+                                            getPartnerIcon(idx, isMobile ? 18 : 22)
                                         )}
                                     </button>
                                 ))}
@@ -141,8 +161,8 @@ const PartnersSection = ({ t }) => {
 
                         <div className="flex items-center justify-center gap-4 lg:gap-8 w-full lg:w-auto">
 
-                            {/* 2. ARROWS */}
-                            <div className="flex flex-col justify-center gap-4 shrink-0 transition-all duration-500 z-30">
+                            {/* 2. ARROWS (Solo escritorio) */}
+                            <div className="hidden lg:flex flex-col justify-center gap-4 shrink-0 transition-all duration-500 z-30">
                                 <button
                                     onClick={prevSlide}
                                     className="w-10 h-10 lg:w-16 lg:h-16 rounded-full bg-white dark:bg-gray-800 shadow-2xl flex items-center justify-center text-gray-400 hover:text-emerald-500 transition-all border border-gray-100 dark:border-gray-700 hover:scale-110 active:scale-95 group"
@@ -158,7 +178,7 @@ const PartnersSection = ({ t }) => {
                             </div>
 
                             {/* 3. CENTER CAROUSEL */}
-                            <div className={`relative w-[260px] md:w-[320px] lg:w-[450px] overflow-hidden mask-vertical`} style={{ height: `${containerHeight}px` }}>
+                            <div className={`relative w-[300px] md:w-[320px] lg:w-[450px] overflow-hidden mask-vertical`} style={{ height: `${containerHeight}px` }}>
                                 <div
                                     className="absolute inset-x-0 top-0 flex flex-col items-center gap-6 transition-transform duration-1000 cubic-bezier(0.23, 1, 0.32, 1)"
                                     style={{
@@ -184,7 +204,7 @@ const PartnersSection = ({ t }) => {
                                             >
                                                 <div
                                                     style={{ backgroundColor: partner.hex }}
-                                                    className={`transition-all duration-1000 cubic-bezier(0.23, 1, 0.32, 1) ${isCenter ? 'h-24 lg:h-36' : 'h-10 lg:h-16'} relative flex items-center justify-center shrink-0`}
+                                                    className={`transition-all duration-1000 cubic-bezier(0.23, 1, 0.32, 1) ${isCenter ? 'h-20 lg:h-36' : 'h-10 lg:h-16'} relative flex items-center justify-center shrink-0`}
                                                 >
                                                     <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
                                                     <div className={`rounded-full border-[4px] lg:border-[6px] ring-2 lg:ring-4 ring-white/15 shadow-xl flex items-center justify-center text-white transition-all duration-1000 cubic-bezier(0.23, 1, 0.32, 1) overflow-hidden
@@ -211,7 +231,7 @@ const PartnersSection = ({ t }) => {
                                                     </div>
                                                     <h4 className="text-2xl lg:text-4xl font-black text-gray-900 dark:text-white mb-2 tracking-tighter leading-none">{partner.name}</h4>
                                                     <p className="text-xs lg:text-lg text-gray-500 dark:text-gray-400 font-medium leading-relaxed mb-4 line-clamp-2 lg:line-clamp-none max-w-[90%]">
-                                                        Beneficios exclusivos en la plataforma Nos Planet para impulsar tu rentabilidad y sostenibilidad.
+                                                        {partner.details.desc || 'Beneficios exclusivos en la plataforma Nos Planet para impulsar tu rentabilidad y sostenibilidad.'}
                                                     </p>
 
                                                     {/* Absolute Action Arrow to prevent flex/rounding clipping issues */}

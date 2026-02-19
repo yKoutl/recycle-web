@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { LayoutDashboard, Users, FileText, LogOut, Gift, MapPin, Users2, ChevronDown, Bell } from 'lucide-react';
 
-const AdminSidebar = ({ t, requestsCount, onLogout, user }) => {
+const AdminSidebar = ({ t, requestsCount, onLogout, user, isOpen }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const [openMenu, setOpenMenu] = useState('partners'); // Default open or closed
@@ -35,7 +35,11 @@ const AdminSidebar = ({ t, requestsCount, onLogout, user }) => {
 
 
     return (
-        <aside className="w-72 bg-white/90 dark:bg-gray-950/90 backdrop-blur-2xl border-r border-gray-100 dark:border-white/5 hidden md:flex flex-col fixed h-full z-20 transition-all duration-500">
+        <aside className={`
+            w-72 bg-white/95 dark:bg-gray-950/95 backdrop-blur-2xl border-r border-gray-100 dark:border-white/5 
+            flex flex-col fixed h-full z-50 transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1)
+            ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        `}>
             <div className="p-8 border-b border-gray-50 dark:border-white/5 relative overflow-hidden">
                 <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
                     style={{ backgroundImage: `linear-gradient(#018F64 1px, transparent 1px), linear-gradient(90deg, #018F64 1px, transparent 1px)`, backgroundSize: '20px 20px' }} />
@@ -50,7 +54,7 @@ const AdminSidebar = ({ t, requestsCount, onLogout, user }) => {
                 </div>
             </div>
 
-            <div className="flex-1 py-10 px-6 space-y-6 overflow-y-auto">
+            <div className="flex-1 py-10 px-6 space-y-6 overflow-y-auto no-scrollbar">
                 <div className="space-y-2">
                     <div className="text-[10px] font-black text-[#018F64] uppercase tracking-[0.2em] px-4 mb-4 opacity-70 italic">{t.admin.menu.main}</div>
                     <button onClick={() => handleNavigate('dashboard')} className={navItemClasses('dashboard')}>

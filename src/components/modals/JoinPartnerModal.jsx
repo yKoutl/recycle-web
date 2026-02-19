@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { X, Handshake, CheckCircle, Mail, User, ArrowLeft, Send, Sparkles, Leaf, Briefcase, Globe, MessageSquare } from 'lucide-react';
+import { X, Handshake, CheckCircle, Mail, User, ArrowLeft, Send, Sparkles, Leaf, Briefcase, Globe, MessageSquare, Phone } from 'lucide-react';
+import { useCreatePartnerRequestMutation } from '../../store/partners/partnerRequestsApi';
+import { Loader2 } from 'lucide-react';
 import Button from '../shared/Button';
 
 const JoinPartnerModal = ({ isOpen, onClose }) => {
@@ -7,13 +9,16 @@ const JoinPartnerModal = ({ isOpen, onClose }) => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        category: '',
-        comment: ''
+        phone: '',
+        category: '', // mapping to website
+        comment: ''   // mapping to message
     });
+
+    const [createRequest, { isLoading }] = useCreatePartnerRequestMutation();
 
     useEffect(() => {
         if (isOpen) {
-            setFormData({ name: '', email: '', category: '', comment: '' });
+            setFormData({ name: '', email: '', phone: '', category: '', comment: '' });
             setSuccess(false);
             document.body.style.overflow = 'hidden';
         } else {
@@ -22,9 +27,21 @@ const JoinPartnerModal = ({ isOpen, onClose }) => {
         return () => { document.body.style.overflow = 'unset'; };
     }, [isOpen]);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setSuccess(true);
+        try {
+            await createRequest({
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone || '', // Opción para agregar input de teléfono si se desea, o extraer del mensaje
+                website: formData.category,
+                message: formData.comment
+            }).unwrap();
+            setSuccess(true);
+        } catch (err) {
+            console.error('Error al enviar solicitud:', err);
+            // Aquí podrías poner un estado de error visual
+        }
     };
 
     if (!isOpen) return null;
@@ -107,10 +124,11 @@ const JoinPartnerModal = ({ isOpen, onClose }) => {
 
                             <form onSubmit={handleSubmit} className="space-y-8 pb-10">
                                 {/* Form Inputs - Soft backgrounds, NO LINES */}
+                                {/* Company Name Input */}
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-[#018F64] dark:text-[#B0EEDE] flex items-center gap-3 ml-1">
                                         <Briefcase size={14} strokeWidth={3} />
-                                        <span>NOMBRE DE LA EMPRESA</span>
+                                        <span>RAZÓN SOCIAL / NOMBRE DE EMPRESA</span>
                                     </label>
                                     <input
                                         type="text"
@@ -137,40 +155,59 @@ const JoinPartnerModal = ({ isOpen, onClose }) => {
                                     />
                                 </div>
 
+                                {/* Website Input */}
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-[#018F64] dark:text-[#B0EEDE] flex items-center gap-3 ml-1">
                                         <Globe size={14} strokeWidth={3} />
-                                        <span>PÁGINA WEB / REDES</span>
+                                        <span>PÁGINA WEB / REDES (OPCIONAL)</span>
                                     </label>
                                     <input
                                         type="text"
-                                        value={formData.category}
+                                        value={formData.category} // maps to website
                                         onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                                         placeholder="www.tusitio.com"
                                         className="w-full bg-gray-50/60 dark:bg-white/5 border-none rounded-2xl py-4 px-6 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all text-base font-bold dark:text-white shadow-sm"
                                     />
                                 </div>
 
+                                {/* Phone Input - Dedicated Field */}
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-[#018F64] dark:text-[#B0EEDE] flex items-center gap-3 ml-1">
+                                        <Phone size={14} strokeWidth={3} />
+                                        <span>CELULAR DE CONTACTO (WHATSAPP)</span>
+                                    </label>
+                                    <input
+                                        type="tel"
+                                        required
+                                        value={formData.phone}
+                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                        placeholder="Ej: +51 987 654 321"
+                                        className="w-full bg-gray-50/60 dark:bg-white/5 border-none rounded-2xl py-4 px-6 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all text-base font-bold dark:text-white shadow-sm"
+                                    />
+                                </div>
+
+                                {/* Message Input */}
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-[#018F64] dark:text-[#B0EEDE] flex items-center gap-3 ml-1">
                                         <MessageSquare size={14} strokeWidth={3} />
-                                        <span>MENSAJE</span>
+                                        <span>MENSAJE O PROPUESTA</span>
                                     </label>
                                     <textarea
                                         required
                                         value={formData.comment}
                                         onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
-                                        placeholder="Cuéntanos sobre tu empresa..."
+                                        placeholder="Cuéntanos brevemente sobre tu empresa y por qué te gustaría ser aliado..."
                                         className="w-full h-32 bg-gray-50/60 dark:bg-white/5 border-none rounded-[2.5rem] p-8 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all text-base font-medium dark:text-gray-200 resize-none shadow-inner"
                                     />
                                 </div>
 
                                 <Button
                                     type="submit"
-                                    className="w-full h-18 rounded-[2.5rem] text-xl font-black bg-[#018F64] dark:bg-[#B0EEDE] dark:text-[#020617] text-white shadow-2xl shadow-emerald-600/30 border-none transition-all hover:scale-[1.02] flex items-center justify-center gap-3"
-                                    icon={Send}
+                                    disabled={isLoading}
+                                    className="w-full h-18 rounded-[2.5rem] text-xl font-black bg-[#018F64] dark:bg-[#B0EEDE] dark:text-[#020617] text-white shadow-2xl shadow-emerald-600/30 border-none transition-all hover:scale-[1.02] flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed"
+                                    icon={isLoading ? Loader2 : Send}
                                 >
-                                    Enviar Postulación
+                                    {isLoading ? 'Enviando...' : 'Enviar Postulación'}
                                 </Button>
                             </form>
                         </div>
@@ -195,7 +232,7 @@ const JoinPartnerModal = ({ isOpen, onClose }) => {
                     <p className="text-[10px] font-black text-gray-200 dark:text-gray-800 uppercase tracking-[1em] lg:mr-8">RECYCLEAPP PARTNERS</p>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

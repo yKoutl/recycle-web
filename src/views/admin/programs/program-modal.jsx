@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { X, Save, Loader2, UploadCloud, MapPin, Building2, Calendar, Trophy } from 'lucide-react';
+import ConfirmModal from '../../../components/shared/ConfirmModal';
 // IMPORTANTE: Asegúrate de importar desde TU api de programs
 import { useCreateProgramMutation, useUpdateProgramMutation } from '../../../store/programs';
 
@@ -33,6 +34,7 @@ const ProgramFormModal = ({ isOpen, onClose }) => {
     };
 
     const [formData, setFormData] = useState(initialState);
+    const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '', variant: 'danger' });
 
     // Estados temporales para inputs de arrays (Objetivos y Actividades)
     const [tempObjective, setTempObjective] = useState('');
@@ -98,7 +100,12 @@ const ProgramFormModal = ({ isOpen, onClose }) => {
             onClose();
         } catch (error) {
             console.error("Error:", error);
-            alert("Error al guardar: " + JSON.stringify(error));
+            setModalConfig({
+                isOpen: true,
+                title: 'Error al Guardar',
+                message: 'No se pudo guardar el programa. Por favor verifica que todos los campos requeridos estén llenos e intenta de nuevo.',
+                variant: 'danger'
+            });
         }
     };
 
@@ -306,6 +313,10 @@ const ProgramFormModal = ({ isOpen, onClose }) => {
                 .label-text { @apply block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1; }
                 .input-field { @apply w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-green-500 outline-none transition-all text-gray-900 dark:text-white; }
             `}</style>
+            <ConfirmModal
+                {...modalConfig}
+                onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
+            />
         </div>
     );
 };

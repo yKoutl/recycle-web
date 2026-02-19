@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { X, Save, Loader2, UploadCloud, Pin } from 'lucide-react';
+import { X, Save, Loader2, UploadCloud, Pin, Eye } from 'lucide-react';
+import ConfirmModal from '../../../components/shared/ConfirmModal';
 // Asegúrate de importar desde TU api creada
 import { useCreatePartnerMutation, useUpdatePartnerMutation } from '../../../store/partners';
 
@@ -22,12 +23,14 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
         description: '',
         environmentalCommitment: '',
         isPinned: false,
+        isVisible: true,
         // AGREGAMOS ESTOS CAMPOS PARA QUE EL BACKEND NO DE ERROR 400
         rewardsCount: 0,
         usersCount: 0
     };
 
     const [formData, setFormData] = useState(initialState);
+    const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '', variant: 'danger' });
 
     // Rellenar formulario si estamos editando
     useEffect(() => {
@@ -54,7 +57,8 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
             ...formData,
             logo: formData.logo.trim() === ''
                 ? 'https://via.placeholder.com/150' // URL por defecto válida
-                : formData.logo
+                : formData.logo,
+            isLocked: false // Al guardar, desbloqueamos el perfil automáticamente
         };
 
         try {
@@ -66,8 +70,12 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
             onClose();
         } catch (error) {
             console.error("Error al guardar:", error);
-            // Aquí podrías poner un alert o toast mostrando el error.data.message
-            alert("Error: " + JSON.stringify(error.data?.message || "Verifica los datos"));
+            setModalConfig({
+                isOpen: true,
+                title: 'Error al Guardar',
+                message: error.data?.message || 'Verifica que todos los datos sean correctos e intenta de nuevo.',
+                variant: 'danger'
+            });
         }
     };
 
@@ -185,18 +193,32 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
                             ></textarea>
                         </div>
 
-                        {/* Checkbox Pinned */}
-                        <label className="flex items-center gap-3 p-4 border border-gray-200 dark:border-gray-700 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
-                            <input
-                                type="checkbox" name="isPinned"
-                                checked={formData.isPinned} onChange={handleChange}
-                                className="w-5 h-5 text-green-600 rounded focus:ring-green-500 border-gray-300"
-                            />
-                            <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                                <Pin size={18} />
-                                Fijar como destacado en el inicio
-                            </div>
-                        </label>
+                        {/* Visibilidad y Destacado */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <label className="flex items-center gap-3 p-4 border border-gray-200 dark:border-gray-700 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+                                <input
+                                    type="checkbox" name="isVisible"
+                                    checked={formData.isVisible} onChange={handleChange}
+                                    className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
+                                />
+                                <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    <Eye size={18} />
+                                    Visible en Landing
+                                </div>
+                            </label>
+
+                            <label className="flex items-center gap-3 p-4 border border-gray-200 dark:border-gray-700 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+                                <input
+                                    type="checkbox" name="isPinned"
+                                    checked={formData.isPinned} onChange={handleChange}
+                                    className="w-5 h-5 text-green-600 rounded focus:ring-green-500 border-gray-300"
+                                />
+                                <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    <Pin size={18} />
+                                    Destacar arriba
+                                </div>
+                            </label>
+                        </div>
 
                     </form>
                 </div>
@@ -221,6 +243,11 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
                 .label-text { @apply block text-sm font-semibold text-gray-700 dark:text-gray-300; }
                 .input-field { @apply bg-white dark:bg-gray-800 outline-none transition-all text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500; }
             `}</style>
+
+            <ConfirmModal
+                {...modalConfig}
+                onClose={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
+            />
         </div>
     );
 };

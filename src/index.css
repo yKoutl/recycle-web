@@ -1,5 +1,6 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Space+Grotesk:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Space+Grotesk:wght@500;700&family=Outfit:wght@300;500;700;900&display=swap');
+
 
 /* Visible Premium Custom Scrollbar */
 ::-webkit-scrollbar {
@@ -49,7 +50,8 @@
 
 @theme {
   --font-sans: "Plus Jakarta Sans", sans-serif;
-  --font-display: "Space Grotesk", sans-serif;
+  --font-display: "Outfit", sans-serif;
+  --font-outfit: "Outfit", sans-serif;
 
   /* Fresh Eco Palette */
   --color-primary: #018F64;

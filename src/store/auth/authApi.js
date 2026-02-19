@@ -27,12 +27,14 @@ export const authApi = createApi({
 
         // 3. CHECK STATUS (@Get('check-status'))
         checkStatus: builder.query({
-            query: () => ({
+            query: (token) => ({
                 url: '/check-status',
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                    Authorization: `Bearer ${token}`
                 }
             }),
+            // Forzar refetch si el token cambia, evitando caché obsoleta
+            keepUnusedDataFor: 0,
         }),
 
         // 4. FORGOT PASSWORD (@Post('forgot-password'))

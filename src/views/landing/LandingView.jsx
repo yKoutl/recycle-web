@@ -10,7 +10,7 @@ import AboutSection from './AboutSection';
 import ContactSection from './ContactSection';
 import LazySection from '../../components/shared/LazySection';
 
-const LandingView = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t, isAuthenticated }) => {
+const LandingView = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t, isAuthenticated, user, onLogout }) => {
     return (
         <>
             <Navbar
@@ -21,7 +21,11 @@ const LandingView = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t, is
                 setDarkMode={setDarkMode}
                 t={t}
                 isAuthenticated={isAuthenticated}
+                user={user}
+                onLogout={onLogout}
             />
+
+
             <div id="home">
                 <Hero onScrollToPrograms={() => document.getElementById('programs').scrollIntoView({ behavior: 'smooth' })} t={t} />
             </div>
@@ -29,10 +33,10 @@ const LandingView = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t, is
                 <AboutSection t={t} />
             </div>
             <div id="programs">
-                <ProgramsSection t={t} />
+                <ProgramsSection t={t} isAuthenticated={isAuthenticated} />
             </div>
             <LazySection id="community">
-                <CommunitySection t={t} />
+                <CommunitySection t={t} isAuthenticated={isAuthenticated} />
             </LazySection>
             <LazySection id="partners">
                 <PartnersSection t={t} />

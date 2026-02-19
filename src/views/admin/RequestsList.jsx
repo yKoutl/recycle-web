@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bell, CheckCircle, XCircle, User } from 'lucide-react';
+import { Bell, CheckCircle, XCircle, User, RotateCw } from 'lucide-react';
 
 const RequestsList = ({ requests, t, onStatusChange }) => {
     return (
@@ -29,8 +29,14 @@ const RequestsList = ({ requests, t, onStatusChange }) => {
             </div>
 
             <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
-                <div className="p-6 border-b border-gray-100 dark:border-gray-800">
+                <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
                     <h3 className="font-bold text-gray-900 dark:text-white text-lg">{t.admin.requestsTitle}</h3>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="p-2 bg-gray-50 dark:bg-gray-800 text-gray-400 hover:text-orange-500 rounded-xl transition-all active:scale-95 group"
+                    >
+                        <RotateCw size={16} className="group-active:rotate-180 transition-transform duration-500" />
+                    </button>
                 </div>
                 <div className="divide-y divide-gray-100 dark:divide-gray-800">
                     {requests.map((req) => (

@@ -5,12 +5,14 @@ import { Plus, Edit2, Trash2, MapPin, Users, Search, Target, Globe, Activity, La
 import { useGetProgramsQuery, useDeleteProgramMutation } from '../../../store/programs';
 import { onSetActiveProgram } from '../../../store/programs';
 import ProgramFormModal from './program-modal';
+import ConfirmModal from '../../../components/shared/ConfirmModal';
 
 const ProgramsList = () => {
     const dispatch = useDispatch();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState('Todos');
     const [searchQuery, setSearchQuery] = useState('');
+    const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '', variant: 'danger', onConfirm: null });
 
     const { data: programs = [], isLoading } = useGetProgramsQuery();
     const [startDelete] = useDeleteProgramMutation();
@@ -36,9 +38,17 @@ const ProgramsList = () => {
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm("¿Estás seguro de eliminar este programa?")) {
-            await startDelete(id);
-        }
+        setModalConfig({
+            isOpen: true,
+            title: '¿Eliminar Programa?',
+            message: '¿Estás seguro de eliminar este programa? Esta acción no se puede deshacer.',
+            variant: 'danger',
+            confirmText: 'Sí, Eliminar',
+            onConfirm: async () => {
+                await startDelete(id);
+                setModalConfig(prev => ({ ...prev, isOpen: false }));
+            }
+        });
     };
 
     if (isLoading) return <div className="p-10 text-center text-gray-500">Cargando programas...</div>;
@@ -181,6 +191,11 @@ const ProgramsList = () => {
             <ProgramFormModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
+            />
+
+            <ConfirmModal
+                {...modalConfig}
+                onClose={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
             />
         </div>
     );

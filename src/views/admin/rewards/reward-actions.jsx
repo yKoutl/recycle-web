@@ -4,11 +4,13 @@ import { Plus, Edit2, Trash2, Tag, Box, Layers, Search, AlertCircle, Award, Gift
 
 import { useGetRewardsQuery, useDeleteRewardMutation } from '../../../store/rewards';
 import { onSetActiveReward } from '../../../store/rewards';
+import ConfirmModal from '../../../components/shared/ConfirmModal';
 
 const RewardsList = ({ onOpenModal }) => {
     const dispatch = useDispatch();
     const [selectedCategory, setSelectedCategory] = useState('Todos');
     const [searchQuery, setSearchQuery] = useState('');
+    const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '', variant: 'danger', onConfirm: null });
 
     const { data: rewards = [], isLoading } = useGetRewardsQuery();
     const [deleteReward] = useDeleteRewardMutation();
@@ -33,9 +35,17 @@ const RewardsList = ({ onOpenModal }) => {
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm("¿Estás seguro de eliminar este premio?")) {
-            await deleteReward(id);
-        }
+        setModalConfig({
+            isOpen: true,
+            title: '¿Eliminar Premio?',
+            message: '¿Estás seguro de eliminar este premio? Esta acción no se puede deshacer.',
+            variant: 'danger',
+            confirmText: 'Sí, Eliminar',
+            onConfirm: async () => {
+                await deleteReward(id);
+                setModalConfig(prev => ({ ...prev, isOpen: false }));
+            }
+        });
     };
 
     if (isLoading) return <div className="p-10 text-center text-gray-500">Cargando premios...</div>;
@@ -176,6 +186,10 @@ const RewardsList = ({ onOpenModal }) => {
                     Crear Nuevo Premio
                 </span>
             </button>
+            <ConfirmModal
+                {...modalConfig}
+                onClose={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
+            />
         </div>
     );
 };

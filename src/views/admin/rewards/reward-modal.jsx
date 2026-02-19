@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Save, Gift, Tag, Info, Layers, Box } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useCreateRewardMutation, useUpdateRewardMutation } from '../../../store/rewards';
+import ConfirmModal from '../../../components/shared/ConfirmModal';
 
 const RewardFormModal = ({ isOpen, onClose }) => {
     const { activeReward } = useSelector((state) => state.rewards || {});
@@ -16,6 +17,7 @@ const RewardFormModal = ({ isOpen, onClose }) => {
         category: 'digital',
         imageUrl: ''
     });
+    const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '', variant: 'danger' });
 
     useEffect(() => {
         if (activeReward) {
@@ -43,7 +45,12 @@ const RewardFormModal = ({ isOpen, onClose }) => {
             onClose();
         } catch (err) {
             console.error('Error saving reward:', err);
-            alert('Error al guardar el premio');
+            setModalConfig({
+                isOpen: true,
+                title: 'Error al Guardar',
+                message: 'No se pudo guardar el premio. Verifica que los datos sean correctos e intenta de nuevo.',
+                variant: 'danger'
+            });
         }
     };
 
@@ -139,6 +146,10 @@ const RewardFormModal = ({ isOpen, onClose }) => {
                     </div>
                 </form>
             </div>
+            <ConfirmModal
+                {...modalConfig}
+                onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
+            />
         </div>
     );
 };

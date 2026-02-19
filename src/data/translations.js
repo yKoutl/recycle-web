@@ -186,6 +186,13 @@ export const TRANSLATIONS = {
                 phone: '+34 900 000 000',
                 email: 'hola@nosplanet.com'
             }
+        },
+        auth: {
+            needLogin: '¡Casi lo logras!',
+            loginToLike: 'Para dar amor a esta historia, primero debes ser parte de nuestra comunidad.',
+        },
+        common: {
+            maybeLater: 'Quizás más tarde'
         }
     },
     en: {
@@ -375,6 +382,13 @@ export const TRANSLATIONS = {
                 phone: '+34 900 000 000',
                 email: 'hello@nosplanet.com'
             }
+        },
+        auth: {
+            needLogin: 'Almost there!',
+            loginToLike: 'To show love to this story, you must first be part of our community.',
+        },
+        common: {
+            maybeLater: 'Maybe later'
         }
     }
 };

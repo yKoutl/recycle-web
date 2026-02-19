@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, FileText } from 'lucide-react';
+import { Search, FileText, RotateCw } from 'lucide-react';
 
 const UsersTable = ({ t }) => {
     return (
@@ -9,9 +9,18 @@ const UsersTable = ({ t }) => {
                     <h3 className="font-bold text-gray-900 dark:text-white text-xl">{t.admin.menu.users}</h3>
                     <p className="text-gray-500 dark:text-gray-400 text-sm">Gestiona los permisos y cuentas.</p>
                 </div>
-                <div className="relative w-full sm:w-auto">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input type="text" placeholder="Buscar usuario..." className="w-full sm:w-64 pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:ring-4 focus:ring-green-50 dark:focus:ring-green-900/30 focus:border-green-500 dark:focus:border-green-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none transition-all" />
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="p-2.5 bg-gray-50 dark:bg-gray-800 text-gray-400 hover:text-green-600 rounded-xl transition-all active:scale-95 border border-transparent hover:border-gray-200 dark:hover:border-white/10 group"
+                        title="Refrescar lista"
+                    >
+                        <RotateCw size={18} className="group-active:rotate-180 transition-transform duration-500" />
+                    </button>
+                    <div className="relative flex-1 sm:flex-none">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                        <input type="text" placeholder="Buscar usuario..." className="w-full sm:w-64 pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:ring-4 focus:ring-green-50 dark:focus:ring-green-900/30 focus:border-green-500 dark:focus:border-green-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none transition-all" />
+                    </div>
                 </div>
             </div>
             <div className="overflow-x-auto">

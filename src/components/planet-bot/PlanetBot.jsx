@@ -47,11 +47,12 @@ const PlanetBot = ({ currentView }) => {
             return;
         }
 
-        // Notificación especial para Login
+        // Notificación de Login eliminada a petición del usuario
         if (currentView === 'login') {
-            setNotification("🔒 Esta área es exclusiva para administradores y funcionarios de Nos Planet SAC.");
+            setNotification(null);
             return;
         }
+
 
         // Intervalo para mostrar notificaciones cada 12 segundos si el chat está cerrado
         const intervalId = setInterval(() => {

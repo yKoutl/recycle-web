@@ -1,23 +1,42 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, Moon, Languages, LogIn, X, Menu, ChevronRight, Home, Sprout, Globe, Users, Handshake, Leaf, Mail, ShieldCheck } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Sun, Moon, Languages, LogIn, LogOut, X, Menu, ChevronRight, Home, Sprout, Globe, Users, Handshake, Leaf, Mail, ShieldCheck } from 'lucide-react';
+
 import Button from '../shared/Button';
 import logoNosPlanet from '../../assets/logo_nos_planet.webp';
 
-const Navbar = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t, isAuthenticated }) => {
-    const [isScrolled, setIsScrolled] = useState(false);
+const Navbar = ({ lang, setLang, darkMode, setDarkMode, t, isAuthenticated, user, onLogout, forceScrolled = false }) => {
+    const navigate = useNavigate();
+    const [isScrolled, setIsScrolled] = useState(forceScrolled);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     useEffect(() => {
-        const handleScroll = () => setIsScrolled(window.scrollY > 20);
+        const handleScroll = () => setIsScrolled(window.scrollY > 20 || forceScrolled);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    }, [forceScrolled]);
 
     const scrollToSection = (id) => {
         const element = document.getElementById(id);
         if (element) {
             element.scrollIntoView({ behavior: 'smooth' });
             setIsMobileMenuOpen(false);
+        } else {
+            // Si estamos en otra página (ej: admin), ir a home y scroll
+            navigate('/');
+            setTimeout(() => {
+                document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+    };
+
+    const handleLoginClick = () => {
+        if (isAuthenticated) {
+            if (['ADMIN', 'OFFICIAL'].includes(user?.role?.toUpperCase())) {
+                navigate('/admin/dashboard');
+            }
+        } else {
+            navigate('/auth/login');
         }
     };
 
@@ -93,12 +112,27 @@ const Navbar = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t, isAuthe
 
                             <Button
                                 variant={isScrolled ? 'primary' : 'outline'}
-                                onClick={onLoginClick}
-                                className={`rounded-xl font-bold text-sm h-11 px-6 shadow-lg transition-all duration-500 scale-100 hover:scale-105 active:scale-95 ${!isScrolled ? 'border-white/40 hover:bg-white hover:text-[#018F64]' : 'bg-[#018F64] border-[#018F64] hover:bg-[#05835D] text-white shadow-[#018F64]/20'}`}
+                                onClick={handleLoginClick}
+                                className={`rounded-xl font-bold text-sm h-11 px-6 shadow-lg transition-all duration-500 scale-100 hover:scale-105 active:scale-95 ${!isScrolled
+                                    ? 'border-white/40 hover:bg-white hover:text-[#018F64] text-white'
+                                    : 'bg-[#018F64] border-[#018F64] hover:bg-[#05835D] text-white shadow-[#018F64]/20'
+                                    } ${isAuthenticated && !isScrolled ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500 hover:text-white' : ''}`}
                                 icon={isAuthenticated ? ShieldCheck : LogIn}
                             >
-                                {isAuthenticated ? 'Panel Admin' : t.nav.login}
+                                {isAuthenticated
+                                    ? (['ADMIN', 'OFFICIAL'].includes(user?.role) ? 'Panel Admin' : `Hola, ${user?.fullName?.split(' ')[0] || 'Usuario'}`)
+                                    : t.nav.login}
                             </Button>
+
+                            {isAuthenticated && (
+                                <button
+                                    onClick={onLogout}
+                                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${isScrolled ? 'hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500' : 'hover:bg-white/20 text-white'}`}
+                                    title="Cerrar sesión"
+                                >
+                                    <LogOut size={20} />
+                                </button>
+                            )}
                         </div>
                     </div>
 
@@ -145,7 +179,7 @@ const Navbar = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t, isAuthe
                         </div>
 
                         <div className="p-6 border-t border-gray-100 dark:border-gray-900 bg-gray-50/50 dark:bg-gray-900/50">
-                            <div className="grid grid-cols-2 gap-4 mb-6">
+                            <div className="grid grid-cols-2 gap-4 mb-4">
                                 <button onClick={() => setDarkMode(!darkMode)} className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-300">
                                     {darkMode ? <Sun size={24} /> : <Moon size={24} />}
                                     <span className="text-xs font-bold uppercase">{darkMode ? 'Claro' : 'Oscuro'}</span>
@@ -155,13 +189,26 @@ const Navbar = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t, isAuthe
                                     <span className="text-xs font-bold uppercase">{lang === 'es' ? 'English' : 'Español'}</span>
                                 </button>
                             </div>
-                            <Button
-                                onClick={() => { onLoginClick(); setIsMobileMenuOpen(false); }}
-                                className="w-full h-14 rounded-2xl text-lg font-extrabold shadow-xl shadow-emerald-500/20"
-                                icon={isAuthenticated ? ShieldCheck : LogIn}
-                            >
-                                {isAuthenticated ? 'Panel Admin' : t.nav.login}
-                            </Button>
+                            <div className="space-y-3">
+                                <Button
+                                    onClick={() => { handleLoginClick(); setIsMobileMenuOpen(false); }}
+                                    className="w-full h-14 rounded-2xl text-lg font-extrabold shadow-xl shadow-emerald-500/20"
+                                    icon={isAuthenticated ? ShieldCheck : LogIn}
+                                >
+                                    {isAuthenticated
+                                        ? (['ADMIN', 'OFFICIAL'].includes(user?.role) ? 'Panel Admin' : `Hola, ${user?.fullName?.split(' ')[0] || 'Usuario'}`)
+                                        : t.nav.login}
+                                </Button>
+
+                                {isAuthenticated && (
+                                    <button
+                                        onClick={() => { onLogout(); setIsMobileMenuOpen(false); }}
+                                        className="w-full flex items-center justify-center gap-3 p-4 rounded-2xl text-red-500 font-bold uppercase tracking-widest text-xs hover:bg-red-50 dark:hover:bg-red-900/20 transition-all border border-red-100 dark:border-red-900/30"
+                                    >
+                                        <LogOut size={18} /> Cerrar Sesión
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

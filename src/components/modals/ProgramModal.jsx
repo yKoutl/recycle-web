@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
-import { Building2, Star, Phone, Mail, Globe, Heart, ArrowLeft, Sparkles, Quote, Calendar, Copy, Check, Target } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Building2, Star, Phone, Mail, Globe, Heart, ArrowLeft, Sparkles, Quote, Calendar, Copy, Check, Target, LogIn, Lock } from 'lucide-react';
 
-const ProgramModal = ({ program, isOpen, onClose }) => {
+const ProgramModal = ({ program, isOpen, onClose, isAuthenticated, t }) => {
+    const navigate = useNavigate();
     const [hoveredContact, setHoveredContact] = React.useState('email');
     const [copySuccess, setCopySuccess] = React.useState(false);
 
@@ -228,10 +230,25 @@ const ProgramModal = ({ program, isOpen, onClose }) => {
                                     )}
                                 </div>
                             </div>
+
                             <div className="pt-4">
-                                <button className="w-full py-5 bg-white font-black text-sm uppercase tracking-[0.2em] rounded-2xl shadow-xl hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-4" style={{ color: config.accent }}>
+                                <button
+                                    onClick={() => {
+                                        if (isAuthenticated) {
+                                            console.log("Joined program:", program.title);
+                                        } else {
+                                            navigate('/auth/login');
+                                        }
+                                    }}
+                                    className="w-full py-5 bg-white font-black text-sm uppercase tracking-[0.2em] rounded-2xl shadow-xl hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-4"
+                                    style={{ color: config.accent }}
+                                >
                                     <span>UNIRME AHORA</span>
-                                    <Heart size={18} className="fill-current" />
+                                    {isAuthenticated ? (
+                                        <Heart size={18} className="fill-current" />
+                                    ) : (
+                                        <Lock size={18} />
+                                    )}
                                 </button>
                             </div>
                         </div>
@@ -276,6 +293,7 @@ const ProgramModal = ({ program, isOpen, onClose }) => {
                     animation: pulse-slow 8s ease-in-out infinite;
                 }
             `}} />
+
         </div>
     );
 };

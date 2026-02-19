@@ -54,7 +54,7 @@ const AdminHeader = ({ t, darkMode, setDarkMode }) => {
                                 {user?.fullName || user?.name || user?.username || 'Admin'}
                             </div>
                             <div className="text-[10px] text-[#018F64] font-black uppercase tracking-[0.1em] mt-1.5 flex items-center justify-end gap-1.5">
-                                Administrador
+                                {(user?.role?.toUpperCase() === 'ADMIN') ? 'Administrador' : 'Funcionario'}
                             </div>
                         </div>
                         <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#018F64] to-emerald-400 p-[1.5px] shadow-lg shadow-[#018F64]/10 transform transition-transform group-hover:scale-110">

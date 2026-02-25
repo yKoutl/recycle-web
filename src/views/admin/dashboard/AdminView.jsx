@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart3, Bell, User, FileText, TrendingUp, Calendar, Zap, Target } from 'lucide-react';
+import { BarChart3, Bell, User, FileText, TrendingUp, Calendar, Zap, Target, Leaf as LeafIcon, Mail, CheckCircle, MessageSquare } from 'lucide-react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import AdminSidebar from './AdminSidebar';
 import AdminHeader from './AdminHeader';
@@ -12,6 +12,8 @@ import PartnersList from '../partners/partners-actions';
 import PartnerRequestsTable from '../partners/requests-list';
 import EcoHistoriesTable from '../EcoHistoriesTable';
 import AdminSettings from './AdminSettings';
+import GestoresManagementView from '../GestoresManagementView';
+import ProgramManagementView from '../programs/ProgramManagementView';
 import { MOCK_REQUESTS, MOCK_STATS } from '../../../data/mockData';
 import { useDispatch, useSelector } from 'react-redux';
 import { onLogout } from '../../../store/auth/authSlice';
@@ -26,6 +28,12 @@ const AdminView = ({ t, darkMode, setDarkMode, lang, setLang, showBot, setShowBo
     const [isRewardModalOpen, setIsRewardModalOpen] = useState(false);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [themeColor, setThemeColor] = useState(localStorage.getItem('adminThemeColor') || '#018F64');
+
+    // Persistir el color del tema
+    useEffect(() => {
+        localStorage.setItem('adminThemeColor', themeColor);
+    }, [themeColor]);
 
     const handleLogout = () => {
         setShowLogoutModal(true);
@@ -56,106 +64,141 @@ const AdminView = ({ t, darkMode, setDarkMode, lang, setLang, showBot, setShowBo
     };
 
     // Componente para el Dashboard Principal
-    const DashboardHome = () => (
-        <div className="space-y-12 animate-fade-in relative z-10">
-            {/* Header with Welcome */}
-            <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
-                <div className="space-y-1">
-                    <h2 className="text-3xl lg:text-4xl font-black text-gray-900 dark:text-white tracking-tight uppercase italic leading-none">
-                        {(user?.role?.toUpperCase() === 'ADMIN') ? 'Bienvenido, Administrador' : 'Bienvenido, Funcionario'} <span className="text-[#018F64]">{user?.fullName || user?.name || 'Usuario'}</span>
-                    </h2>
-                    <p className="text-gray-400 dark:text-gray-500 font-medium text-sm">
-                        {(user?.role?.toUpperCase() === 'ADMIN') ? 'Panel de Control Total' : 'Panel de Gestión Municipal'} • <span className="text-[#018F64] font-bold">{new Date().toLocaleDateString()}</span>
-                    </p>
-                </div>
-                <div className="flex gap-3 w-full sm:w-auto">
-                    <button className="flex-1 sm:flex-none px-5 py-2.5 bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 transition-all shadow-sm flex items-center justify-center gap-2">
-                        <Calendar size={14} /> {t.admin.exportBtn}
-                    </button>
-                    <button className="flex-1 sm:flex-none px-5 py-2.5 bg-[#018F64] text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#05835D] transition-all shadow-lg shadow-[#018F64]/20 active:scale-95 flex items-center justify-center gap-2">
-                        <Target size={14} /> {t.admin.reportBtn}
-                    </button>
-                </div>
-            </div>
+    const DashboardHome = () => {
+        const roleColor = themeColor;
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-                {MOCK_STATS(t).map((stat, idx) => (
-                    <div key={idx} className="bg-white/80 dark:bg-gray-900/40 backdrop-blur-xl p-6 rounded-3xl border border-gray-100 dark:border-white/5 flex flex-col justify-between h-40 transition-all hover:shadow-lg hover:shadow-gray-200/20 dark:hover:shadow-none">
-                        <div className="flex justify-between items-start">
-                            <div className={`p-3 rounded-2xl ${stat.bg} ${stat.color} shadow-sm`}>
-                                <stat.icon size={20} />
-                            </div>
-                            <div className="text-[10px] font-black text-[#018F64] bg-green-500/10 px-2 py-1 rounded-lg">
-                                +12.5%
-                            </div>
+        return (
+            <div className="space-y-6 animate-fade-in pb-20">
+                {/* ── Header ── */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 rounded-2xl text-white shadow-lg" style={{ background: `linear-gradient(135deg, ${themeColor}, ${themeColor}dd)`, boxShadow: `0 8px 20px ${themeColor}30` }}>
+                            <LeafIcon size={22} strokeWidth={1.75} />
                         </div>
                         <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500">{stat.label}</p>
-                            <p className="text-2xl lg:text-3xl font-black text-gray-900 dark:text-white tabular-nums">{stat.value}</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest mb-0.5" style={{ color: roleColor }}>
+                                {new Date().toLocaleDateString('es-PE', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}
+                            </p>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
+                                {(user?.role?.toUpperCase() === 'ADMIN') ? 'Panel de Administración' : 'Panel de Gestión'}
+                            </h2>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                                Bienvenido, <span className="font-semibold" style={{ color: roleColor }}>{user?.fullName || 'Usuario'}</span> · {(user?.role?.toUpperCase() === 'ADMIN') ? 'Control total' : 'Gestión institucional'}
+                            </p>
                         </div>
                     </div>
-                ))}
-            </div>
-
-            {/* Charts Section */}
-            <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
-                <div className="xl:col-span-3 bg-white/80 dark:bg-gray-900/40 p-6 sm:p-10 rounded-[2.5rem] lg:rounded-[3rem] border border-gray-100 dark:border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-none backdrop-blur-xl">
-                    <div className="flex justify-between items-center mb-8 sm:mb-10">
-                        <div className="space-y-1">
-                            <h3 className="text-lg lg:text-xl font-black text-gray-900 dark:text-white uppercase tracking-tighter italic flex items-center gap-3">
-                                <div className="p-2 bg-[#018F64]/10 rounded-xl text-[#018F64]">
-                                    <BarChart3 size={20} strokeWidth={3} />
-                                </div>
-                                {t.admin.weeklySummary}
-                            </h3>
-                            <p className="text-[9px] lg:text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] ml-11">Kg de material recolectado</p>
-                        </div>
-                    </div>
-                    <div className="h-64 flex items-end justify-between gap-2 sm:gap-6 px-0 sm:px-4">
-                        {[40, 60, 45, 70, 85, 55, 65].map((h, i) => (
-                            <div key={i} className="flex-1 bg-gray-100/50 dark:bg-white/5 rounded-2xl sm:rounded-3xl relative group h-full transition-all">
-                                <div className="absolute bottom-0 w-full bg-gradient-to-t from-[#018F64] to-emerald-400 rounded-2xl sm:rounded-3xl" style={{ height: `${h}%` }} />
-                            </div>
-                        ))}
+                    <div className="flex gap-2 w-full sm:w-auto">
+                        <button className="flex-1 sm:flex-none px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-100 dark:border-white/10 rounded-xl text-xs font-bold uppercase tracking-widest text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
+                            <Calendar size={14} /> EXPORTAR
+                        </button>
+                        <button
+                            style={{ background: `linear-gradient(135deg, ${themeColor}, ${themeColor}dd)`, boxShadow: `0 4px 14px ${themeColor}40` }}
+                            className="flex-1 sm:flex-none px-4 py-2.5 text-white rounded-xl text-xs font-bold uppercase tracking-widest hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-1.5"
+                        >
+                            <Target size={14} /> REPORTES
+                        </button>
                     </div>
                 </div>
 
-                <div className="xl:col-span-2 bg-white/80 dark:bg-gray-900/40 p-6 sm:p-10 rounded-[2.5rem] lg:rounded-[3rem] border border-gray-100 dark:border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-none backdrop-blur-xl">
-                    <div className="flex justify-between items-center mb-8 sm:mb-10">
-                        <div className="space-y-1">
-                            <h3 className="text-lg lg:text-xl font-black text-gray-900 dark:text-white uppercase tracking-tighter italic flex items-center gap-3">
-                                <div className="p-2 bg-orange-500/10 rounded-xl text-orange-500">
-                                    <Bell size={20} strokeWidth={3} />
+                {/* ── Stats Grid ── */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {MOCK_STATS(t).map((stat, idx) => {
+                        const colors = [
+                            { bg: 'bg-emerald-50 dark:bg-emerald-500/10', color: 'text-emerald-600', dynamicColor: themeColor },
+                            { bg: 'bg-blue-50 dark:bg-blue-500/10', color: 'text-blue-600' },
+                            { bg: 'bg-orange-50 dark:bg-orange-500/10', color: 'text-orange-600' },
+                            { bg: 'bg-purple-50 dark:bg-purple-500/10', color: 'text-purple-600' },
+                        ];
+                        const c = colors[idx % colors.length];
+                        return (
+                            <div key={idx} className="bg-white dark:bg-gray-900 p-5 rounded-3xl border border-gray-100 dark:border-white/5 hover:shadow-xl transition-all group overflow-hidden relative">
+                                <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:scale-150 transition-transform duration-700">
+                                    <stat.icon size={60} />
                                 </div>
-                                {t.admin.recentActivity}
-                            </h3>
-                        </div>
-                    </div>
-                    <div className="space-y-4 sm:space-y-6">
-                        {[1, 2].map((i) => (
-                            <div key={i} className="flex gap-4 sm:gap-6 items-center p-4 rounded-2xl lg:rounded-3xl bg-gray-50/50 dark:bg-white/5 border border-transparent">
-                                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl lg:rounded-2xl bg-white dark:bg-gray-800 flex items-center justify-center text-[#018F64] shadow-sm shrink-0">
-                                    <User size={18} />
+                                <div className="flex items-center justify-between mb-4 relative z-10">
+                                    <div
+                                        className={`p-2.5 rounded-2xl ${c.bg} ${c.color}`}
+                                        style={c.dynamicColor ? { backgroundColor: `${c.dynamicColor}15`, color: c.dynamicColor } : {}}
+                                    >
+                                        <stat.icon size={18} strokeWidth={1.75} />
+                                    </div>
+                                    <TrendingUp size={13} strokeWidth={1.75} className="text-emerald-400" style={c.dynamicColor ? { color: c.dynamicColor } : {}} />
                                 </div>
-                                <div className="flex-1">
-                                    <p className="text-gray-800 dark:text-gray-200 text-xs sm:text-sm font-bold">Actividad Reciente</p>
-                                    <span className="text-gray-400 text-[9px] uppercase font-black">Hace 2 horas</span>
+                                <div className="relative z-10">
+                                    <p className="text-2xl font-black text-gray-900 dark:text-white tabular-nums tracking-tight">{stat.value}</p>
+                                    <p className="text-[10px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-widest mt-0.5">{stat.label}</p>
                                 </div>
                             </div>
-                        ))}
+                        );
+                    })}
+                </div>
+
+                {/* ── Charts Section ── */}
+                <div className="grid grid-cols-1 xl:grid-cols-5 gap-4">
+                    <div className="xl:col-span-3 bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-white/5 shadow-sm">
+                        <div className="flex justify-between items-center mb-8">
+                            <div>
+                                <h3 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                    <BarChart3 size={18} strokeWidth={2.5} style={{ color: roleColor }} />
+                                    Resumen Semanal de Recolección
+                                </h3>
+                                <p className="text-[10px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-widest mt-1 ml-7">Kilogramos de material por día</p>
+                            </div>
+                        </div>
+                        <div className="h-44 flex items-end justify-between gap-3 px-2">
+                            {[40, 60, 45, 70, 85, 55, 65].map((h, i) => (
+                                <div key={i} className="flex-1 flex flex-col items-center gap-3 group/bar">
+                                    <div className="w-full relative rounded-2xl overflow-hidden cursor-pointer" style={{ height: '160px', background: 'rgba(0,0,0,0.02)' }}>
+                                        <div
+                                            className="absolute bottom-0 w-full rounded-2xl transition-all duration-700 ease-out group-hover/bar:brightness-110"
+                                            style={{ height: `${h}%`, background: `linear-gradient(to top, ${themeColor}, ${themeColor}dd)` }}
+                                        />
+                                        <div className="absolute inset-x-0 bottom-0 top-0 bg-white/20 opacity-0 group-hover/bar:opacity-100 transition-opacity pointer-events-none" />
+                                    </div>
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{['L', 'M', 'X', 'J', 'V', 'S', 'D'][i]}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="xl:col-span-2 bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-white/5 shadow-sm overflow-hidden flex flex-col">
+                        <h3 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-6">
+                            <Bell size={18} strokeWidth={2.5} style={{ color: roleColor }} />
+                            Actividad Reciente
+                        </h3>
+                        <div className="space-y-4 flex-1">
+                            {[
+                                { title: 'Nueva solicitud', desc: 'Socio "EcoModa" envió propuesta', time: 'hace 5 min', icon: Mail, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-500/10' },
+                                { title: 'Retiro completado', desc: 'Canje de puntos "Bolsa Reutilizable"', time: 'hace 12 min', icon: CheckCircle, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-500/10', dynamicColor: themeColor },
+                                { title: 'Nueva EcoHistoria', desc: 'Usuario "JPerez" publicó testimonio', time: 'hace 1 hora', icon: MessageSquare, color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-500/10' },
+                            ].map((act, i) => (
+                                <div key={i} className="flex gap-4 group cursor-default">
+                                    <div
+                                        className={`w-10 h-10 rounded-2xl ${act.bg} ${act.color} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}
+                                        style={act.dynamicColor ? { backgroundColor: `${act.dynamicColor}15`, color: act.dynamicColor } : {}}
+                                    >
+                                        <act.icon size={18} strokeWidth={2.5} />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-sm font-bold text-gray-900 dark:text-white leading-tight">{act.title}</p>
+                                        <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate mt-0.5">{act.desc}</p>
+                                        <p className="text-[9px] font-black text-gray-300 dark:text-gray-600 uppercase tracking-widest mt-1">{act.time}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    );
+        );
+    };
 
     return (
-        <div className="min-h-screen bg-[#FAFCF9] dark:bg-gray-950 flex font-sans transition-all duration-500 relative">
+        <div className="min-h-screen flex font-sans transition-all duration-500 relative bg-slate-50 dark:bg-slate-950">
             {/* Overlay para móvil */}
             {isSidebarOpen && (
                 <div
-                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden transition-all duration-500 animate-fade-in"
+                    className="fixed inset-0 bg-black/40 z-40 md:hidden animate-fade-in"
                     onClick={() => setIsSidebarOpen(false)}
                 />
             )}
@@ -167,51 +210,61 @@ const AdminView = ({ t, darkMode, setDarkMode, lang, setLang, showBot, setShowBo
                 user={user}
                 isOpen={isSidebarOpen}
                 setIsOpen={setIsSidebarOpen}
+                themeColor={themeColor}
             />
 
-            <main className={`flex-1 ${isSidebarOpen ? '' : ''} md:ml-72 min-h-screen transition-all duration-500 relative z-10`}>
+            <main className={`flex-1 md:ml-64 min-h-screen transition-all duration-300 relative z-10`}>
                 <AdminHeader
                     t={t}
                     darkMode={darkMode}
                     setDarkMode={setDarkMode}
                     setIsSidebarOpen={setIsSidebarOpen}
                     isSidebarOpen={isSidebarOpen}
+                    themeColor={themeColor}
                 />
-                <div className="p-4 sm:p-6 lg:p-12 max-w-[1400px] mx-auto transition-all duration-500">
+                <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto">
                     <Routes>
                         <Route path="/" element={<Navigate to="dashboard" replace />} />
                         <Route path="dashboard" element={<DashboardHome />} />
 
-                        {/* Rutas Protegidas por Rol en el Frontend */}
                         {user?.role?.toUpperCase() === 'ADMIN' && (
                             <>
-                                <Route path="users" element={<div className="animate-fade-in"><UsersTable t={t} /></div>} />
-                                <Route path="requests" element={<div className="animate-fade-in"><RequestsList requests={requests} t={t} onStatusChange={handleStatusChange} /></div>} />
-                                <Route path="rewards" element={<div className="animate-fade-in"><RewardsList onOpenModal={() => setIsRewardModalOpen(true)} /></div>} />
-
-                                {/* Gestión de Socios */}
-                                <Route path="partners/list" element={<div className="animate-fade-in"><PartnersList /></div>} />
-                                <Route path="partners/requests" element={<div className="animate-fade-in"><PartnerRequestsTable /></div>} />
-
-                                <Route path="histories" element={<div className="animate-fade-in"><EcoHistoriesTable t={t} /></div>} />
-                                <Route path="settings" element={
-                                    <AdminSettings
-                                        t={t}
-                                        darkMode={darkMode}
-                                        setDarkMode={setDarkMode}
-                                        lang={lang}
-                                        setLang={setLang}
-                                        user={user}
-                                        showBot={showBot}
-                                        setShowBot={setShowBot}
-                                    />
+                                <Route path="users" element={<div className="animate-fade-in"><UsersTable t={t} themeColor={themeColor} /></div>} />
+                                <Route path="gestores" element={<div className="animate-fade-in"><GestoresManagementView t={t} themeColor={themeColor} /></div>} />
+                                <Route path="requests" element={<div className="animate-fade-in"><RequestsList requests={requests} t={t} onStatusChange={handleStatusChange} themeColor={themeColor} /></div>} />
+                                <Route path="rewards" element={
+                                    <div className="animate-fade-in">
+                                        <RewardsList t={t} onAdd={() => setIsRewardModalOpen(true)} themeColor={themeColor} />
+                                        <RewardFormModal
+                                            isOpen={isRewardModalOpen}
+                                            onClose={() => setIsRewardModalOpen(false)}
+                                            t={t}
+                                            themeColor={themeColor}
+                                        />
+                                    </div>
                                 } />
+                                <Route path="partners/list" element={<div className="animate-fade-in"><PartnersList t={t} themeColor={themeColor} /></div>} />
+                                <Route path="partners/requests" element={<div className="animate-fade-in"><PartnerRequestsTable t={t} themeColor={themeColor} /></div>} />
+                                <Route path="histories" element={<div className="animate-fade-in"><EcoHistoriesTable t={t} themeColor={themeColor} /></div>} />
                             </>
                         )}
+                        <Route path="settings" element={
+                            <AdminSettings
+                                t={t}
+                                darkMode={darkMode}
+                                setDarkMode={setDarkMode}
+                                lang={lang}
+                                setLang={setLang}
+                                user={user}
+                                showBot={showBot}
+                                setShowBot={setShowBot}
+                                themeColor={themeColor}
+                                setThemeColor={setThemeColor}
+                            />
+                        } />
 
-                        <Route path="programs" element={<div className="animate-fade-in"><ProgramsList /></div>} />
-
-                        {/* Redirección si la ruta no existe */}
+                        <Route path="programs/:id" element={<div className="animate-fade-in"><ProgramManagementView t={t} themeColor={themeColor} /></div>} />
+                        <Route path="programs" element={<div className="animate-fade-in"><ProgramsList t={t} themeColor={themeColor} /></div>} />
                         <Route path="*" element={<Navigate to="dashboard" replace />} />
                     </Routes>
                 </div>

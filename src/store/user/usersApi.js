@@ -61,6 +61,16 @@ export const usersApi = createApi({
                 };
             },
         }),
+
+        // 5. UPDATE USER BY ID (@Patch(':id')) - Para Admin
+        updateUser: builder.mutation({
+            query: ({ id, ...updateData }) => ({
+                url: `/${id}`,
+                method: 'PATCH',
+                body: updateData,
+            }),
+            invalidatesTags: ['Users'],
+        }),
     }),
 });
 
@@ -68,5 +78,6 @@ export const {
     useGetUsersQuery,
     useDeleteUserMutation,
     useUpdateProfileMutation,
-    useUploadAvatarMutation
+    useUploadAvatarMutation,
+    useUpdateUserMutation
 } = usersApi;

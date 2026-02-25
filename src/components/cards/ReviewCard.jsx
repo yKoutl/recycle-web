@@ -9,6 +9,34 @@ const ReviewCard = ({ review, t, onToggleLike, index, variant = 'landing' }) => 
 
     const isWall = variant === 'wall';
 
+    // Tier-based specific styling
+    const tierStyles = {
+        HERO: {
+            bg: 'bg-indigo-600 text-white border-indigo-400/30 shadow-[0_20px_50px_rgba(79,70,229,0.3)]',
+            text: 'text-white',
+            subtext: 'text-indigo-100',
+            icon: 'text-white',
+            badge: 'bg-white/20 text-white border-white/30'
+        },
+        GROWTH: {
+            bg: 'bg-emerald-600 text-white border-emerald-400/30 shadow-[0_20px_50px_rgba(5,150,105,0.3)]',
+            text: 'text-white',
+            subtext: 'text-emerald-100',
+            icon: 'text-white',
+            badge: 'bg-white/20 text-white border-white/30'
+        },
+        STARTER: {
+            bg: 'bg-lime-600 text-white border-lime-400/30 shadow-[0_20px_50px_rgba(101,163,13,0.3)]',
+            text: 'text-white',
+            subtext: 'text-lime-100',
+            icon: 'text-white',
+            badge: 'bg-white/20 text-white border-white/30'
+        },
+        NONE: null
+    };
+
+    const currentTierStyle = tierStyles[review.tier] || tierStyles.NONE;
+
     const bgColors = isWall ? [
         'bg-white/90 dark:bg-emerald-900/30 border-emerald-500/30 backdrop-blur-2xl shadow-[0_20px_50px_rgba(1,143,100,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)]',
         'bg-emerald-50/90 dark:bg-gray-900/40 border-emerald-400/20 backdrop-blur-2xl shadow-[0_20px_50px_rgba(5,131,93,0.12)]',
@@ -18,7 +46,7 @@ const ReviewCard = ({ review, t, onToggleLike, index, variant = 'landing' }) => 
         'bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800',
         'bg-[#FEF9E7] dark:bg-[#FFD700]/10 border-[#F7DC6F]/50',
     ];
-    const bgColorClass = bgColors[index % bgColors.length];
+    const bgColorClass = currentTierStyle ? currentTierStyle.bg : bgColors[index % bgColors.length];
 
     return (
         <motion.div
@@ -64,7 +92,9 @@ const ReviewCard = ({ review, t, onToggleLike, index, variant = 'landing' }) => 
                         <Sparkles
                             key={n}
                             size={10}
-                            className={n < review.rating ? "text-[#018F64] dark:text-[#B0EEDE]" : "text-gray-200 dark:text-gray-700"}
+                            className={n < review.rating
+                                ? (currentTierStyle ? "text-white" : "text-[#018F64] dark:text-[#B0EEDE]")
+                                : (currentTierStyle ? "text-white/30" : "text-gray-200 dark:text-gray-700")}
                             fill={n < review.rating ? "currentColor" : "none"}
                         />
                     ))}
@@ -78,7 +108,9 @@ const ReviewCard = ({ review, t, onToggleLike, index, variant = 'landing' }) => 
                     }}
                     className={`flex items-center gap-2 ${isWall ? 'px-3 py-1.5 text-[10px]' : 'px-2 py-1 text-[9px]'} rounded-full font-black uppercase tracking-widest transition-all shadow-md ${review.liked
                         ? 'bg-rose-500 text-white shadow-rose-500/30'
-                        : 'bg-white/80 dark:bg-white/10 text-gray-500 hover:text-rose-500 hover:bg-white'
+                        : (currentTierStyle
+                            ? 'bg-white/20 text-white hover:bg-white/30'
+                            : 'bg-white/80 dark:bg-white/10 text-gray-500 hover:text-rose-500 hover:bg-white')
                         }`}
                 >
                     <Heart
@@ -93,27 +125,52 @@ const ReviewCard = ({ review, t, onToggleLike, index, variant = 'landing' }) => 
             <div className={`relative z-10 ${isWall ? 'mb-8 mt-2 flex-grow flex items-center' : 'mb-6 flex-grow'}`}>
                 <div className="relative">
                     {/* Floating Decorative Quote Mark - Smaller */}
-                    {isWall && <span className="absolute -top-4 -left-2 text-4xl text-[#018F64]/10 dark:text-emerald-400/10 font-serif leading-none select-none">“</span>}
+                    {isWall && <span className={`absolute -top-4 -left-2 text-4xl font-serif leading-none select-none ${currentTierStyle ? 'text-white/20' : 'text-[#018F64]/10 dark:text-emerald-400/10'}`}>“</span>}
 
-                    <p className={`${isWall ? 'text-gray-900 dark:text-white text-base md:text-lg font-black' : 'text-gray-800 dark:text-gray-100 text-sm md:text-base font-bold'} italic leading-relaxed tracking-tight`}>
+                    <p className={`${isWall ? 'text-base md:text-lg font-black' : 'text-sm md:text-base font-bold'} italic leading-relaxed tracking-tight
+                        ${currentTierStyle ? 'text-white' : 'text-gray-800 dark:text-gray-100'}`}>
                         "{(review.comment || review.text || "").replace(/"/g, '')}"
                     </p>
                 </div>
             </div>
 
             {/* User Info */}
-            <div className={`mt-auto flex items-center gap-3 relative z-10 border-t border-[#018F64]/10 dark:border-white/10 ${isWall ? 'pt-5' : 'pt-4'}`}>
-                <img
-                    src={review.image || (review.avatar ? `https://i.pravatar.cc/150?img=${review.avatar}` : `https://ui-avatars.com/api/?name=${review.name}&background=018F64&color=fff`)}
-                    alt={review.name}
-                    className="w-10 h-10 rounded-xl object-cover border border-white dark:border-gray-800 shadow-sm"
-                />
+            <div className={`mt-auto flex items-center gap-3 relative z-10 border-t ${isWall ? 'pt-5' : 'pt-4'}
+                ${currentTierStyle ? 'border-white/20' :
+                    review.tier === 'HERO' ? 'border-indigo-500/20' :
+                        review.tier === 'GROWTH' ? 'border-emerald-500/20' :
+                            review.tier === 'STARTER' ? 'border-lime-500/20' : 'border-[#018F64]/10'}`}>
+                <div className="relative">
+                    <img
+                        src={review.image || (review.avatar ? `https://i.pravatar.cc/150?img=${review.avatar}` : `https://ui-avatars.com/api/?name=${review.name}&background=018F64&color=fff`)}
+                        alt={review.name}
+                        className={`w-10 h-10 rounded-xl object-cover border shadow-sm transition-all duration-500
+                            ${review.tier === 'HERO' ? 'border-indigo-500 shadow-indigo-500/20' :
+                                review.tier === 'GROWTH' ? 'border-emerald-500 shadow-emerald-500/20' :
+                                    review.tier === 'STARTER' ? 'border-lime-500 shadow-lime-500/20' : 'border-white dark:border-gray-800'}`}
+                    />
+                    {review.tier !== 'NONE' && (
+                        <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-[8px] text-white shadow-lg
+                            ${review.tier === 'HERO' ? 'bg-indigo-600' :
+                                review.tier === 'GROWTH' ? 'bg-emerald-600' :
+                                    review.tier === 'STARTER' ? 'bg-lime-600' : ''}`}>
+                            <Sparkles size={8} fill="currentColor" />
+                        </div>
+                    )}
+                </div>
                 <div className="flex flex-col">
-                    <span className="font-bold text-gray-900 dark:text-white text-xs">
+                    <span className={`font-bold text-xs ${currentTierStyle ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
                         {review.name}
                     </span>
-                    <span className="text-[9px] font-bold text-[#018F64] dark:text-emerald-400 uppercase tracking-widest">
-                        {review.role || review.level || 'Eco-Guardián'}
+                    <span className={`text-[9px] font-black uppercase tracking-widest
+                        ${currentTierStyle ? 'text-white/80' :
+                            review.tier === 'HERO' ? 'text-indigo-500 dark:text-indigo-400' :
+                                review.tier === 'GROWTH' ? 'text-emerald-500 dark:text-emerald-400' :
+                                    review.tier === 'STARTER' ? 'text-lime-600 dark:text-lime-400' :
+                                        'text-[#018F64] dark:text-emerald-400'}`}>
+                        {review.tier === 'HERO' ? 'Eco-Visionario' :
+                            review.tier === 'GROWTH' ? 'Eco-Embajador' :
+                                review.tier === 'STARTER' ? 'Eco-Socio' : 'Eco-Guardián'}
                     </span>
                 </div>
             </div>

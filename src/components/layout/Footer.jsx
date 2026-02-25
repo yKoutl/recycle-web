@@ -1,13 +1,25 @@
 import React, { useState } from 'react';
-import { Instagram, Twitter, Linkedin, Github, Facebook, Youtube, Send, ArrowUpRight } from 'lucide-react';
+import { Instagram, Twitter, Linkedin, Facebook, Send, ArrowUpRight } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import logoNosPlanet from '../../assets/logo_nos_planet.webp';
 import TermsModal from '../planet-bot/TermsModal';
 
 const Footer = ({ t }) => {
+    const navigate = useNavigate();
+    const location = useLocation();
     const [showTerms, setShowTerms] = useState(false);
 
+    const scrollToSection = (id) => {
+        navigate(`/#${id}`);
+    };
+
     const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (location.pathname === '/') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            navigate('/', { replace: true });
+        } else {
+            navigate('/');
+        }
     };
 
     return (
@@ -19,9 +31,9 @@ const Footer = ({ t }) => {
             <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#018F64]/5 dark:bg-[#018F64]/5 rounded-full blur-[120px] pointer-events-none"></div>
 
             <div className="container mx-auto px-6 relative z-10">
-                {/* Top Row: Brand & CTA */}
+                {/* Top Row: Brand & Navigation */}
                 <div className="grid lg:grid-cols-12 gap-12 pb-12 border-b border-gray-100 dark:border-white/5">
-                    <div className="lg:col-span-5 space-y-8">
+                    <div className="lg:col-span-4 space-y-6">
                         <div
                             className="flex items-center gap-3 cursor-pointer group w-fit"
                             onClick={scrollToTop}
@@ -36,25 +48,13 @@ const Footer = ({ t }) => {
                                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#05835D] dark:text-emerald-500/60">Nos Planet</span>
                             </div>
                         </div>
-                        <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed max-w-md font-sans">
+                        <p className="text-base text-gray-600 dark:text-gray-400 leading-relaxed max-w-sm font-sans">
                             {t.footer.desc.replace(/LA PLATAFORMA LÍDER/i, 'La plataforma líder').replace(/CONECTAMOS PERSONAS/i, 'Conectamos personas')}
                         </p>
-
-                        {/* Newsletter-ish small CTA */}
-                        <div className="relative max-w-sm group">
-                            <input
-                                type="email"
-                                placeholder="Tu correo electrónico"
-                                className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl py-4 pl-6 pr-14 text-sm focus:outline-none focus:border-[#018F64] dark:focus:border-[#018F64] transition-all text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 shadow-sm"
-                            />
-                            <button className="absolute right-2 top-2 bottom-2 w-12 bg-[#018F64] text-white rounded-xl flex items-center justify-center hover:bg-[#05835D] transition-colors shadow-lg shadow-[#018F64]/20">
-                                <Send size={18} />
-                            </button>
-                        </div>
                     </div>
 
                     {/* Navigation Columns */}
-                    <div className="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-8 font-ui">
+                    <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-8 font-ui">
                         {/* Explore */}
                         <div className="space-y-6">
                             <h5 className="text-gray-900 dark:text-white font-bold text-sm uppercase tracking-widest">Explorar</h5>
@@ -68,7 +68,7 @@ const Footer = ({ t }) => {
                                 ].map((link) => (
                                     <li key={link.id}>
                                         <button
-                                            onClick={() => document.getElementById(link.id).scrollIntoView({ behavior: 'smooth' })}
+                                            onClick={() => scrollToSection(link.id)}
                                             className="text-gray-600 dark:text-gray-400 hover:text-[#018F64] dark:hover:text-emerald-400 transition-all flex items-center gap-1 group/link text-sm font-semibold"
                                         >
                                             <span className="relative">
@@ -103,22 +103,17 @@ const Footer = ({ t }) => {
                             </ul>
                         </div>
 
-                        {/* Social & Contact */}
+                        {/* Social */}
                         <div className="col-span-2 md:col-span-1 space-y-6">
                             <h5 className="text-gray-900 dark:text-white font-bold text-sm uppercase tracking-widest">Síguenos</h5>
                             <div className="flex flex-wrap gap-4">
-                                {[
-                                    { Icon: Instagram, color: 'hover:bg-[#018F64]' },
-                                    { Icon: Facebook, color: 'hover:bg-[#018F64]' },
-                                    { Icon: Twitter, color: 'hover:bg-[#018F64]' },
-                                    { Icon: Linkedin, color: 'hover:bg-[#018F64]' }
-                                ].map((social, idx) => (
+                                {[Instagram, Facebook, Twitter, Linkedin].map((Icon, idx) => (
                                     <a
                                         key={idx}
                                         href="#"
-                                        className={`w-12 h-12 rounded-2xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-white transition-all duration-300 hover:scale-110 hover:-translate-y-1 ${social.color} shadow-lg shadow-gray-200/20 dark:shadow-none`}
+                                        className="w-10 h-10 rounded-xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-white hover:bg-[#018F64] transition-all duration-300"
                                     >
-                                        <social.Icon size={22} />
+                                        <Icon size={18} />
                                     </a>
                                 ))}
                             </div>
@@ -126,18 +121,11 @@ const Footer = ({ t }) => {
                     </div>
                 </div>
 
-                {/* Bottom Bar */}
-                <div className="pt-10 flex flex-col md:flex-row justify-between items-center gap-8 font-ui">
-                    <p className="text-gray-400 dark:text-gray-600 text-[10px] font-bold uppercase tracking-widest text-center md:text-left">
+                {/* Bottom Bar: Rights Centered */}
+                <div className="pt-10 flex justify-center items-center font-ui">
+                    <p className="text-gray-400 dark:text-gray-600 text-[10px] font-bold uppercase tracking-widest text-center">
                         {t.footer.rights}
                     </p>
-
-                    <div className="flex items-center gap-4">
-                        <span className="text-gray-400 dark:text-gray-600 text-[10px] font-bold uppercase tracking-widest">Powered by</span>
-                        <div className="px-4 py-2 bg-white dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/10 group hover:border-[#018F64]/30 transition-colors shadow-sm">
-                            <span className="text-[#018F64] dark:text-emerald-400 font-black text-xs tracking-tighter">NOS PLANET</span>
-                        </div>
-                    </div>
                 </div>
             </div>
         </footer>

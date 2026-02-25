@@ -70,7 +70,7 @@ const PartnersSection = ({ t }) => {
     const translateY = -(currentIndex * (smallCardHeight + gap)) + (containerHeight / 2 - cardHeight / 2);
 
     return (
-        <section id="partners" className="py-16 lg:py-24 bg-[#FEFDFB] dark:bg-[#020617] relative overflow-hidden transition-colors duration-500">
+        <section className="py-16 lg:py-24 bg-[#FEFDFB] dark:bg-[#020617] relative overflow-hidden transition-colors duration-500">
             {/* Grid background */}
             <div className="absolute inset-0 pointer-events-none opacity-[0.08] dark:opacity-[0.04]"
                 style={{
@@ -178,7 +178,7 @@ const PartnersSection = ({ t }) => {
                             </div>
 
                             {/* 3. CENTER CAROUSEL */}
-                            <div className={`relative w-[300px] md:w-[320px] lg:w-[450px] overflow-hidden mask-vertical`} style={{ height: `${containerHeight}px` }}>
+                            <div className={`relative w-[300px] md:w-[320px] lg:w-[450px] overflow-hidden`} style={{ height: `${containerHeight}px` }}>
                                 <div
                                     className="absolute inset-x-0 top-0 flex flex-col items-center gap-6 transition-transform duration-1000 cubic-bezier(0.23, 1, 0.32, 1)"
                                     style={{
@@ -194,13 +194,12 @@ const PartnersSection = ({ t }) => {
                                                 onClick={() => isCenter && handleCardClick(partner)}
                                                 style={{
                                                     height: isCenter ? `${cardHeight}px` : `${smallCardHeight}px`,
-                                                    boxShadow: isCenter ? `0 40px 100px -20px ${partner.hex}40` : 'none',
                                                     borderColor: isCenter ? `${partner.hex}20` : undefined
                                                 }}
                                                 className={`w-full bg-white dark:bg-[#0f172a] rounded-[2.5rem] lg:rounded-[3rem] overflow-hidden transition-all duration-1000 cubic-bezier(0.23, 1, 0.32, 1) cursor-pointer border border-gray-100 dark:border-white/5 flex flex-col shrink-0
                                                     ${isCenter
-                                                        ? 'z-20 opacity-100 scale-100 ring-2'
-                                                        : 'z-0 opacity-20 scale-[0.85] blur-[3px] pointer-events-none'}`}
+                                                        ? 'z-20 opacity-100 scale-100 shadow-xl'
+                                                        : 'z-0 opacity-40 scale-[0.85] pointer-events-none'}`}
                                             >
                                                 <div
                                                     style={{ backgroundColor: partner.hex }}
@@ -262,10 +261,6 @@ const PartnersSection = ({ t }) => {
                 }
                 .animate-bounce-soft {
                     animation: bounce-soft 3s ease-in-out infinite;
-                }
-                .mask-vertical {
-                    mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
-                    -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
                 }
                 .no-scrollbar::-webkit-scrollbar {
                     display: none;

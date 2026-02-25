@@ -1,10 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const LazySection = ({ children, id, className = "", offset = "600px" }) => {
-    const [isVisible, setIsVisible] = useState(false);
+const LazySection = ({ children, id, className = "", offset = "600px", forceVisible = false }) => {
+    const [isVisible, setIsVisible] = useState(forceVisible);
     const sectionRef = useRef(null);
 
     useEffect(() => {
+        if (forceVisible) {
+            setIsVisible(true);
+            return;
+        }
+
+        // Si el hash actual coincide con este ID, forzar visibilidad inmediata
+        if (window.location.hash === `#${id}`) {
+            setIsVisible(true);
+            return;
+        }
+
         const observer = new IntersectionObserver(
             ([entry]) => {
                 if (entry.isIntersecting) {
@@ -22,12 +33,21 @@ const LazySection = ({ children, id, className = "", offset = "600px" }) => {
             observer.observe(sectionRef.current);
         }
 
+        const handleHashChange = () => {
+            if (window.location.hash === `#${id}`) {
+                setIsVisible(true);
+            }
+        };
+
+        window.addEventListener('hashchange', handleHashChange);
+
         return () => {
             if (sectionRef.current) {
                 observer.unobserve(sectionRef.current);
             }
+            window.removeEventListener('hashchange', handleHashChange);
         };
-    }, [offset]);
+    }, [id, offset, forceVisible]);
 
     return (
         <div ref={sectionRef} id={id} className={className}>

@@ -100,7 +100,7 @@ const EcoHistoriesView = ({ t, lang, setLang, darkMode, setDarkMode, isAuthentic
                     return {
                         id: h._id,
                         name: h.user?.fullName || 'Eco-Héroe',
-                        role: 'Eco-Héroe',
+                        tier: h.user?.membershipTier || 'NONE',
                         comment: h.message,
                         likes: h.likes || 0,
                         liked: existing ? existing.liked : false,
@@ -129,7 +129,7 @@ const EcoHistoriesView = ({ t, lang, setLang, darkMode, setDarkMode, isAuthentic
                     return {
                         id: h._id,
                         name: h.user?.fullName || 'Eco-Héroe',
-                        role: 'Eco-Héroe',
+                        tier: h.user?.membershipTier || 'NONE',
                         comment: h.message,
                         likes: h.likes || 0,
                         liked: existing ? existing.liked : false,
@@ -255,73 +255,42 @@ const EcoHistoriesView = ({ t, lang, setLang, darkMode, setDarkMode, isAuthentic
                         </div>
 
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
-                            {loadingFeatured ? (
-                                [1, 2, 3].map(i => <div key={i} className="h-64 bg-white/20 dark:bg-black/20 backdrop-blur-md rounded-[3rem] animate-pulse border border-white/20"></div>)
+                            {(loadingFeatured || loadingAll) ? (
+                                [1, 2, 3, 4, 5, 6].map(i => <div key={i} className="h-64 bg-white/20 dark:bg-black/20 backdrop-blur-md rounded-[3rem] animate-pulse border border-white/20"></div>)
                             ) : (
-                                featured.map((review, index) => (
-                                    <ReviewCard
-                                        key={`featured-${review.id}`}
-                                        review={review}
-                                        t={t}
-                                        onToggleLike={(id) => toggleLike(id, 'featured')}
-                                        index={index}
-                                        variant="wall"
-                                    />
-                                ))
+                                <>
+                                    {featured.map((review, index) => (
+                                        <ReviewCard
+                                            key={`featured-${review.id}`}
+                                            review={review}
+                                            t={t}
+                                            onToggleLike={(id) => toggleLike(id, 'featured')}
+                                            index={index}
+                                            variant="wall"
+                                        />
+                                    ))}
+                                    {allStories.map((review, index) => (
+                                        <ReviewCard
+                                            key={`all-${review.id}`}
+                                            review={review}
+                                            t={t}
+                                            onToggleLike={(id) => toggleLike(id, 'all')}
+                                            index={featured.length + index}
+                                            variant="wall"
+                                        />
+                                    ))}
+                                </>
                             )}
-                            {!loadingFeatured && featured.length === 0 && (
+                            {!(loadingFeatured || loadingAll) && featured.length === 0 && allStories.length === 0 && (
                                 <div className="col-span-full flex flex-col items-center justify-center text-center py-12 opacity-60">
-                                    <div className="w-20 h-20 bg-yellow-400/10 rounded-full flex items-center justify-center mb-4">
-                                        <Star size={32} className="text-yellow-500/50" />
-                                    </div>
-                                    <p className="text-lg font-bold italic text-gray-500 dark:text-gray-400">
-                                        Aún no hay historias destacadas. ¡Tu historia podría ser la primera!
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-                    </section>
-
-                    <section className="mb-40">
-                        <div className="flex flex-col items-center text-center gap-4 mb-20 text-gray-900 dark:text-white">
-                            <motion.div
-                                animate={{ scale: [1, 1.1, 1] }}
-                                transition={{ repeat: Infinity, duration: 3 }}
-                                className="p-5 bg-emerald-500/20 rounded-3xl text-[#018F64] shadow-xl backdrop-blur-md border border-emerald-500/10"
-                            >
-                                <MessageSquare size={40} fill="currentColor" />
-                            </motion.div>
-                            <div>
-                                <h2 className="text-4xl font-black uppercase tracking-tight italic">El Muro Completo</h2>
-                                <div className="h-1.5 w-24 bg-emerald-500 rounded-full mx-auto mt-4"></div>
-                            </div>
-                        </div>
-
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
-                            {loadingAll ? (
-                                [1, 2, 3, 4, 5, 6].map(i => <div key={i} className="h-56 bg-white/20 dark:bg-black/20 backdrop-blur-md rounded-[3rem] animate-pulse border border-white/20"></div>)
-                            ) : (
-                                allStories.map((review, index) => (
-                                    <ReviewCard
-                                        key={`all-${review.id}`}
-                                        review={review}
-                                        t={t}
-                                        onToggleLike={(id) => toggleLike(id, 'all')}
-                                        index={index}
-                                        variant="wall"
-                                    />
-                                ))
-                            )}
-                            {!loadingAll && allStories.length === 0 && (
-                                <div className="col-span-full flex flex-col items-center justify-center text-center py-12">
-                                    <div className="w-24 h-24 bg-gray-100 dark:bg-white/5 rounded-full flex items-center justify-center mb-6 animate-pulse">
-                                        <MessageSquare size={40} className="text-gray-400 dark:text-gray-600" />
+                                    <div className="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mb-6">
+                                        <MessageSquare size={40} className="text-emerald-500/50" />
                                     </div>
                                     <h3 className="text-2xl font-black text-gray-800 dark:text-gray-200 mb-2">
                                         Por ahora no tenemos historias
                                     </h3>
-                                    <p className="text-gray-500 dark:text-gray-400 font-medium text-lg">
-                                        ¡Pero tú puedes ser el primero o el siguiente!
+                                    <p className="text-gray-500 dark:text-gray-400 font-medium text-lg italic">
+                                        ¡Pero tú puedes ser el primero en inspirarnos!
                                     </p>
                                 </div>
                             )}

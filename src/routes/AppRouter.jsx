@@ -16,16 +16,17 @@ const AdminView = lazy(() => import('../views/admin/dashboard/AdminView'));
 const PageLoader = () => (
     <div className="fixed inset-0 z-[9999] bg-white dark:bg-[#020617] flex flex-col items-center justify-center transition-colors duration-300">
         <div className="relative">
-            <div className="w-20 h-20 rounded-full border-4 border-gray-100 dark:border-gray-800 border-t-[#018F64] dark:border-t-[#B0EEDE] animate-spin" />
+            <div className="w-20 h-20 rounded-full border-4 border-gray-100 dark:border-gray-800 border-t-[#018F64] dark:border-t-[#018F64] animate-spin" />
             <div className="absolute inset-0 flex items-center justify-center">
-                <Loader2 size={24} className="text-[#018F64] dark:text-[#B0EEDE] animate-pulse" />
+                <Loader2 size={24} className="animate-pulse" style={{ color: '#018F64' }} />
             </div>
         </div>
-        <p className="mt-6 text-sm font-black uppercase tracking-[0.3em] text-[#018F64] dark:text-[#B0EEDE] animate-pulse">
+        <p className="mt-6 text-sm font-bold uppercase tracking-[0.3em] animate-pulse" style={{ color: '#018F64' }}>
             Cargando...
         </p>
     </div>
 );
+
 
 const AppRouter = ({ lang, setLang, darkMode, setDarkMode, onLogout, showBot, setShowBot }) => {
     const t = TRANSLATIONS[lang];
@@ -66,7 +67,7 @@ const AppRouter = ({ lang, setLang, darkMode, setDarkMode, onLogout, showBot, se
                     <Route path="/auth/login" element={<LoginView t={t} />} />
                 </Route>
 
-                {/* Rutas Privadas (Admin y Funcionario) */}
+                {/* Rutas Privadas (Admin y Gestor) */}
                 <Route element={<PrivateRoute allowedRoles={['ADMIN', 'OFFICIAL']} />}>
                     <Route path="/admin/*" element={
                         <AdminView

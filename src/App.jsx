@@ -16,7 +16,7 @@ const App = () => {
   const token = localStorage.getItem('token');
 
   // Recuperar datos reales del usuario si hay token al recargar
-  const { data: userData, isSuccess, isError, refetch } = useCheckStatusQuery(token, {
+  const { data: userData, isSuccess, isError, refetch } = useCheckStatusQuery(undefined, {
     skip: !token,
     refetchOnMountOrArgChange: true // Forzar comprobación al cambiar de usuario
   });

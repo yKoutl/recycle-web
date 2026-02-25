@@ -5,15 +5,12 @@ import ConfirmModal from '../../../components/shared/ConfirmModal';
 // Asegúrate de importar desde TU api creada
 import { useCreatePartnerMutation, useUpdatePartnerMutation } from '../../../store/partners';
 
-const PartnerFormModal = ({ isOpen, onClose }) => {
-    // 1. Obtenemos el socio seleccionado del estado global
+const PartnerFormModal = ({ isOpen, onClose, themeColor }) => {
     const { activePartner } = useSelector((state) => state.partners);
-
-    // 2. Hooks de la API para guardar cambios
     const [createPartner, { isLoading: isCreating }] = useCreatePartnerMutation();
     const [updatePartner, { isLoading: isUpdating }] = useUpdatePartnerMutation();
+    const accent = themeColor || '#018F64';
 
-    // 3. Estado inicial basado en tu JSON
     const initialState = {
         name: '',
         filterType: 'ong',
@@ -24,7 +21,6 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
         environmentalCommitment: '',
         isPinned: false,
         isVisible: true,
-        // AGREGAMOS ESTOS CAMPOS PARA QUE EL BACKEND NO DE ERROR 400
         rewardsCount: 0,
         usersCount: 0
     };
@@ -32,7 +28,6 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
     const [formData, setFormData] = useState(initialState);
     const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '', variant: 'danger' });
 
-    // Rellenar formulario si estamos editando
     useEffect(() => {
         if (isOpen) {
             setFormData(activePartner || initialState);
@@ -49,16 +44,12 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // --- VALIDACIÓN RÁPIDA PARA EL LOGO ---
-        // Si el usuario no puso logo, el backend dará error. 
-        // Asignamos una imagen por defecto si está vacío.
         const payload = {
             ...formData,
             logo: formData.logo.trim() === ''
-                ? 'https://via.placeholder.com/150' // URL por defecto válida
+                ? 'https://via.placeholder.com/150'
                 : formData.logo,
-            isLocked: false // Al guardar, desbloqueamos el perfil automáticamente
+            isLocked: false
         };
 
         try {
@@ -105,20 +96,24 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
                         {/* Nombre y Tipo */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div className="flex flex-col">
-                                <label className="label-text pb-1">Nombre de la Entidad</label>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 pb-1">Nombre de la Entidad</label>
                                 <input
                                     type="text" name="name" required
                                     value={formData.name} onChange={handleChange}
-                                    className="input-field border dark:border-gray-700 rounded-lg px-2.5 py-2 w-full"
+                                    className="bg-white dark:bg-gray-800 outline-none transition-all text-gray-900 dark:text-white border dark:border-gray-700 rounded-lg px-2.5 py-2 w-full placeholder:text-gray-500"
                                     placeholder="Ej: Alianza Verde"
+                                    onFocus={(e) => e.target.style.borderColor = accent}
+                                    onBlur={(e) => e.target.style.borderColor = ''}
                                 />
                             </div>
                             <div className="flex flex-col">
-                                <label className="label-text pb-1">Tipo de Filtro</label>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 pb-1">Tipo de Filtro</label>
                                 <select
                                     name="filterType"
                                     value={formData.filterType} onChange={handleChange}
-                                    className="input-field border dark:border-gray-700 rounded-lg px-2.5 py-2 w-full"
+                                    className="bg-white dark:bg-gray-800 outline-none transition-all text-gray-900 dark:text-white border dark:border-gray-700 rounded-lg px-2.5 py-2 w-full"
+                                    onFocus={(e) => e.target.style.borderColor = accent}
+                                    onBlur={(e) => e.target.style.borderColor = ''}
                                 >
                                     <option value="ong">ONG</option>
                                     <option value="financial">Financiera</option>
@@ -131,16 +126,18 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
                         {/* Etiqueta y Color */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div className="flex flex-col">
-                                <label className="label-text pb-1">Etiqueta Visible</label>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 pb-1">Etiqueta Visible</label>
                                 <input
                                     type="text" name="typeLabel"
                                     value={formData.typeLabel} onChange={handleChange}
-                                    className="input-field border dark:border-gray-700 rounded-lg px-2.5 py-2 w-full"
+                                    className="bg-white dark:bg-gray-800 outline-none transition-all text-gray-900 dark:text-white border dark:border-gray-700 rounded-lg px-2.5 py-2 w-full placeholder:text-gray-500"
                                     placeholder="Ej: Organización"
+                                    onFocus={(e) => e.target.style.borderColor = accent}
+                                    onBlur={(e) => e.target.style.borderColor = ''}
                                 />
                             </div>
                             <div className="flex flex-col">
-                                <label className="label-text pb-1">Color Institucional</label>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 pb-1">Color Institucional</label>
                                 <div className="flex items-center gap-3 h-[42px]">
                                     <input
                                         type="color" name="mainColor"
@@ -154,15 +151,17 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
 
                         {/* Logo */}
                         <div className="flex flex-col">
-                            <label className="label-text pb-1">URL del Logo (Obligatorio)</label>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 pb-1">URL del Logo (Obligatorio)</label>
                             <div className="relative">
                                 <UploadCloud className="absolute left-3 top-3 text-gray-400" size={20} />
                                 <input
                                     type="url" name="logo"
                                     value={formData.logo} onChange={handleChange}
-                                    className="input-field pl-10 border dark:border-gray-700 rounded-lg py-2 w-full"
+                                    className="bg-white dark:bg-gray-800 outline-none transition-all text-gray-900 dark:text-white pl-10 border dark:border-gray-700 rounded-lg py-2 w-full placeholder:text-gray-500"
                                     placeholder="https://ejemplo.com/logo.png"
-                                    required // Hacemos que el navegador valide que no esté vacío
+                                    required
+                                    onFocus={(e) => e.target.style.borderColor = accent}
+                                    onBlur={(e) => e.target.style.borderColor = ''}
                                 />
                             </div>
                             {formData.logo && (
@@ -174,22 +173,36 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
 
                         {/* Descripciones */}
                         <div className="flex flex-col">
-                            <label className="label-text pb-1">Descripción</label>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 pb-1">Descripción</label>
                             <textarea
                                 name="description" rows="3"
                                 value={formData.description} onChange={handleChange}
-                                className="input-field resize-none border dark:border-gray-700 rounded-lg px-2.5 py-2 w-full"
+                                className="bg-white dark:bg-gray-800 outline-none transition-all text-gray-900 dark:text-white resize-none border dark:border-gray-700 rounded-lg px-2.5 py-2 w-full placeholder:text-gray-500"
                                 placeholder="Breve descripción..."
+                                onFocus={(e) => e.target.style.borderColor = accent}
+                                onBlur={(e) => e.target.style.borderColor = ''}
                             ></textarea>
                         </div>
 
                         <div className="flex flex-col">
-                            <label className="label-text text-green-700 dark:text-green-400 pb-1">Compromiso Ambiental</label>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 pb-1" style={{ color: accent }}>Compromiso Ambiental</label>
                             <textarea
                                 name="environmentalCommitment" rows="2"
                                 value={formData.environmentalCommitment} onChange={handleChange}
-                                className="input-field bg-green-50/50 dark:bg-green-900/10 border border-green-200 dark:border-green-800 focus:ring-green-500 rounded-lg px-2.5 py-2 w-full"
+                                className="bg-white dark:bg-gray-800 outline-none transition-all text-gray-900 dark:text-white border rounded-lg px-2.5 py-2 w-full placeholder:text-gray-500"
+                                style={{
+                                    backgroundColor: `${accent}05`,
+                                    borderColor: `${accent}30`
+                                }}
                                 placeholder="Ej: Recuperar 5 toneladas..."
+                                onFocus={(e) => {
+                                    e.target.style.borderColor = accent;
+                                    e.target.style.ring = `2px solid ${accent}20`;
+                                }}
+                                onBlur={(e) => {
+                                    e.target.style.borderColor = `${accent}30`;
+                                    e.target.style.ring = '';
+                                }}
                             ></textarea>
                         </div>
 
@@ -199,7 +212,8 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
                                 <input
                                     type="checkbox" name="isVisible"
                                     checked={formData.isVisible} onChange={handleChange}
-                                    className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
+                                    className="w-5 h-5 rounded border-gray-300"
+                                    style={{ accentColor: accent }}
                                 />
                                 <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                                     <Eye size={18} />
@@ -211,7 +225,8 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
                                 <input
                                     type="checkbox" name="isPinned"
                                     checked={formData.isPinned} onChange={handleChange}
-                                    className="w-5 h-5 text-green-600 rounded focus:ring-green-500 border-gray-300"
+                                    className="w-5 h-5 rounded border-gray-300"
+                                    style={{ accentColor: accent }}
                                 />
                                 <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                                     <Pin size={18} />
@@ -231,7 +246,8 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
                     <button
                         type="submit" form="partnerForm"
                         disabled={isCreating || isUpdating}
-                        className="px-6 py-2.5 rounded-xl bg-green-600 text-white font-bold hover:bg-green-700 transition-all shadow-lg shadow-green-600/20 flex items-center gap-2"
+                        className="px-6 py-2.5 rounded-xl text-white font-bold hover:opacity-90 transition-all shadow-lg flex items-center gap-2"
+                        style={{ backgroundColor: accent, boxShadow: `0 8px 20px ${accent}30` }}
                     >
                         {(isCreating || isUpdating) ? <Loader2 className="animate-spin" /> : <Save size={18} />}
                         Guardar Socio
@@ -239,10 +255,7 @@ const PartnerFormModal = ({ isOpen, onClose }) => {
                 </div>
             </div>
 
-            <style>{`
-                .label-text { @apply block text-sm font-semibold text-gray-700 dark:text-gray-300; }
-                .input-field { @apply bg-white dark:bg-gray-800 outline-none transition-all text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500; }
-            `}</style>
+
 
             <ConfirmModal
                 {...modalConfig}

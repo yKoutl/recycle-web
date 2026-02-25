@@ -34,7 +34,7 @@ const ImpactSection = ({ t }) => {
     const defaultImage = "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&q=75&auto=format&fit=crop";
 
     return (
-        <section id="impact" className="relative py-20 lg:py-28 bg-[#0a1a16] dark:bg-[#020617] overflow-hidden group transition-colors duration-1000">
+        <section className="relative py-20 lg:py-28 bg-[#0a1a16] dark:bg-[#020617] overflow-hidden group transition-colors duration-1000">
 
             {/* 1. DYNAMIC BACKGROUND LAYERS - High Contrast and Moody for both modes */}
             <div className="absolute inset-0 z-0 overflow-hidden">

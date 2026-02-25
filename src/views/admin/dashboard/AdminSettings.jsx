@@ -1,188 +1,277 @@
 import React from 'react';
-import { Moon, Sun, Globe, Bell, Shield, User, ChevronRight, Smartphone, Mail, Lock, Bot } from 'lucide-react';
+import {
+    Moon, Sun, Globe, Bell, Shield, User,
+    Smartphone, Mail, Lock, Bot, Settings,
+    Palette, Check, Languages, MessageSquare,
+    Sparkles, ShieldCheck, Laptop, BellRing,
+    ChevronRight, Fingerprint, Zap, Activity
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const AdminSettings = ({ t, darkMode, setDarkMode, lang, setLang, user, showBot, setShowBot }) => {
-    const sections = [
-        {
-            title: t.admin?.settings?.appearance || "Apariencia y Sistema",
-            description: "Personaliza tu experiencia visual y regional.",
-            items: [
-                {
-                    id: 'theme',
-                    label: "Modo Oscuro",
-                    sublabel: darkMode ? "Activado (Cuidando tus ojos)" : "Desactivado (Modo Claro)",
-                    icon: darkMode ? Moon : Sun,
-                    action: () => setDarkMode(!darkMode),
-                    type: 'toggle',
-                    value: darkMode
-                },
-                {
-                    id: 'lang',
-                    label: "Idioma del Sistema",
-                    sublabel: "Solo Español disponible por ahora (BETA)",
-                    icon: Globe,
-                    type: 'select',
-                    value: 'es',
-                    disabled: true,
-                    options: [
-                        { value: 'es', label: 'Español' },
-                        { value: 'en', label: 'English (Próximamente)' }
-                    ],
-                    onChange: (e) => setLang(e.target.value)
-                },
-                {
-                    id: 'bot',
-                    label: "Asistente PlanetBot",
-                    sublabel: showBot ? "Activado (Visible en pantalla)" : "Desactivado (Oculto)",
-                    icon: Bot,
-                    type: 'toggle',
-                    value: showBot,
-                    action: () => setShowBot(!showBot)
-                }
-            ]
-        },
-        {
-            title: "Perfil y Seguridad",
-            description: "Gestiona tu información personal y acceso.",
-            items: [
-                {
-                    id: 'profile',
-                    label: "Información de Perfil",
-                    sublabel: user?.fullName || "Administrador",
-                    icon: User,
-                    type: 'link',
-                    badge: user?.role
-                },
-                {
-                    id: 'email',
-                    label: "Correo Vinculado",
-                    sublabel: user?.email || "admin@recycleapp.com",
-                    icon: Mail,
-                    type: 'info'
-                },
-                {
-                    id: 'security',
-                    label: "Contraseña y Autenticación",
-                    sublabel: "Último cambio hace 3 días",
-                    icon: Lock,
-                    type: 'button',
-                    btnText: "Cambiar"
-                }
-            ]
-        },
-        {
-            title: "Notificaciones",
-            description: "Controla qué alertas deseas recibir.",
-            items: [
-                {
-                    id: 'notif_email',
-                    label: "Alertas por Correo",
-                    sublabel: "Recibir resúmenes semanales",
-                    icon: Bell,
-                    type: 'toggle',
-                    value: true
-                },
-                {
-                    id: 'notif_push',
-                    label: "Notificaciones Push",
-                    sublabel: "Alertas en tiempo real",
-                    icon: Smartphone,
-                    type: 'toggle',
-                    value: false
-                }
-            ]
-        }
+const AdminSettings = ({ t, darkMode, setDarkMode, lang, setLang, user, showBot, setShowBot, themeColor, setThemeColor }) => {
+    const themes = [
+        { id: 'forest', name: 'Esmeralda', color: '#018F64', glow: 'rgba(1, 143, 100, 0.4)', desc: 'Frecuencia Ecológica' },
+        { id: 'earth', name: 'Carmesí', color: '#FF3B3B', glow: 'rgba(255, 59, 59, 0.4)', desc: 'Alerta Global' },
+        { id: 'sunset', name: 'Ámbar', color: '#f97316', glow: 'rgba(249, 115, 22, 0.4)', desc: 'Resiliencia' },
+        { id: 'ocean', name: 'Zafiro', color: '#2563eb', glow: 'rgba(37, 99, 235, 0.4)', desc: 'Profundidad' }
     ];
 
+    const accent = themeColor || '#018F64';
+
     return (
-        <div className="space-y-8 animate-fade-in max-w-4xl mx-auto pb-20">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-end gap-4 border-b border-gray-100 dark:border-white/5 pb-6">
-                <div>
-                    <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight uppercase italic mb-2">
-                        Configuración <span className="text-[#018F64]">General</span>
-                    </h2>
-                    <p className="text-gray-500 dark:text-gray-400 font-medium text-sm">
-                        Administra las preferencias globales de tu panel de control.
-                    </p>
+        <div className="space-y-10 animate-fade-in pb-24">
+            {/* ── Header de Configuración ── */}
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6 pb-6 border-b border-gray-100 dark:border-white/5 relative overflow-hidden">
+                <div className="flex items-center gap-5 relative z-10 w-full md:w-auto text-center md:text-left flex-col md:flex-row">
+                    <div className="relative group">
+                        <div
+                            className="absolute -inset-1.5 rounded-2xl blur-lg opacity-10 group-hover:opacity-20 transition duration-1000"
+                            style={{ background: `linear-gradient(to right, ${accent}, ${accent}dd)` }}
+                        ></div>
+                        <div className="relative p-3.5 rounded-xl text-white shadow-lg bg-[#1a2234] border border-white/5 flex items-center justify-center">
+                            <Bot size={22} strokeWidth={2.5} className="group-hover:rotate-12 transition-transform duration-500" style={{ color: accent }} />
+                        </div>
+                    </div>
+                    <div>
+                        <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tighter uppercase flex items-center justify-center md:justify-start gap-2">
+                            Configuración <span style={{ color: accent }}>PlanetBot</span>
+                        </h2>
+                        <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                            Ajustes del sistema y preferencias de {user?.role?.toUpperCase() === 'ADMIN' ? 'administrador' : 'gestor'}
+                        </p>
+                    </div>
                 </div>
             </div>
 
-            <div className="grid gap-8">
-                {sections.map((section, idx) => (
-                    <div key={idx} className="bg-white dark:bg-[#111827] rounded-[2.5rem] p-8 border border-gray-100 dark:border-white/5 shadow-xl shadow-gray-200/20 dark:shadow-none overflow-hidden relative">
-                        {/* Decorative Background */}
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-slate-50 dark:bg-white/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none opacity-50" />
+            {/* ── 4-Grid Command Center ── */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-                        <div className="relative z-10 mb-8">
-                            <h3 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-wider mb-1">
-                                {section.title}
-                            </h3>
-                            <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
-                                {section.description}
+                {/* 1. APARIENCIA */}
+                <div className="group relative bg-white dark:bg-[#0f172a] rounded-[2rem] p-6 border border-gray-100 dark:border-white/5 shadow-lg overflow-hidden flex flex-col">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-gray-50 dark:bg-white/[0.01] rounded-bl-[60px] -z-0" />
+
+                    <div className="relative z-10 flex items-center justify-between mb-8">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2.5 rounded-lg bg-gray-50 dark:bg-white/5 text-gray-400 group-hover:text-emerald-500 transition-all">
+                                <Palette size={18} strokeWidth={2.5} />
+                            </div>
+                            <div>
+                                <h3 className="text-[11px] font-black text-gray-900 dark:text-white uppercase tracking-wider leading-tight">Apariencia</h3>
+                                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">Personaliza tu interfaz</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="relative z-10 space-y-8 flex-1">
+                        <div>
+                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-4 ml-1 opacity-60">Colores del Tema</p>
+                            <div className="grid grid-cols-4 gap-4">
+                                {themes.map((theme) => (
+                                    <button
+                                        key={theme.id}
+                                        onClick={() => setThemeColor(theme.color)}
+                                        className="relative flex flex-col items-center gap-3 group/theme"
+                                    >
+                                        <div className="relative">
+                                            <AnimatePresence>
+                                                {accent === theme.color && (
+                                                    <motion.div
+                                                        layoutId="swatchGlow"
+                                                        className="absolute -inset-2 rounded-xl border-2 z-0 opacity-20"
+                                                        style={{ borderColor: theme.color, boxShadow: `0 0 10px ${theme.color}40` }}
+                                                        initial={{ opacity: 0, scale: 0.8 }}
+                                                        animate={{ opacity: 0.6, scale: 1 }}
+                                                        exit={{ opacity: 0, scale: 1.1 }}
+                                                    />
+                                                )}
+                                            </AnimatePresence>
+                                            <div
+                                                className={`w-11 h-11 rounded-xl shadow-md transition-all duration-500 group-hover/theme:scale-105 flex items-center justify-center z-10 relative overflow-hidden`}
+                                                style={{ background: `linear-gradient(135deg, ${theme.color}, ${theme.color}dd)` }}
+                                            >
+                                                {accent === theme.color && <Check size={18} className="text-white drop-shadow-md" strokeWidth={4} />}
+                                            </div>
+                                        </div>
+                                        <div className="text-center">
+                                            <p className={`text-[9px] font-black uppercase tracking-tight transition-colors ${accent === theme.color ? 'text-gray-900 dark:text-white' : 'text-gray-400'}`}>
+                                                {theme.name}
+                                            </p>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="p-4 rounded-2xl bg-gray-50/50 dark:bg-black/30 border border-transparent hover:border-gray-100 dark:hover:border-white/10 transition-all flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="w-11 h-11 rounded-xl bg-white dark:bg-white/5 flex items-center justify-center shadow-sm" style={{ color: accent }}>
+                                    {darkMode ? <Sun size={20} strokeWidth={2.5} /> : <Moon size={20} strokeWidth={2.5} />}
+                                </div>
+                                <div className="text-left">
+                                    <p className="text-[11px] font-black text-gray-900 dark:text-white uppercase tracking-tight">Modo Visual</p>
+                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">{darkMode ? 'Oscuro Activo' : 'Claro Activo'}</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setDarkMode(!darkMode)}
+                                className={`w-14 h-8 rounded-full p-1.5 transition-all duration-700 flex items-center ${darkMode ? '' : 'bg-gray-200 dark:bg-gray-700'}`}
+                                style={{ backgroundColor: darkMode ? accent : '' }}
+                            >
+                                <motion.div
+                                    animate={{ x: darkMode ? 24 : 0 }}
+                                    className="w-5 h-5 rounded-full bg-white shadow-md"
+                                />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 2. CONFIGURACIÓN DE SISTEMA */}
+                <div className="bg-white dark:bg-[#0f172a] rounded-[2rem] p-6 border border-gray-100 dark:border-white/5 shadow-lg flex flex-col group">
+                    <div className="flex items-center gap-3 mb-8">
+                        <div className="p-2.5 rounded-lg bg-gray-50 dark:bg-white/5 text-gray-400 group-hover:text-blue-500 transition-all">
+                            <Globe size={18} strokeWidth={2.5} />
+                        </div>
+                        <div>
+                            <h3 className="text-[11px] font-black text-gray-900 dark:text-white uppercase tracking-wider leading-tight">Configuración</h3>
+                            <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">Preferencias regionales</p>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4 flex-1">
+                        <div className="p-4 rounded-2xl bg-gray-50/50 dark:bg-black/30 border border-transparent hover:border-blue-100 dark:hover:border-blue-900/40 transition-all flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="w-11 h-11 rounded-xl bg-white dark:bg-white/5 flex items-center justify-center shadow-sm text-blue-500">
+                                    <Languages size={20} />
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-black text-gray-900 dark:text-white uppercase tracking-tight">Idioma</p>
+                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1">{lang === 'es' ? 'Español' : 'English'}</p>
+                                </div>
+                            </div>
+                            <button onClick={() => setLang(lang === 'es' ? 'en' : 'es')} className="px-4 py-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-lg text-[9px] font-black uppercase tracking-wider hover:bg-blue-600 hover:text-white transition-all">
+                                Cambiar
+                            </button>
+                        </div>
+
+                        <div className="p-4 rounded-2xl bg-gray-50/50 dark:bg-black/30 border border-transparent hover:border-emerald-100 dark:hover:border-emerald-900/40 transition-all flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="w-11 h-11 rounded-xl bg-white dark:bg-white/5 flex items-center justify-center shadow-sm" style={{ color: accent }}>
+                                    <BellRing size={20} />
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-black text-gray-900 dark:text-white uppercase tracking-tight">Notificaciones</p>
+                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1">Sugerencias activas</p>
+                                </div>
+                            </div>
+                            <div className="w-14 h-7 rounded-full p-1 flex items-center" style={{ backgroundColor: accent }}>
+                                <div className="w-5 h-5 rounded-full bg-white shadow-md translate-x-7" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 3. PLANETBOT IA */}
+                <div className="group relative bg-[#131a2b] rounded-[2rem] p-7 border border-white/5 shadow-xl overflow-hidden flex flex-col">
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-900/10 via-transparent to-accent/5 pointer-events-none" />
+
+                    <div className="relative z-10 flex items-center justify-between mb-8">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-2xl bg-white/5 text-purple-400/80 border border-white/10 transition-all duration-700">
+                                <Sparkles size={18} strokeWidth={2.5} />
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-black text-white uppercase tracking-wider">PlanetBot IA</h3>
+                                <p className="text-[9px] text-purple-400/70 font-black uppercase tracking-widest mt-1">Asistente Inteligente</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="relative z-10 flex-1 flex flex-col justify-between">
+                        <div className="bg-white/[0.02] p-5 rounded-2xl border border-white/5 mb-6 backdrop-blur-xl transition-all">
+                            <p className="text-[11px] text-gray-400 leading-relaxed font-medium">
+                                Operando para automatizar tus reportes y diagnosticar el estado del sistema.
+                            </p>
+                            <div className="mt-4 flex gap-1 items-end h-6">
+                                {[4, 9, 5, 12, 7, 10, 6, 4, 8, 11].map((h, i) => (
+                                    <motion.div
+                                        key={i}
+                                        animate={{ height: showBot ? h * 1.5 : 3 }}
+                                        transition={{ repeat: Infinity, duration: 0.8, delay: i * 0.1 }}
+                                        className="flex-1 bg-purple-500/40 rounded-t-sm"
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className={`p-6 rounded-2xl transition-all duration-700 ${showBot ? 'bg-gradient-to-r from-purple-900/40 to-indigo-900/40 border border-white/10' : 'bg-white/5 shadow-inner'}`}>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-2xl bg-white/5 backdrop-blur-2xl flex items-center justify-center border border-white/10">
+                                        <Bot size={24} className={`text-white transition-all duration-700 ${showBot ? 'opacity-80 drop-shadow-[0_0_5px_white]' : 'opacity-10'}`} />
+                                    </div>
+                                    <div>
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-0.5 leading-none">Estado</p>
+                                        <p className="text-xl font-black text-white italic tracking-tighter leading-none">{showBot ? 'ACTIVO' : 'HIBERNANDO'}</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setShowBot(!showBot)}
+                                    className={`w-14 h-8 rounded-full p-1.5 transition-all duration-700 flex items-center ${showBot ? 'bg-white shadow-md' : 'bg-white/10 border border-white/5'}`}
+                                >
+                                    <motion.div
+                                        animate={{ x: showBot ? 24 : 0 }}
+                                        className={`w-5 h-5 rounded-full shadow-lg ${showBot ? 'bg-purple-900' : 'bg-white/20'}`}
+                                    />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 4. SEGURIDAD */}
+                <div className="group relative bg-white dark:bg-[#0f172a] rounded-[2rem] p-6 border border-gray-100 dark:border-white/5 shadow-lg flex flex-col">
+                    <div className="flex items-center gap-3 mb-8">
+                        <div className="p-2.5 rounded-lg bg-gray-50 dark:bg-white/5 text-gray-400 group-hover:text-emerald-500 transition-all">
+                            <ShieldCheck size={18} strokeWidth={2.5} style={{ color: accent }} />
+                        </div>
+                        <div>
+                            <h3 className="text-[11px] font-black text-gray-900 dark:text-white uppercase tracking-wider leading-tight">Seguridad</h3>
+                            <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">Gestión de accesos</p>
+                        </div>
+                    </div>
+
+                    <div className="space-y-6 flex-1">
+                        <div className="p-6 rounded-2xl bg-gray-50/50 dark:bg-black/30 border border-transparent shadow-sm group/mail overflow-hidden relative">
+                            <div className="flex items-center justify-between mb-2 color-gray-400">
+                                <p className="text-[9px] font-black uppercase tracking-widest flex items-center gap-2" style={{ color: accent }}>
+                                    <Mail size={12} strokeWidth={3} /> Correo de {user?.role?.toUpperCase() === 'ADMIN' ? 'Administrador' : 'Gestor'}
+                                </p>
+                            </div>
+                            <p className="text-lg font-black text-gray-900 dark:text-white truncate tracking-tight leading-none">
+                                {user?.email || 'admin@nosplanet.com'}
                             </p>
                         </div>
 
-                        <div className="space-y-4 relative z-10">
-                            {section.items.map((item, itemIdx) => (
-                                <div key={itemIdx} className="flex items-center justify-between p-4 rounded-3xl bg-gray-50/50 dark:bg-black/20 border border-transparent hover:border-[#018F64]/20 hover:bg-white dark:hover:bg-white/5 transition-all group">
-                                    <div className="flex items-center gap-5">
-                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-[#018F64] dark:text-[#B0EEDE] shadow-sm transition-transform group-hover:scale-110 ${item.value || item.value === undefined ? 'bg-white dark:bg-white/5' : 'bg-gray-200 dark:bg-white/5 grayscale'}`}>
-                                            <item.icon size={22} strokeWidth={2} />
-                                        </div>
-                                        <div>
-                                            <h4 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight">
-                                                {item.label}
-                                            </h4>
-                                            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                                                {item.sublabel}
-                                            </p>
-                                        </div>
+                        <button className="w-full group/btn overflow-hidden p-6 rounded-2xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 transition-all duration-500 hover:shadow-lg shadow-md">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/10 dark:bg-black/5 flex items-center justify-center border border-white/10">
+                                        <Lock size={22} strokeWidth={2.5} />
                                     </div>
-
-                                    <div>
-                                        {item.type === 'toggle' && (
-                                            <button
-                                                onClick={item.action}
-                                                className={`w-14 h-8 rounded-full p-1 transition-all duration-300 flex items-center ${item.value ? 'bg-[#018F64]' : 'bg-gray-300 dark:bg-gray-700'}`}
-                                            >
-                                                <div className={`w-6 h-6 rounded-full bg-white shadow-md transform transition-transform duration-300 ${item.value ? 'translate-x-6' : 'translate-x-0'}`} />
-                                            </button>
-                                        )}
-
-                                        {item.type === 'select' && (
-                                            <div className="relative">
-                                                <select
-                                                    value={item.value}
-                                                    onChange={item.onChange}
-                                                    disabled={item.disabled}
-                                                    className={`appearance-none border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2 pr-8 text-xs font-bold uppercase tracking-wider outline-none focus:border-[#018F64] transition-all ${item.disabled ? 'bg-gray-100 dark:bg-white/5 text-gray-400 cursor-not-allowed' : 'bg-white dark:bg-black/40 text-gray-700 dark:text-gray-200 cursor-pointer'}`}
-                                                >
-                                                    {item.options.map(opt => (
-                                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                                    ))}
-                                                </select>
-                                                <ChevronRight size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none rotate-90" />
-                                            </div>
-                                        )}
-
-                                        {item.type === 'button' && (
-                                            <button className="px-5 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg">
-                                                {item.btnText}
-                                            </button>
-                                        )}
-
-                                        {item.type === 'link' && item.badge && (
-                                            <span className="px-3 py-1 bg-[#018F64]/10 text-[#018F64] dark:text-[#B0EEDE] rounded-lg text-[10px] font-black uppercase tracking-widest">
-                                                {item.badge}
-                                            </span>
-                                        )}
+                                    <div className="text-left">
+                                        <p className="text-base font-black uppercase tracking-tight leading-none">Restablecer Acceso</p>
+                                        <p className="text-[9px] font-bold opacity-40 uppercase tracking-widest mt-1.5">Cambiar contraseña maestra</p>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
+                                <div className="p-2 rounded-xl bg-white/5 transition-all group-hover/btn:bg-white/20">
+                                    <ChevronRight size={20} strokeWidth={3} />
+                                </div>
+                            </div>
+                        </button>
                     </div>
-                ))}
+                </div>
+
             </div>
         </div>
     );

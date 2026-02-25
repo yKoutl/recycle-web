@@ -1,75 +1,200 @@
-import { Bell, Moon, Sun, Menu, X } from 'lucide-react';
-import logoNosPlanet from '../../../assets/Logo Nos Planet.png';
+import { Bell, Moon, Sun, Menu, X, Leaf, Check } from 'lucide-react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const AdminHeader = ({ t, darkMode, setDarkMode, setIsSidebarOpen, isSidebarOpen }) => {
+const AdminHeader = ({ t, darkMode, setDarkMode, setIsSidebarOpen, isSidebarOpen, themeColor }) => {
+    const navigate = useNavigate();
     const { user } = useSelector(state => state.auth);
+    const accent = themeColor || '#018F64';
+    const [showNotifications, setShowNotifications] = useState(false);
+
+    const iconBtn = `p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-all active:scale-95 cursor-pointer flex items-center justify-center`;
 
     return (
         <>
-            {/* Mobile Header */}
-            <header className="bg-white/70 dark:bg-gray-950/70 backdrop-blur-xl h-20 border-b border-gray-100 dark:border-white/5 flex items-center justify-between px-6 sticky top-0 z-40 md:hidden transition-all duration-500">
+            {/* ── Mobile Header ── */}
+            <header
+                className="h-20 flex items-center justify-between px-6 sticky top-0 z-40 md:hidden border-b"
+                style={{ background: '#0f172a', borderColor: 'rgba(255,255,255,0.06)' }}
+            >
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                        className="p-2 text-gray-400 hover:text-[#018F64] transition-colors"
+                        className={iconBtn}
+                        aria-label="Toggle Menu"
                     >
-                        {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+                        {isSidebarOpen ? <X size={26} strokeWidth={2} /> : <Menu size={26} strokeWidth={2} />}
                     </button>
-                    <div className="flex items-center gap-2">
-                        <img src={logoNosPlanet} alt="Logo" className="w-5 h-5 object-contain" />
-                        <span className="text-lg font-black uppercase tracking-tighter italic text-gray-900 dark:text-white">
-                            Nos<span className="text-[#018F64]">Planet</span>
+                    <div className="flex items-center gap-2.5 group cursor-pointer" onClick={() => navigate('/')}>
+                        <div
+                            className="p-1.5 rounded-lg transition-transform group-hover:rotate-12"
+                            style={{ backgroundColor: `${accent}20` }}
+                        >
+                            <Leaf size={18} style={{ color: accent }} strokeWidth={2.5} />
+                        </div>
+                        <span className="text-base font-black text-white italic tracking-wider">
+                            NosPlanet
                         </span>
                     </div>
                 </div>
-
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-4">
+                    <div className="relative">
+                        <button
+                            className={iconBtn}
+                            onClick={() => setShowNotifications(!showNotifications)}
+                        >
+                            <Bell size={22} strokeWidth={2} />
+                        </button>
+                        <AnimatePresence>
+                            {showNotifications && (
+                                <>
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        className="fixed inset-0 z-40"
+                                        onClick={() => setShowNotifications(false)}
+                                    />
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -20, scale: 0.95, transformOrigin: 'top right' }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                                        transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                                        className="absolute right-0 mt-4 w-[calc(100vw-2rem)] sm:w-80 bg-[#1e293b] border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden"
+                                    >
+                                        <div className="p-4 border-b border-white/5 flex justify-between items-center bg-white/2">
+                                            <h3 className="text-white font-bold text-xs uppercase tracking-widest">Notificaciones</h3>
+                                            <span
+                                                className="text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-widest"
+                                                style={{ backgroundColor: `${accent}20`, color: accent }}
+                                            >
+                                                0 NUEVAS
+                                            </span>
+                                        </div>
+                                        <div className="p-10 flex flex-col items-center justify-center text-center">
+                                            <div className="w-16 h-16 bg-white/[0.03] rounded-full flex items-center justify-center mb-4 ring-1 ring-white/5">
+                                                <Bell size={28} className="text-slate-600" />
+                                            </div>
+                                            <p className="text-white font-bold text-sm">Todo despejado</p>
+                                            <p className="text-slate-500 text-[10px] mt-1 leading-relaxed">No hay alertas pendientes.</p>
+                                        </div>
+                                    </motion.div>
+                                </>
+                            )}
+                        </AnimatePresence>
+                    </div>
                     <button
-                        onClick={() => setDarkMode(!darkMode)}
-                        className="p-2 text-gray-400 hover:text-[#018F64] dark:hover:text-green-400 transition-all active:scale-90 bg-gray-100 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/10"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setDarkMode(!darkMode);
+                        }}
+                        className={iconBtn}
+                        title={darkMode ? 'Modo Claro' : 'Modo Oscuro'}
                     >
-                        {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+                        {darkMode ? <Sun size={22} strokeWidth={2} /> : <Moon size={22} strokeWidth={2} />}
                     </button>
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#018F64] to-emerald-400 p-[1px] shadow-lg shadow-[#018F64]/10">
-                        <div className="w-full h-full rounded-[0.6rem] bg-white dark:bg-gray-950 flex items-center justify-center text-[#018F64] font-black text-[10px] border border-white/50 dark:border-white/5">
-                            {(user?.fullName?.[0] || user?.name?.[0] || user?.username?.[0] || 'A').toUpperCase()}
-                        </div>
+                    <div
+                        className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold shadow-lg"
+                        style={{ background: `linear-gradient(135deg, ${accent}, ${accent}bb)`, boxShadow: `0 4px 12px ${accent}40` }}
+                    >
+                        {(user?.fullName?.[0] || 'A').toUpperCase()}
                     </div>
                 </div>
             </header>
 
-            {/* Desktop Header Info */}
-            <div className="hidden md:flex justify-end items-center px-12 h-24 bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl border-b border-gray-100 dark:border-white/5 sticky top-0 z-40 transition-all duration-500">
+            {/* ── Desktop Header ── */}
+            <div
+                className="hidden md:flex justify-end items-center px-10 h-24 sticky top-0 z-40 border-b"
+                style={{
+                    background: '#1e293b',
+                    borderColor: 'rgba(255,255,255,0.1)',
+                }}
+            >
                 <div className="flex items-center gap-5">
                     <button
-                        onClick={() => setDarkMode(!darkMode)}
-                        className="p-2.5 text-gray-400 hover:text-[#018F64] dark:hover:text-green-400 transition-all active:scale-90 bg-gray-100 dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setDarkMode(!darkMode);
+                        }}
+                        className={iconBtn}
+                        title={darkMode ? 'Modo Claro' : 'Modo Oscuro'}
                     >
-                        {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+                        {darkMode ? <Sun size={26} strokeWidth={2} /> : <Moon size={26} strokeWidth={2} />}
                     </button>
 
-                    <button className="relative p-2.5 text-gray-400 hover:text-[#018F64] dark:hover:text-green-400 transition-all active:scale-90 bg-gray-100 dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm">
-                        <Bell size={20} />
-                        <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-orange-500 rounded-full border-2 border-white dark:border-gray-950"></span>
-                    </button>
+                    <div className="relative">
+                        <button
+                            className={`relative ${iconBtn}`}
+                            onClick={() => setShowNotifications(!showNotifications)}
+                        >
+                            <Bell size={26} strokeWidth={2} />
+                            <span
+                                className="absolute top-2.5 right-2.5 w-2.5 h-2.5 rounded-full ring-2 ring-[#1e293b] animate-pulse"
+                                style={{ backgroundColor: accent }}
+                            />
+                        </button>
 
-                    <div className="h-10 w-[1px] bg-gray-200 dark:bg-white/10 mx-2"></div>
+                        <AnimatePresence>
+                            {showNotifications && (
+                                <>
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        className="fixed inset-0 z-40"
+                                        onClick={() => setShowNotifications(false)}
+                                    />
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -20, scale: 0.95, transformOrigin: 'top right' }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                                        transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                                        className="absolute right-0 mt-4 w-80 bg-[#1e293b] border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden"
+                                    >
+                                        <div className="p-4 border-b border-white/5 flex justify-between items-center bg-white/2">
+                                            <h3 className="text-white font-bold text-xs uppercase tracking-widest">Notificaciones</h3>
+                                            <span
+                                                className="text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-widest"
+                                                style={{ backgroundColor: `${accent}20`, color: accent }}
+                                            >
+                                                0 NUEVAS
+                                            </span>
+                                        </div>
+                                        <div className="p-10 flex flex-col items-center justify-center text-center">
+                                            <div className="w-20 h-20 bg-white/[0.03] rounded-full flex items-center justify-center mb-5 ring-1 ring-white/5">
+                                                <Bell size={32} className="text-slate-600" />
+                                            </div>
+                                            <p className="text-white font-bold text-sm">¡Todo despejado!</p>
+                                            <p className="text-slate-500 text-xs mt-2 leading-relaxed">No tienes alertas pendientes en este momento.</p>
+                                        </div>
+                                        <button className="w-full p-4 bg-white/2 hover:bg-white/5 text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] transition-all border-t border-white/5">
+                                            Ver todas las actividades
+                                        </button>
+                                    </motion.div>
+                                </>
+                            )}
+                        </AnimatePresence>
+                    </div>
 
-                    <div className="flex items-center gap-4 group cursor-pointer">
-                        <div className="text-right hidden md:block">
-                            <div className="text-xs font-black text-gray-900 dark:text-white uppercase tracking-widest leading-none">
-                                {user?.fullName || user?.name || user?.username || 'Admin'}
+                    <div className="w-px h-8 bg-white/10 mx-4" />
+
+                    <div className="flex items-center gap-2.5 cursor-pointer group pl-1">
+                        <div className="text-right">
+                            <div className="text-sm font-semibold text-white truncate max-w-[160px]">
+                                {user?.fullName || 'Admin'}
                             </div>
-                            <div className="text-[10px] text-[#018F64] font-black uppercase tracking-[0.1em] mt-1.5 flex items-center justify-end gap-1.5">
-                                {(user?.role?.toUpperCase() === 'ADMIN') ? 'Administrador' : 'Funcionario'}
+                            <div className="text-[10px] font-medium mt-0.5 truncate text-slate-400">
+                                {user?.role?.toUpperCase() === 'ADMIN' ? 'Administrador' : `Gestor · ${user?.institution || ''}`}
                             </div>
                         </div>
-                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#018F64] to-emerald-400 p-[1.5px] shadow-lg shadow-[#018F64]/10 transform transition-transform group-hover:scale-110">
-                            <div className="w-full h-full rounded-[0.9rem] bg-white dark:bg-gray-950 flex items-center justify-center text-[#018F64] font-black text-sm border border-white/50 dark:border-white/5">
-                                {(user?.fullName?.[0] || user?.name?.[0] || user?.username?.[0] || 'A').toUpperCase()}
-                                {(user?.fullName?.split(' ')[1]?.[0] || user?.name?.split(' ')[1]?.[0] || user?.username?.[1] || 'D').toUpperCase()}
-                            </div>
+                        <div
+                            className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold text-sm shrink-0 transition-transform group-hover:scale-105 shadow-lg"
+                            style={{ background: `linear-gradient(135deg, ${accent}, ${accent}bb)`, boxShadow: `0 4px 12px ${accent}40` }}
+                        >
+                            {(user?.fullName?.[0] || 'A').toUpperCase()}
+                            {(user?.fullName?.split(' ')[1]?.[0] || '').toUpperCase()}
                         </div>
                     </div>
                 </div>

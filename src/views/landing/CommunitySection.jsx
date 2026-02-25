@@ -23,7 +23,7 @@ const CommunitySection = ({ t, isAuthenticated }) => {
             const mappedReviews = featuredReviews.map(h => ({
                 id: h._id,
                 name: h.user?.fullName || 'Eco-Héroe',
-                role: 'Eco-Héroe',
+                tier: h.user?.membershipTier || 'NONE',
                 comment: h.message,
                 likes: 0,
                 liked: false,
@@ -55,7 +55,7 @@ const CommunitySection = ({ t, isAuthenticated }) => {
     };
 
     return (
-        <section id="community" className="py-24 relative overflow-hidden transition-colors duration-500 bg-[#FEFDFB] dark:bg-[#020617]">
+        <section className="py-24 relative overflow-hidden transition-colors duration-500 bg-[#FEFDFB] dark:bg-[#020617]">
             {/* Background Decorative Patterns */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
                 <div className="absolute inset-0 opacity-[0.1] dark:opacity-[0.05]"

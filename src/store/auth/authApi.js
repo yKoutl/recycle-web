@@ -1,9 +1,10 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
 import { API_URLS } from '../../api/config';
+import { baseQueryWithAuth } from '../baseQuery';
 
 export const authApi = createApi({
     reducerPath: 'authApi',
-    baseQuery: fetchBaseQuery({ baseUrl: API_URLS.AUTH }),
+    baseQuery: baseQueryWithAuth(API_URLS.AUTH),
 
     endpoints: (builder) => ({
 
@@ -27,12 +28,7 @@ export const authApi = createApi({
 
         // 3. CHECK STATUS (@Get('check-status'))
         checkStatus: builder.query({
-            query: (token) => ({
-                url: '/check-status',
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }),
+            query: () => '/check-status',
             // Forzar refetch si el token cambia, evitando caché obsoleta
             keepUnusedDataFor: 0,
         }),

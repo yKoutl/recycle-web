@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, CheckCircle, Recycle, Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import Lottie from 'lottie-react';
+import LazyLottie from '../../components/common/LazyLottie';
 import recycleAnimation from '../../assets/Recycle.json';
 import logoNosPlanet from '../../assets/reciclaje.webp'; // Assuming this exists or using a substitute
 
@@ -24,7 +24,7 @@ const HeroMockup = ({ t }) => {
     const LoadingScreen = () => (
         <div className="absolute inset-0 bg-[#018f64] flex flex-col items-center justify-center z-30 transition-opacity duration-1000 animate-in fade-in">
             <div className="w-48 h-48 mb-2">
-                <Lottie animationData={recycleAnimation} loop={true} />
+                <LazyLottie animationData={recycleAnimation} loop={true} />
             </div>
             <span className="text-white font-medium tracking-widest text-lg">Cargando...</span>
         </div>

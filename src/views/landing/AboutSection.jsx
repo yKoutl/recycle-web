@@ -60,7 +60,7 @@ const AboutSection = ({ t }) => {
     };
 
     return (
-        <section id="about" className="pt-24 pb-12 relative overflow-hidden bg-[#FEFDFB] dark:bg-[#020617] transition-colors duration-500">
+        <section className="pt-24 pb-12 relative overflow-hidden bg-[#FEFDFB] dark:bg-[#020617] transition-colors duration-500">
             <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none"
                 style={{ backgroundImage: `linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)`, backgroundSize: '60px 60px' }} />
 

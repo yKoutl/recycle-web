@@ -169,6 +169,35 @@ export const TRANSLATIONS = {
                 actions: 'Acciones'
             }
         },
+        donation: {
+            tag: 'Eco-Aporte',
+            title: 'Sostén el Impacto Ambiental',
+            subtitle: 'Tu contribución permite que RecycleApp siga educando y conectando a miles de personas para un futuro sin residuos.',
+            disclaimer: 'Las contribuciones realizadas a través de la sección de Apoyo son voluntarias y no constituyen una donación deducible de impuestos de acuerdo con la ley peruana. Estos fondos se destinan íntegramente al mantenimiento tecnológico y operativo de RecycleApp.',
+            tiers: {
+                starter: {
+                    title: 'Eco-Socio',
+                    desc: 'Aporta el impulso inicial para nuestras tareas diarias.',
+                    amount: 'S/ 15 /mensual'
+                },
+                growth: {
+                    title: 'Eco-Embajador',
+                    desc: 'Fortalece la red y permite llegar a más comunidades.',
+                    amount: 'S/ 30 /mensual'
+                },
+                hero: {
+                    title: 'Eco-Visionario',
+                    desc: 'Lidera la transformación tecnológica del reciclaje.',
+                    amount: 'S/ 55 /mensual'
+                }
+            },
+            qrTitle: 'Aporta vía QR',
+            paymentNotice: 'Realiza el pago escaneando el código QR con <b>Yape</b> o <b>Plin</b>. Procesaremos tu aporte en un tiempo estimado de <b>5 minutos</b>, tras lo cual tu membresía se actualizará automáticamente.',
+            payerLabel: 'Titular de la Operación',
+            payerPlaceholder: 'Nombre de quien realiza el Yape/Plin...',
+            customBtn: 'Aporte Personalizado',
+            btn: 'Realizar Aporte'
+        },
         contact: {
             tag: 'Contacto',
             title: 'Hablemos de Sostenibilidad',
@@ -386,6 +415,35 @@ export const TRANSLATIONS = {
         auth: {
             needLogin: 'Almost there!',
             loginToLike: 'To show love to this story, you must first be part of our community.',
+        },
+        donation: {
+            tag: 'Eco-Contribution',
+            title: 'Sustain Environmental Impact',
+            subtitle: 'Your contribution allows RecycleApp to continue educating and connecting thousands of people for a waste-free future.',
+            disclaimer: 'Contributions made through the Support section are voluntary and do not constitute a tax-deductible donation in accordance with Peruvian law. These funds are used entirely for the technological and operational maintenance of RecycleApp.',
+            tiers: {
+                starter: {
+                    title: 'Eco-Partner',
+                    desc: 'Provide the initial boost for our daily tasks.',
+                    amount: 'S/ 15 /monthly'
+                },
+                growth: {
+                    title: 'Eco-Ambassador',
+                    desc: 'Strengthen the network and reach more communities.',
+                    amount: 'S/ 30 /monthly'
+                },
+                hero: {
+                    title: 'Eco-Visionary',
+                    desc: 'Lead the technological transformation of recycling.',
+                    amount: 'S/ 55 /monthly'
+                }
+            },
+            qrTitle: 'Contribute via QR',
+            paymentNotice: 'Make the payment by scanning the QR code with <b>Yape</b> or <b>Plin</b>. We will process your contribution in an estimated time of <b>5 minutes</b>, after which your membership will be automatically updated.',
+            payerLabel: 'Operation Holder',
+            payerPlaceholder: 'Name of the person making the Yape/Plin...',
+            customBtn: 'Custom Contribution',
+            btn: 'Contribute Now'
         },
         common: {
             maybeLater: 'Maybe later'

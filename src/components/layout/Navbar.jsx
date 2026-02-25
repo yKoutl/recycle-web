@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Sun, Moon, Languages, LogIn, LogOut, X, Menu, ChevronRight, Home, Sprout, Globe, Users, Handshake, Leaf, Mail, ShieldCheck } from 'lucide-react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { Sun, Moon, Languages, LogIn, LogOut, X, Menu, ChevronRight, Home, Sprout, Globe, Users, Handshake, Leaf, Mail, ShieldCheck, UserPlus, Award, Rocket, Loader2, User as UserIcon, LayoutGrid } from 'lucide-react';
 
 import Button from '../shared/Button';
 import logoNosPlanet from '../../assets/logo_nos_planet.webp';
 
 const Navbar = ({ lang, setLang, darkMode, setDarkMode, t, isAuthenticated, user, onLogout, forceScrolled = false }) => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [isScrolled, setIsScrolled] = useState(forceScrolled);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isProfileHovered, setIsProfileHovered] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 20 || forceScrolled);
@@ -17,17 +19,15 @@ const Navbar = ({ lang, setLang, darkMode, setDarkMode, t, isAuthenticated, user
     }, [forceScrolled]);
 
     const scrollToSection = (id) => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
-            setIsMobileMenuOpen(false);
-        } else {
-            // Si estamos en otra página (ej: admin), ir a home y scroll
-            navigate('/');
-            setTimeout(() => {
-                document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-            }, 100);
+        setIsMobileMenuOpen(false);
+
+        if (id === 'home' && location.pathname === '/') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            navigate('/', { replace: true });
+            return;
         }
+
+        navigate(`/#${id}`);
     };
 
     const handleLoginClick = () => {
@@ -52,7 +52,7 @@ const Navbar = ({ lang, setLang, darkMode, setDarkMode, t, isAuthenticated, user
     return (
         <nav className={`fixed top-0 w-full z-50 transition-all duration-500 px-6 ${isScrolled ? 'pt-4' : 'pt-6'}`}>
             <div className={`container mx-auto max-w-7xl transition-all duration-500 ${isScrolled
-                ? 'bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl shadow-2xl shadow-emerald-900/10 border border-white/20 dark:border-white/5 rounded-[2.5rem] py-3 px-8'
+                ? 'bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl shadow-2xl shadow-emerald-900/10 border border-white/20 dark:border-white/5 rounded-[2.5rem] py-3 px-6'
                 : 'bg-transparent py-2 px-4'
                 }`}>
                 <div className="flex justify-between items-center">
@@ -110,29 +110,119 @@ const Navbar = ({ lang, setLang, darkMode, setDarkMode, t, isAuthenticated, user
                                 <Languages size={18} /> {lang}
                             </button>
 
-                            <Button
-                                variant={isScrolled ? 'primary' : 'outline'}
-                                onClick={handleLoginClick}
-                                className={`rounded-xl font-bold text-sm h-11 px-6 shadow-lg transition-all duration-500 scale-100 hover:scale-105 active:scale-95 ${!isScrolled
-                                    ? 'border-white/40 hover:bg-white hover:text-[#018F64] text-white'
-                                    : 'bg-[#018F64] border-[#018F64] hover:bg-[#05835D] text-white shadow-[#018F64]/20'
-                                    } ${isAuthenticated && !isScrolled ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500 hover:text-white' : ''}`}
-                                icon={isAuthenticated ? ShieldCheck : LogIn}
-                            >
-                                {isAuthenticated
-                                    ? (['ADMIN', 'OFFICIAL'].includes(user?.role) ? 'Panel Admin' : `Hola, ${user?.fullName?.split(' ')[0] || 'Usuario'}`)
-                                    : t.nav.login}
-                            </Button>
-
-                            {isAuthenticated && (
-                                <button
-                                    onClick={onLogout}
-                                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${isScrolled ? 'hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500' : 'hover:bg-white/20 text-white'}`}
-                                    title="Cerrar sesión"
-                                >
-                                    <LogOut size={20} />
-                                </button>
-                            )}
+                            {/* User Actions Group */}
+                            <div className="flex items-center gap-1">
+                                {isAuthenticated ? (
+                                    <>
+                                        <button
+                                            onClick={handleLoginClick}
+                                            onMouseEnter={() => setIsProfileHovered(true)}
+                                            onMouseLeave={() => setIsProfileHovered(false)}
+                                            className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-2xl transition-all duration-500 hover:scale-[1.02] active:scale-95 border min-w-[140px] h-[48px]
+                                                ${isScrolled
+                                                    ? (isProfileHovered && user?.role?.toUpperCase() === 'ADMIN' ? 'bg-red-600 border-red-500 shadow-xl shadow-red-900/40 text-white' :
+                                                        isProfileHovered && user?.role?.toUpperCase() === 'OFFICIAL' ? 'bg-orange-600 border-orange-500 shadow-xl shadow-orange-900/40 text-white' :
+                                                            user?.role?.toUpperCase() === 'ADMIN' ? 'bg-red-50/50 dark:bg-red-900/10 border-red-500/20 shadow-lg shadow-red-900/5' :
+                                                                user?.role?.toUpperCase() === 'OFFICIAL' ? 'bg-orange-50/50 dark:bg-orange-900/10 border-orange-500/20 shadow-lg shadow-orange-900/5' :
+                                                                    'bg-indigo-50/50 dark:bg-indigo-900/10 border-indigo-500/20 shadow-lg shadow-indigo-900/5')
+                                                    : (isProfileHovered && user?.role?.toUpperCase() === 'ADMIN' ? 'bg-red-600 border-red-500 shadow-2xl text-white' :
+                                                        isProfileHovered && user?.role?.toUpperCase() === 'OFFICIAL' ? 'bg-orange-600 border-orange-500 shadow-2xl text-white' :
+                                                            'bg-white/10 backdrop-blur-md border-white/20 shadow-2xl')}`}
+                                        >
+                                            <div className={`w-8 h-8 rounded-xl flex items-center justify-center shadow-lg transition-all shrink-0
+                                                ${isProfileHovered ? 'bg-white text-gray-900' :
+                                                    user?.role?.toUpperCase() === 'ADMIN' ? 'bg-red-600 text-white shadow-red-500/30' :
+                                                        user?.role?.toUpperCase() === 'OFFICIAL' ? 'bg-orange-600 text-white shadow-orange-500/30' :
+                                                            user?.membershipStatus === 'PENDING' ? 'bg-amber-500 text-white shadow-amber-500/30' :
+                                                                user?.membershipTier === 'HERO' ? 'bg-indigo-600 text-white shadow-indigo-500/30' :
+                                                                    user?.membershipTier === 'GROWTH' ? 'bg-emerald-600 text-white shadow-emerald-500/30' :
+                                                                        user?.membershipTier === 'STARTER' ? 'bg-lime-600 text-white shadow-lime-500/30' : 'bg-emerald-600 text-white shadow-emerald-500/20'} group-hover:rotate-6`}>
+                                                {user?.role?.toUpperCase() === 'ADMIN' ? (
+                                                    <ShieldCheck size={16} strokeWidth={2.5} />
+                                                ) : user?.role?.toUpperCase() === 'OFFICIAL' ? (
+                                                    <Handshake size={16} strokeWidth={2.5} />
+                                                ) : user?.membershipStatus === 'PENDING' ? (
+                                                    <Loader2 size={16} strokeWidth={2.5} className="animate-spin" />
+                                                ) : user?.membershipTier === 'HERO' ? (
+                                                    <Rocket size={16} strokeWidth={2.5} />
+                                                ) : user?.membershipTier === 'GROWTH' ? (
+                                                    <Award size={16} strokeWidth={2.5} />
+                                                ) : user?.membershipTier === 'STARTER' ? (
+                                                    <UserPlus size={16} strokeWidth={2.5} />
+                                                ) : (
+                                                    <UserIcon size={16} strokeWidth={2.5} />
+                                                )}
+                                            </div>
+                                            <div className="flex flex-col flex-1 items-center justify-center leading-none">
+                                                {isProfileHovered && ['ADMIN', 'OFFICIAL'].includes(user?.role?.toUpperCase()) ? (
+                                                    <div className="flex flex-col items-center gap-1 animate-in fade-in slide-in-from-bottom-1 duration-300">
+                                                        <span className="text-[8px] font-black tracking-wider whitespace-nowrap">PANEL CONTROL</span>
+                                                        <LayoutGrid size={11} strokeWidth={3} className="opacity-80" />
+                                                    </div>
+                                                ) : (
+                                                    <>
+                                                        <span className={`text-[9px] font-black tracking-tight mb-1 ${isScrolled ? 'text-gray-900 dark:text-white' : 'text-white'}`}>
+                                                            Hola, {user?.fullName?.split(' ')[0] || 'Admin'}
+                                                        </span>
+                                                        <div className="flex items-center gap-1.5">
+                                                            <div className={`w-2 h-[px] bg-gradient-to-l opacity-60
+                                                                 ${user?.role?.toUpperCase() === 'ADMIN' ? 'from-red-500' :
+                                                                    user?.role?.toUpperCase() === 'OFFICIAL' ? 'from-orange-500' :
+                                                                        user?.membershipStatus === 'PENDING' ? 'from-amber-500' :
+                                                                            user?.membershipTier === 'HERO' ? 'from-indigo-500' :
+                                                                                user?.membershipTier === 'GROWTH' ? 'from-emerald-500' :
+                                                                                    user?.membershipTier === 'STARTER' ? 'from-lime-500' : 'from-emerald-500'} to-transparent`} />
+                                                            <span className={`text-[6.5px] font-black uppercase tracking-[0.2em]
+                                                                 ${user?.role?.toUpperCase() === 'ADMIN' ? 'text-red-500' :
+                                                                    user?.role?.toUpperCase() === 'OFFICIAL' ? 'text-orange-500' :
+                                                                        user?.membershipStatus === 'PENDING' ? 'text-amber-500 animate-pulse' :
+                                                                            user?.membershipTier === 'HERO' ? 'text-indigo-400' :
+                                                                                user?.membershipTier === 'GROWTH' ? 'text-emerald-400' :
+                                                                                    user?.membershipTier === 'STARTER' ? 'text-lime-400' : 'text-emerald-400'}`}>
+                                                                {user?.role?.toUpperCase() === 'ADMIN' ? 'Admin' :
+                                                                    user?.role?.toUpperCase() === 'OFFICIAL' ? 'Gestor' :
+                                                                        user?.membershipStatus === 'PENDING' ? 'Validando' :
+                                                                            user?.membershipTier === 'HERO' ? 'Visionario' :
+                                                                                user?.membershipTier === 'GROWTH' ? 'Embajador' :
+                                                                                    user?.membershipTier === 'STARTER' ? 'Socio' : 'Eco'}
+                                                            </span>
+                                                            <div className={`w-2 h-[1px] bg-gradient-to-r opacity-60
+                                                                 ${user?.role?.toUpperCase() === 'ADMIN' ? 'from-red-500' :
+                                                                    user?.role?.toUpperCase() === 'OFFICIAL' ? 'from-orange-500' :
+                                                                        user?.membershipStatus === 'PENDING' ? 'from-amber-500' :
+                                                                            user?.membershipTier === 'HERO' ? 'from-indigo-500' :
+                                                                                user?.membershipTier === 'GROWTH' ? 'from-emerald-500' :
+                                                                                    user?.membershipTier === 'STARTER' ? 'from-lime-500' : 'from-emerald-500'} to-transparent`} />
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </button>
+                                        <button
+                                            onClick={onLogout}
+                                            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300
+                                                ${isScrolled
+                                                    ? 'text-gray-500 hover:text-red-600 hover:bg-red-50 dark:text-gray-400 dark:hover:text-red-400 dark:hover:bg-red-500/10'
+                                                    : 'text-white/70 hover:text-white hover:bg-white/10'}`}
+                                            title="Cerrar sesión"
+                                        >
+                                            <LogOut size={18} />
+                                        </button>
+                                    </>
+                                ) : (
+                                    <Button
+                                        variant={isScrolled ? 'primary' : 'outline'}
+                                        onClick={handleLoginClick}
+                                        className={`rounded-xl font-bold text-sm h-11 px-6 shadow-lg transition-all duration-500 scale-100 hover:scale-105 active:scale-95 ${!isScrolled
+                                            ? 'border-white/40 hover:bg-white hover:text-[#018F64] text-white'
+                                            : 'bg-[#018F64] border-[#018F64] hover:bg-[#05835D] text-white shadow-[#018F64]/20'
+                                            }`}
+                                        icon={LogIn}
+                                    >
+                                        {t.nav.login}
+                                    </Button>
+                                )}
+                            </div>
                         </div>
                     </div>
 
@@ -189,16 +279,45 @@ const Navbar = ({ lang, setLang, darkMode, setDarkMode, t, isAuthenticated, user
                                     <span className="text-xs font-bold uppercase">{lang === 'es' ? 'English' : 'Español'}</span>
                                 </button>
                             </div>
-                            <div className="space-y-3">
-                                <Button
-                                    onClick={() => { handleLoginClick(); setIsMobileMenuOpen(false); }}
-                                    className="w-full h-14 rounded-2xl text-lg font-extrabold shadow-xl shadow-emerald-500/20"
-                                    icon={isAuthenticated ? ShieldCheck : LogIn}
-                                >
-                                    {isAuthenticated
-                                        ? (['ADMIN', 'OFFICIAL'].includes(user?.role) ? 'Panel Admin' : `Hola, ${user?.fullName?.split(' ')[0] || 'Usuario'}`)
-                                        : t.nav.login}
-                                </Button>
+                            <div className="space-y-4">
+                                {isAuthenticated ? (
+                                    <button
+                                        onClick={() => { handleLoginClick(); setIsMobileMenuOpen(false); }}
+                                        className={`w-full relative flex items-center gap-5 p-5 rounded-[2.5rem] border shadow-2xl overflow-hidden group text-left
+                                            ${user?.role?.toUpperCase() === 'ADMIN' ? 'bg-red-600 border-red-400 shadow-red-500/30' :
+                                                user?.role?.toUpperCase() === 'OFFICIAL' ? 'bg-orange-600 border-orange-400 shadow-orange-500/30' :
+                                                    'bg-indigo-600 border-indigo-400 shadow-indigo-500/30'}`}
+                                    >
+                                        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+                                        <div className="w-14 h-14 rounded-2xl bg-white shadow-xl flex items-center justify-center shrink-0 group-active:scale-95 transition-transform"
+                                            style={{ color: user?.role?.toUpperCase() === 'ADMIN' ? '#dc2626' : user?.role?.toUpperCase() === 'OFFICIAL' ? '#ea580c' : '#4f46e5' }}>
+                                            {user?.role?.toUpperCase() === 'ADMIN' ? <ShieldCheck size={28} strokeWidth={2.5} /> :
+                                                user?.role?.toUpperCase() === 'OFFICIAL' ? <Handshake size={28} strokeWidth={2.5} /> :
+                                                    <Rocket size={28} strokeWidth={2.5} />}
+                                        </div>
+                                        <div className="flex flex-col items-start leading-none gap-2">
+                                            <span className="text-base font-black text-white italic tracking-tight">
+                                                Hola, {user?.fullName?.split(' ')[0] || 'Raúl'}
+                                            </span>
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-5 h-[1px] bg-white/30" />
+                                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/90">
+                                                    {user?.role?.toUpperCase() === 'ADMIN' ? 'Administrador' :
+                                                        user?.role?.toUpperCase() === 'OFFICIAL' ? 'Gestor' : 'Eco-Héroe'}
+                                                </span>
+                                                <div className="w-5 h-[1px] bg-white/30" />
+                                            </div>
+                                        </div>
+                                    </button>
+                                ) : (
+                                    <Button
+                                        onClick={() => { handleLoginClick(); setIsMobileMenuOpen(false); }}
+                                        className="w-full h-14 rounded-2xl text-lg font-extrabold shadow-xl shadow-emerald-500/20"
+                                        icon={LogIn}
+                                    >
+                                        {t.nav.login}
+                                    </Button>
+                                )}
 
                                 {isAuthenticated && (
                                     <button

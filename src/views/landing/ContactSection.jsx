@@ -6,7 +6,6 @@ const ContactSection = ({ t }) => {
 
     return (
         <section
-            id="contact"
             className={`py-24 relative overflow-hidden transition-all duration-1000 ease-in-out ${showForm
                 ? 'bg-[#00281F] dark:bg-[#011c16]'
                 : 'bg-[#FEFDFB] dark:bg-[#020617]'

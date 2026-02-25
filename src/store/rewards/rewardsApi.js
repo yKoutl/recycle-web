@@ -1,9 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { API_URLS } from '../../api/config';
 
 export const rewardsApi = createApi({
     reducerPath: 'rewardsApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:3000/api', // Puerto 3000 según tu captura
+        baseUrl: API_URLS.BASE,
     }),
     tagTypes: ['Rewards'], // Etiqueta para el caché
 

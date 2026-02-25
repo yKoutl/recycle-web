@@ -7,6 +7,7 @@ export const TRANSLATIONS = {
             community: 'Comunidad',
             partners: 'Aliados',
             about: 'Nosotros',
+            contact: 'Contacto',
             login: 'Ingresar',
             logout: 'Cerrar Sesión',
             backToSite: 'Volver al Sitio'
@@ -100,7 +101,7 @@ export const TRANSLATIONS = {
         about: {
             tag: 'Sobre Nosotros',
             title: 'Innovando para un Planeta Sostenible',
-            subtitle: 'RecycleApp nace con el propósito de conectar ciudadanos conscientes con una red eficiente de reciclaje. Creemos que la tecnología es el puente hacia un futuro sostenible y circular.',
+            subtitle: 'RecycleApp nace con el objetivo de conectar ciudadanos conscientes con una red eficiente de reciclaje. Creemos que la tecnología es el puente hacia un futuro sostenible y circular.',
             global: {
                 title: 'Alcance Global',
                 desc: 'Impactando comunidades en más de 15 países.'
@@ -130,7 +131,7 @@ export const TRANSLATIONS = {
             passLabel: 'Contraseña',
             loginBtn: 'Iniciar Sesión',
             backBtn: 'Volver al inicio',
-            welcome: 'Hola, Administrador',
+            welcome: 'Hola,',
             welcomeSub: 'Aquí está lo que sucede hoy en la plataforma.',
             exportBtn: 'Exportar Datos',
             reportBtn: 'Nuevo Reporte',
@@ -167,6 +168,60 @@ export const TRANSLATIONS = {
                 status: 'Estado',
                 actions: 'Acciones'
             }
+        },
+        donation: {
+            tag: 'Eco-Aporte',
+            title: 'Sostén el Impacto Ambiental',
+            subtitle: 'Tu contribución permite que RecycleApp siga educando y conectando a miles de personas para un futuro sin residuos.',
+            disclaimer: 'Las contribuciones realizadas a través de la sección de Apoyo son voluntarias y no constituyen una donación deducible de impuestos de acuerdo con la ley peruana. Estos fondos se destinan íntegramente al mantenimiento tecnológico y operativo de RecycleApp.',
+            tiers: {
+                starter: {
+                    title: 'Eco-Socio',
+                    desc: 'Aporta el impulso inicial para nuestras tareas diarias.',
+                    amount: 'S/ 15 /mensual'
+                },
+                growth: {
+                    title: 'Eco-Embajador',
+                    desc: 'Fortalece la red y permite llegar a más comunidades.',
+                    amount: 'S/ 30 /mensual'
+                },
+                hero: {
+                    title: 'Eco-Visionario',
+                    desc: 'Lidera la transformación tecnológica del reciclaje.',
+                    amount: 'S/ 55 /mensual'
+                }
+            },
+            qrTitle: 'Aporta vía QR',
+            paymentNotice: 'Realiza el pago escaneando el código QR con <b>Yape</b> o <b>Plin</b>. Procesaremos tu aporte en un tiempo estimado de <b>5 minutos</b>, tras lo cual tu membresía se actualizará automáticamente.',
+            payerLabel: 'Titular de la Operación',
+            payerPlaceholder: 'Nombre de quien realiza el Yape/Plin...',
+            customBtn: 'Aporte Personalizado',
+            btn: 'Realizar Aporte'
+        },
+        contact: {
+            tag: 'Contacto',
+            title: 'Hablemos de Sostenibilidad',
+            subtitle: '¿Tienes alguna duda o quieres colaborar? Escríbenos y nuestro equipo te responderá lo antes posible.',
+            form: {
+                name: 'Nombre Completo',
+                email: 'Correo Electrónico',
+                subject: 'Asunto',
+                message: 'Mensaje',
+                send: 'Enviar Mensaje'
+            },
+            info: {
+                title: 'Información de Contacto',
+                address: 'Calle de la Sostenibilidad 123, CP 28001',
+                phone: '+34 900 000 000',
+                email: 'hola@nosplanet.com'
+            }
+        },
+        auth: {
+            needLogin: '¡Casi lo logras!',
+            loginToLike: 'Para dar amor a esta historia, primero debes ser parte de nuestra comunidad.',
+        },
+        common: {
+            maybeLater: 'Quizás más tarde'
         }
     },
     en: {
@@ -177,6 +232,7 @@ export const TRANSLATIONS = {
             community: 'Community',
             partners: 'Partners',
             about: 'About Us',
+            contact: 'Contact',
             login: 'Login',
             logout: 'Logout',
             backToSite: 'Back to Site'
@@ -337,6 +393,60 @@ export const TRANSLATIONS = {
                 status: 'Status',
                 actions: 'Actions'
             }
+        },
+        contact: {
+            tag: 'Contact',
+            title: 'Let\'s Talk Sustainability',
+            subtitle: 'Do you have any questions or want to collaborate? Write to us and our team will get back to you as soon as possible.',
+            form: {
+                name: 'Full Name',
+                email: 'Email Address',
+                subject: 'Subject',
+                message: 'Message',
+                send: 'Send Message'
+            },
+            info: {
+                title: 'Contact Information',
+                address: 'Sustainability Street 123, 28001',
+                phone: '+34 900 000 000',
+                email: 'hello@nosplanet.com'
+            }
+        },
+        auth: {
+            needLogin: 'Almost there!',
+            loginToLike: 'To show love to this story, you must first be part of our community.',
+        },
+        donation: {
+            tag: 'Eco-Contribution',
+            title: 'Sustain Environmental Impact',
+            subtitle: 'Your contribution allows RecycleApp to continue educating and connecting thousands of people for a waste-free future.',
+            disclaimer: 'Contributions made through the Support section are voluntary and do not constitute a tax-deductible donation in accordance with Peruvian law. These funds are used entirely for the technological and operational maintenance of RecycleApp.',
+            tiers: {
+                starter: {
+                    title: 'Eco-Partner',
+                    desc: 'Provide the initial boost for our daily tasks.',
+                    amount: 'S/ 15 /monthly'
+                },
+                growth: {
+                    title: 'Eco-Ambassador',
+                    desc: 'Strengthen the network and reach more communities.',
+                    amount: 'S/ 30 /monthly'
+                },
+                hero: {
+                    title: 'Eco-Visionary',
+                    desc: 'Lead the technological transformation of recycling.',
+                    amount: 'S/ 55 /monthly'
+                }
+            },
+            qrTitle: 'Contribute via QR',
+            paymentNotice: 'Make the payment by scanning the QR code with <b>Yape</b> or <b>Plin</b>. We will process your contribution in an estimated time of <b>5 minutes</b>, after which your membership will be automatically updated.',
+            payerLabel: 'Operation Holder',
+            payerPlaceholder: 'Name of the person making the Yape/Plin...',
+            customBtn: 'Custom Contribution',
+            btn: 'Contribute Now'
+        },
+        common: {
+            maybeLater: 'Maybe later'
         }
     }
 };

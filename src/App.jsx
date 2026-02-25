@@ -1,77 +1,70 @@
 import React, { useState, useEffect } from 'react';
-import { TRANSLATIONS } from './data/translations';
-import LandingView from './views/landing/LandingView';
-import LoginView from './views/auth/LoginView';
-import AdminView from './views/admin/AdminView';
-import { onLogin, onLogout } from './store/auth/authSlice';
+import { useLocation } from 'react-router-dom';
+import AppRouter from './routes/AppRouter';
+import PlanetBot from './components/planet-bot/PlanetBot';
+import { onLogin, onLogout, useCheckStatusQuery } from './store/auth';
 import { useSelector, useDispatch } from 'react-redux';
-import EcoBot from './components/eco-bot/EcoBot';
 
 const App = () => {
-  const [view, setView] = useState('landing'); // 'landing', 'login', 'admin'
   const [lang, setLang] = useState('es');
   const [darkMode, setDarkMode] = useState(false);
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [showBot, setShowBot] = useState(true);
 
   const dispatch = useDispatch();
-
+  const location = useLocation();
   const { status } = useSelector((state) => state.auth);
+  const token = localStorage.getItem('token');
 
+  // Recuperar datos reales del usuario si hay token al recargar
+  const { data: userData, isSuccess, isError, refetch } = useCheckStatusQuery(undefined, {
+    skip: !token,
+    refetchOnMountOrArgChange: true // Forzar comprobación al cambiar de usuario
+  });
 
-  // Helper for translation
-  const t = TRANSLATIONS[lang];
-
-
+  // Sincronizar estado de Redux con el backend
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      // Si hay token guardado, recuperamos la sesión
-      dispatch(onLogin({ token, user: { name: 'Admin Recuperado' } }));
-    } else {
-      // Si no hay token, aseguramos que esté fuera
+    if (isSuccess && userData && token) {
+      // Solo actualizamos si el usuario actual es diferente para evitar bucles
+      // O si no hay usuario en el estado
+      // Verificamos si realmente necesitamos actualizar
+      dispatch(onLogin({
+        token,
+        user: userData.user || userData
+      }));
+    }
+  }, [isSuccess, userData, token, dispatch]);
+
+  // Manejar errores de token expirado o inválido
+  useEffect(() => {
+    if (isError) {
       dispatch(onLogout());
     }
-  }, [dispatch]);
+  }, [isError, dispatch]);
 
-  if (status === 'authenticated') {
-    return (
-      <div className={darkMode ? 'dark' : ''}>
-        <div className="font-sans text-gray-800 bg-white dark:bg-gray-950 transition-colors duration-500">
-          <AdminView t={t} />
-          {/* Nota: Ya no pasamos onLogout aquí, AdminView lo maneja internamente */}
-        </div>
-      </div>
-    );
-  }
+  const handleLogout = () => {
+    dispatch(onLogout());
+  };
+
+  // Contexto para el Bot
+  const isLoginPage = location.pathname.includes('/auth/login');
+  const isAdminPage = location.pathname.includes('/admin');
+  const botContext = isAdminPage ? 'admin' : (isLoginPage ? 'login' : 'landing');
 
   return (
     <div className={darkMode ? 'dark' : ''}>
-      <div className="font-sans text-gray-800 bg-white dark:bg-gray-950 transition-colors duration-500">
-
-        {/* Si isLoginOpen es true, mostramos Login, si no, Landing */}
-        {isLoginOpen ? (
-          <LoginView
-            onLogin={() => {
-              // LoginView ya hace el dispatch.
-              // Aquí no hace falta hacer nada más, Redux cambiará el 'status' 
-              // y el bloque 'A' de arriba se activará solo.
-            }}
-            onCancel={() => setIsLoginOpen(false)} // Volver al Landing
-            t={t}
-          />
-        ) : (
-          <LandingView
-            onLoginClick={() => setIsLoginOpen(true)} // Ir al Login
-            lang={lang}
-            setLang={setLang}
-            darkMode={darkMode}
-            setDarkMode={setDarkMode}
-            t={t}
-          />
-        )}
-
+      <div className="font-sans text-gray-800 bg-white dark:bg-gray-950 transition-colors duration-500 min-h-screen">
+        <AppRouter
+          lang={lang}
+          setLang={setLang}
+          darkMode={darkMode}
+          setDarkMode={setDarkMode}
+          onLogout={handleLogout}
+          showBot={showBot}
+          setShowBot={setShowBot}
+        />
       </div>
-      <EcoBot />
+
+      {!isLoginPage && showBot && <PlanetBot currentView={botContext} />}
     </div>
   );
 };

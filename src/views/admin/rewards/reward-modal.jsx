@@ -1,0 +1,186 @@
+import React, { useState, useEffect } from 'react';
+import { X, Save, Gift, Tag, Info, Layers, Box } from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useCreateRewardMutation, useUpdateRewardMutation } from '../../../store/rewards';
+import ConfirmModal from '../../../components/shared/ConfirmModal';
+
+const RewardFormModal = ({ isOpen, onClose, themeColor }) => {
+    const { activeReward } = useSelector((state) => state.rewards || {});
+    const [createReward] = useCreateRewardMutation();
+    const [updateReward] = useUpdateRewardMutation();
+    const accent = themeColor || '#018F64';
+
+    const [formData, setFormData] = useState({
+        title: '',
+        description: '',
+        points: 0,
+        stock: 0,
+        category: 'digital',
+        imageUrl: ''
+    });
+    const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '', variant: 'danger' });
+
+    useEffect(() => {
+        if (activeReward) {
+            setFormData(activeReward);
+        } else {
+            setFormData({
+                title: '',
+                description: '',
+                points: 0,
+                stock: 0,
+                category: 'digital',
+                imageUrl: ''
+            });
+        }
+    }, [activeReward, isOpen]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            if (activeReward) {
+                await updateReward({ id: activeReward._id, ...formData }).unwrap();
+            } else {
+                await createReward(formData).unwrap();
+            }
+            onClose();
+        } catch (err) {
+            console.error('Error saving reward:', err);
+            setModalConfig({
+                isOpen: true,
+                title: 'Error al Guardar',
+                message: 'No se pudo guardar el premio. Verifica que los datos sean correctos e intenta de nuevo.',
+                variant: 'danger'
+            });
+        }
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+            <div className="bg-white dark:bg-gray-900 w-full max-w-xl rounded-[2.5rem] shadow-2xl border border-gray-100 dark:border-white/5 overflow-hidden animate-in zoom-in-95 duration-300">
+                <div className="p-8 border-b border-gray-50 dark:border-white/5 flex justify-between items-center bg-gray-50/50 dark:bg-white/5">
+                    <div className="flex items-center gap-3">
+                        <div
+                            className="p-2.5 text-white rounded-2xl shadow-lg"
+                            style={{ backgroundColor: accent, boxShadow: `0 8px 20px ${accent}30` }}
+                        >
+                            <Gift size={20} />
+                        </div>
+                        <h2 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tighter italic">
+                            {activeReward ? 'Editar Premio' : 'Nuevo Premio'}
+                        </h2>
+                    </div>
+                    <button onClick={onClose} className="p-2 hover:bg-white dark:hover:bg-white/10 rounded-xl transition-colors text-gray-400">
+                        <X size={20} />
+                    </button>
+                </div>
+
+                <form onSubmit={handleSubmit} className="p-8 space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="md:col-span-2 space-y-2">
+                            <label
+                                className="text-[10px] font-black uppercase tracking-widest ml-1 flex items-center gap-2"
+                                style={{ color: accent }}
+                            >
+                                <Tag size={12} /> Título del Premio
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.title}
+                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                className="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:ring-4 transition-all font-medium dark:text-white placeholder:text-gray-500"
+                                style={{ '--tw-ring-color': `${accent}15` }}
+                                onFocus={(e) => e.target.style.borderColor = accent}
+                                onBlur={(e) => e.target.style.borderColor = ''}
+                                placeholder="Ej: Suscripción Premium"
+                                required
+                            />
+                        </div>
+
+                        <div className="md:col-span-2 space-y-2">
+                            <label
+                                className="text-[10px] font-black uppercase tracking-widest ml-1 flex items-center gap-2"
+                                style={{ color: accent }}
+                            >
+                                <Info size={12} /> Descripción
+                            </label>
+                            <textarea
+                                value={formData.description}
+                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                className="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:ring-4 transition-all font-medium h-24 resize-none dark:text-white placeholder:text-gray-500"
+                                style={{ '--tw-ring-color': `${accent}15` }}
+                                onFocus={(e) => e.target.style.borderColor = accent}
+                                onBlur={(e) => e.target.style.borderColor = ''}
+                                placeholder="Explica en qué consiste el premio..."
+                                required
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label
+                                className="text-[10px] font-black uppercase tracking-widest ml-1 flex items-center gap-2"
+                                style={{ color: accent }}
+                            >
+                                <Layers size={12} /> Puntos Requeridos
+                            </label>
+                            <input
+                                type="number"
+                                value={formData.points}
+                                onChange={(e) => setFormData({ ...formData, points: Number(e.target.value) })}
+                                className="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:ring-4 transition-all font-bold dark:text-white"
+                                style={{ '--tw-ring-color': `${accent}15` }}
+                                onFocus={(e) => e.target.style.borderColor = accent}
+                                onBlur={(e) => e.target.style.borderColor = ''}
+                                required
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label
+                                className="text-[10px] font-black uppercase tracking-widest ml-1 flex items-center gap-2"
+                                style={{ color: accent }}
+                            >
+                                <Box size={12} /> Stock Disponible
+                            </label>
+                            <input
+                                type="number"
+                                value={formData.stock}
+                                onChange={(e) => setFormData({ ...formData, stock: Number(e.target.value) })}
+                                className="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:ring-4 transition-all font-bold dark:text-white"
+                                style={{ '--tw-ring-color': `${accent}15` }}
+                                onFocus={(e) => e.target.style.borderColor = accent}
+                                onBlur={(e) => e.target.style.borderColor = ''}
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className="pt-4 flex gap-3">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="flex-1 px-6 py-4 border border-gray-100 dark:border-white/10 rounded-2xl text-[11px] font-black uppercase tracking-widest text-gray-500 hover:bg-gray-50 dark:hover:bg-white/5 transition-all"
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            type="submit"
+                            className="flex-1 px-6 py-4 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all shadow-xl flex items-center justify-center gap-2"
+                            style={{ backgroundColor: accent, boxShadow: `0 8px 20px ${accent}30` }}
+                        >
+                            <Save size={16} /> {activeReward ? 'Guardar Cambios' : 'Crear Premio'}
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <ConfirmModal
+                {...modalConfig}
+                onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
+            />
+        </div>
+    );
+};
+
+export default RewardFormModal;

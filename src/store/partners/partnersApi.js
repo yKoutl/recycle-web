@@ -1,10 +1,10 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { API_URLS } from '../../api/config';
+import { baseQueryWithAuth } from '../baseQuery';
 
 export const partnersApi = createApi({
     reducerPath: 'partnersApi',
-    baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:3000/api', // Asegúrate de que este sea tu puerto correcto
-    }),
+    baseQuery: baseQueryWithAuth(API_URLS.BASE),
     tagTypes: ['Partners'], // Etiqueta para el caché
 
     endpoints: (builder) => ({

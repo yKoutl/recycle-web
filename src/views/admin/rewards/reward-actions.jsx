@@ -1,113 +1,207 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Plus, Edit2, Trash2, Tag, Box, Layers } from 'lucide-react'; // Iconos temáticos
+import { Plus, Edit2, Trash2, Tag, Box, Layers, Search, AlertCircle, Award, Gift as GiftIcon, Filter, RotateCw, ArrowRight } from 'lucide-react';
 
-// Asegúrate de que las rutas coincidan con tu estructura (api vs slice)
 import { useGetRewardsQuery, useDeleteRewardMutation } from '../../../store/rewards';
 import { onSetActiveReward } from '../../../store/rewards';
+import ConfirmModal from '../../../components/shared/ConfirmModal';
 
-const RewardsList = ({ onOpenModal }) => {
+const RewardsList = ({ onOpenModal, themeColor }) => {
     const dispatch = useDispatch();
+    const [selectedCategory, setSelectedCategory] = useState('Todos');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '', variant: 'danger', onConfirm: null });
+    const accent = themeColor || '#018F64';
 
-    // 1. Obtener datos (Si quieres filtrar solo partners, usa useGetRewardsQuery('partners'))
-    const { data: rewards = [], isLoading } = useGetRewardsQuery();
-
-    // 2. Hook para borrar
+    const { data: rewards = [], isLoading, refetch } = useGetRewardsQuery();
     const [deleteReward] = useDeleteRewardMutation();
 
-    // Acción para CREAR
+    const categories = ['Todos', ...new Set(rewards.map(r => r.category || 'Sin categoría'))];
+
+    const filteredRewards = rewards.filter(reward => {
+        const matchesCategory = selectedCategory === 'Todos' || reward.category === selectedCategory;
+        const matchesSearch = reward.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (reward.description || '').toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesCategory && matchesSearch;
+    });
+
     const handleCreate = () => {
         dispatch(onSetActiveReward(null));
         if (onOpenModal) onOpenModal();
     };
 
-    // Acción para EDITAR
     const handleEdit = (reward) => {
         dispatch(onSetActiveReward(reward));
         if (onOpenModal) onOpenModal();
     };
 
-    // Acción para BORRAR
     const handleDelete = async (id) => {
-        if (window.confirm("¿Estás seguro de eliminar este premio?")) {
-            await deleteReward(id);
-        }
+        setModalConfig({
+            isOpen: true,
+            title: '¿Eliminar Premio?',
+            message: '¿Estás seguro de eliminar este premio? Esta acción no se puede deshacer.',
+            variant: 'danger',
+            confirmText: 'Sí, Eliminar',
+            onConfirm: async () => {
+                await deleteReward(id);
+                setModalConfig(prev => ({ ...prev, isOpen: false }));
+            }
+        });
     };
 
-    if (isLoading) return <div className="p-10 text-center text-gray-500">Cargando premios...</div>;
+    const stats = [
+        { label: 'Total', value: rewards.length, icon: GiftIcon, color: '#2563eb', bg: 'bg-blue-50 dark:bg-blue-500/10' },
+        { label: 'Stock Crítico', value: rewards.filter(r => r.stock < 5).length, icon: AlertCircle, color: '#f97316', bg: 'bg-orange-50 dark:bg-orange-500/10' },
+        { label: 'Categorías', value: Math.max(0, categories.length - 1), icon: Layers, color: '#8b5cf6', bg: 'bg-purple-50 dark:bg-purple-500/10' },
+    ];
 
     return (
-        <div className="relative min-h-[50vh]">
-
-            {/* GRID DE TARJETAS */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-24">
-                {rewards?.map((reward) => (
-                    <div
-                        key={reward._id}
-                        className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md dark:hover:shadow-green-700 transition-all group relative"
-                    >
-
-                        {/* --- BOTONES DE ACCIÓN (Hover) --- */}
-                        <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                            <button
-                                onClick={() => handleEdit(reward)}
-                                className="p-2 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/30 transition-colors"
-                                title="Editar"
-                            >
-                                <Edit2 size={16} />
-                            </button>
-                            <button
-                                onClick={() => handleDelete(reward._id)}
-                                className="p-2 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/30 transition-colors"
-                                title="Eliminar"
-                            >
-                                <Trash2 size={16} />
-                            </button>
-                        </div>
-
-                        {/* --- CONTENIDO --- */}
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white pr-16 truncate">
-                            {reward.title}
-                        </h3>
-
-                        <p className="text-gray-500 dark:text-gray-400 text-sm mt-2 line-clamp-2 h-10">
-                            {reward.description}
-                        </p>
-
-                        <div className="mt-6 flex flex-wrap gap-2 items-center border-t border-gray-50 dark:border-gray-800 pt-4">
-
-                            <span className="flex items-center gap-1.5 font-base bg-green-50 dark:bg-green-900/20 px-3 py-1 rounded-full text-xs">
-                                <Tag size={14} className='text-green-600' />
-                                {reward.points} Pts
-                            </span>
-
-                            <span className="flex items-center gap-1.5 font-base bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full text-xs">
-                                <Box size={14} className='text-gray-600' />
-                                Stock: {reward.stock}
-                            </span>
-
-                            <span className="flex items-center gap-1.5 font-base bg-blue-50 dark:bg-blue-900/20 px-3 py-1 rounded-full text-xs   ">
-                                <Layers size={14} className='text-blue-600' />
-                                {reward.category}
-                            </span>
-
-                        </div>
+        <div className="space-y-6 animate-fade-in pb-20">
+            {/* ── Header ── */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-2xl text-white shadow-lg" style={{ background: `linear-gradient(135deg, ${accent}, ${accent}dd)`, boxShadow: `0 8px 20px ${accent}30` }}>
+                        <GiftIcon size={22} strokeWidth={1.75} />
                     </div>
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
+                            Gestión de Premios
+                        </h2>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                            Crea y administra las recompensas para tus ciudadanos.
+                        </p>
+                    </div>
+                </div>
+                <button
+                    onClick={handleCreate}
+                    className="flex items-center gap-2 px-5 py-2.5 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition-all active:scale-95 shadow-md"
+                    style={{ background: `linear-gradient(135deg, ${accent}, ${accent}dd)`, boxShadow: `0 4px 14px ${accent}40` }}
+                >
+                    <Plus size={16} strokeWidth={2.5} /> Nuevo premio
+                </button>
+            </div>
+
+            {/* ── Search and Filter ── */}
+            <div className="flex flex-col md:flex-row gap-3">
+                <div className="relative flex-1">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={15} strokeWidth={1.75} />
+                    <input
+                        type="text"
+                        placeholder="Buscar premios..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 rounded-xl text-sm outline-none transition-all text-gray-900 dark:text-white placeholder:text-gray-400"
+                        style={{ outline: 'none' }}
+                        onFocus={(e) => {
+                            e.target.style.borderColor = accent;
+                            e.target.style.boxShadow = `0 0 0 4px ${accent}15`;
+                        }}
+                        onBlur={(e) => {
+                            e.target.style.borderColor = '';
+                            e.target.style.boxShadow = '';
+                        }}
+                    />
+                </div>
+                <div className="flex items-center gap-2">
+                    <div className="relative">
+                        <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={15} />
+                        <select
+                            value={selectedCategory}
+                            onChange={(e) => setSelectedCategory(e.target.value)}
+                            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 rounded-xl pl-9 pr-8 py-2.5 text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 outline-none appearance-none cursor-pointer hover:border-gray-300 transition-all"
+                        >
+                            {categories.map(cat => (
+                                <option key={cat} value={cat}>{cat}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <button
+                        onClick={() => refetch()}
+                        className="p-2.5 text-gray-500 hover:text-gray-800 dark:hover:text-white bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 rounded-xl transition-all"
+                    >
+                        <RotateCw size={15} strokeWidth={1.75} className={isLoading ? 'animate-spin' : ''} />
+                    </button>
+                </div>
+            </div>
+
+            {/* ── Stats Row ── */}
+            <div className="flex items-center justify-end gap-2">
+                {stats.map((stat, i) => (
+                    <span key={i} className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${stat.bg} ${stat.color} border border-black/5 dark:border-white/5`}>
+                        <stat.icon size={11} strokeWidth={2.5} />
+                        {stat.value} {stat.label}
+                    </span>
                 ))}
             </div>
 
-            {/* --- BOTÓN FLOTANTE (FAB) --- */}
-            <button
-                onClick={handleCreate}
-                className="fixed bottom-10 right-10 bg-green-700 text-white p-4 rounded-full shadow-xl shadow-green-600/30 hover:bg-green-700 hover:scale-110 active:scale-95 transition-all z-50 group flex items-center justify-center"
-            >
-                <Plus size={28} strokeWidth={3} />
+            {/* ── Grid of Cards ── */}
+            {isLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[1, 2, 3].map(i => (
+                        <div key={i} className="h-64 bg-slate-100 dark:bg-white/5 animate-pulse rounded-3xl" />
+                    ))}
+                </div>
+            ) : filteredRewards.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredRewards.map((reward) => (
+                        <div
+                            key={reward._id}
+                            className="bg-white dark:bg-gray-900 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-white/5 hover:shadow-xl hover:-translate-y-1 transition-all group relative overflow-hidden"
+                        >
+                            <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+                                <button
+                                    onClick={() => handleEdit(reward)}
+                                    className="p-2 bg-slate-50 dark:bg-white/5 text-gray-400 rounded-lg transition-colors"
+                                    style={{ color: accent }}
+                                >
+                                    <Edit2 size={14} />
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(reward._id)}
+                                    className="p-2 bg-slate-50 dark:bg-white/5 text-gray-400 hover:text-red-500 rounded-lg transition-colors"
+                                >
+                                    <Trash2 size={14} />
+                                </button>
+                            </div>
 
-                {/* Tooltip Lateral */}
-                <span className="absolute right-full mr-4 px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none translate-x-2 group-hover:translate-x-0">
-                    Nuevo Premio
-                </span>
-            </button>
+                            <div className={`w-12 h-12 rounded-2xl mb-4 flex items-center justify-center text-white shrink-0 shadow-lg`} style={{ background: `linear-gradient(135deg, ${accent}, ${accent}dd)`, boxShadow: `0 8px 20px ${accent}40` }}>
+                                <Award size={24} />
+                            </div>
+
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-white truncate">
+                                {reward.title}
+                            </h3>
+                            <p className="text-gray-400 dark:text-gray-500 text-xs mt-2 line-clamp-2 font-medium">
+                                {reward.description}
+                            </p>
+
+                            <div className="mt-8 flex items-center justify-between border-t border-gray-50 dark:border-white/5 pt-5">
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: accent }}>Puntuación</span>
+                                    <span className="text-xl font-black text-gray-900 dark:text-white tabular-nums">{reward.points} <span className="text-[10px] text-gray-400">PTS</span></span>
+                                </div>
+                                <div className="flex flex-col items-end">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Disponibles</span>
+                                    <span className={`text-base font-bold tabular-nums ${reward.stock < 10 ? 'text-orange-500' : 'text-gray-600 dark:text-gray-300'}`}>{reward.stock}</span>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="py-20 text-center bg-white dark:bg-gray-900 rounded-3xl border border-dashed border-gray-200 dark:border-white/10">
+                    <div className="inline-flex p-6 rounded-3xl bg-gray-50 dark:bg-white/5 text-gray-300 mb-4">
+                        <GiftIcon size={48} />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Sin premios</h3>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">No se encontraron premios que coincidan con tu búsqueda.</p>
+                </div>
+            )}
+
+            <ConfirmModal
+                {...modalConfig}
+                onClose={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
+            />
         </div>
     );
 };

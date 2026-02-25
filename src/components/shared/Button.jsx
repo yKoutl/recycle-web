@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Button = ({ children, variant = 'primary', className = '', icon: Icon, ...props }) => {
+const Button = ({ children, variant = 'primary', className = '', icon: Icon, style, ...props }) => {
     const baseStyles = "px-5 py-2.5 rounded-full font-medium transition-all duration-300 flex items-center justify-center gap-2 transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed";
 
     const variants = {
@@ -13,7 +13,11 @@ const Button = ({ children, variant = 'primary', className = '', icon: Icon, ...
     };
 
     return (
-        <button className={`${baseStyles} ${variants[variant]} ${className}`} {...props}>
+        <button
+            className={`${baseStyles} ${!style ? variants[variant] : ''} ${className}`}
+            style={style}
+            {...props}
+        >
             {Icon && <Icon size={18} />}
             {children}
         </button>

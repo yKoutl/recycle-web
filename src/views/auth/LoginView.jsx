@@ -1,25 +1,28 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useDispatch } from 'react-redux'; // 1. Importar useDispatch
-import { LogIn, XCircle, ArrowRight, Loader2 } from 'lucide-react'; // Agregué Loader2 para el spinner
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { useLoginMutation, onLogin as setAuthCredentials } from '../../store/auth';
 
-// 2. Importar tu API y tu Acción del Slice
-import { useLoginMutation } from '../../store/auth';
-import { onLogin as setAuthCredentials } from '../../store/auth'; // Renombré para no confundir con la prop
+// Sub-components
+import LoginStatusModal from './components/LoginStatusModal';
+import LoginRoleSelection from './components/LoginRoleSelection';
+import LoginForm from './components/LoginForm';
 
-const LoginView = ({ onLogin, onCancel, t }) => {
+const LoginView = ({ t }) => {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const [loginApi] = useLoginMutation();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-
-    const dispatch = useDispatch();
-
-    // 3. Hook de la API de Login
-    // loginApi: función para llamar al backend
-    // isLoading: booleano automático que indica si está cargando
-    const [loginApi, { isLoading }] = useLoginMutation();
-
-    // ... (Tu código de Sliders y Bubbles se mantiene IGUAL) ...
+    const [showPassword, setShowPassword] = useState(false);
+    const [loginStatus, setLoginStatus] = useState(null);
+    const [statusMessage, setStatusMessage] = useState('');
+    const [step, setStep] = useState('select-role');
+    const [selectedRole, setSelectedRole] = useState(null);
+    const [isChangingState, setIsChangingState] = useState(false);
     const [currentSlide, setCurrentSlide] = useState(0);
+
     const slides = [
         { id: 0, image: '/src/assets/hero_nature_v2.png' },
         { id: 1, image: '/src/assets/hero_environment.jpg' }
@@ -32,145 +35,120 @@ const LoginView = ({ onLogin, onCancel, t }) => {
         return () => clearInterval(interval);
     }, [slides.length]);
 
-    const bubbles = useMemo(() => {
-        return Array.from({ length: 20 }).map((_, i) => ({
-            id: i,
-            left: `${Math.random() * 100}%`,
-            width: `${Math.random() * 50 + 20}px`,
-            height: `${Math.random() * 50 + 20}px`,
-            animationDuration: `${Math.random() * 10 + 15}s`,
-            animationDelay: `${Math.random() * 10}s`,
-            opacity: Math.random() * 0.3 + 0.1
-        }));
-    }, []);
+    const bubbles = useMemo(() => Array.from({ length: 15 }).map((_, i) => ({
+        id: i,
+        left: `${Math.random() * 100}%`,
+        width: `${Math.random() * 40 + 20}px`,
+        animationDuration: `${Math.random() * 10 + 15}s`,
+        animationDelay: `${Math.random() * 10}s`,
+    })), []);
 
-    // 4. NUEVO HANDLER DE SUBMIT (Conectado al Backend)
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(''); // Limpiar errores previos
+        setLoginStatus('loading');
+        setStatusMessage('Verificando identidad...');
 
         try {
-            // A) Llamamos a la API
-            // .unwrap() es necesario para usar try/catch con RTK Query
             const result = await loginApi({ email, password }).unwrap();
 
-            // B) Si sale bien, guardamos en Redux Global
-            // Asumo que tu backend devuelve { user: {...}, token: "..." }
-            dispatch(setAuthCredentials({
-                user: result.user || result, // Ajusta según tu respuesta de backend
-                token: result.access_token || result.token
-            }));
+            // --- NUEVA VALIDACIÓN DE SEGURIDAD ---
+            const userData = result.user || result;
+            const dbRole = userData?.role?.toUpperCase();
 
-            // C) Avisamos al componente padre (App.js) para cambiar la vista
-            onLogin();
+            // Mapeo de UI Roles a DB Roles
+            const roleMapping = {
+                'admin': ['ADMIN'],
+                'gestor': ['OFFICIAL'],
+                'ecoheroe': ['USER', 'VOLUNTEER'] // Asumiendo estos roles para usuarios normales
+            };
+
+            const allowedRoles = roleMapping[selectedRole] || [];
+
+            if (!allowedRoles.includes(dbRole)) {
+                setLoginStatus('error');
+                setStatusMessage(`Acceso no autorizado: Tu cuenta no tiene permisos para el portal de ${selectedRole}.`);
+                return; // Detenemos el login aunque la contraseña sea correcta
+            }
+            // -------------------------------------
+
+            await new Promise(resolve => setTimeout(resolve, 800));
+
+            setLoginStatus('success');
+            setStatusMessage('¡Bienvenido de nuevo!');
+
+            setTimeout(() => {
+                const token = result.access_token || result.token;
+                dispatch(setAuthCredentials({ user: userData, token }));
+
+                navigate(['ADMIN', 'OFFICIAL'].includes(dbRole) ? '/admin/dashboard' : '/');
+            }, 2000);
 
         } catch (err) {
-            console.error("Error login:", err);
-            // D) Manejo de errores
-            const errorMsg = err.data?.message || 'Error de conexión o credenciales inválidas';
-            setError(Array.isArray(errorMsg) ? errorMsg[0] : errorMsg);
+            setLoginStatus('error');
+            const errorMsg = err.data?.message || 'Credenciales inválidas';
+            setStatusMessage(Array.isArray(errorMsg) ? errorMsg[0] : errorMsg);
+            setTimeout(() => setLoginStatus(null), 3500);
         }
     };
 
-    const inputClasses = `
-        w-full px-4 py-3 
-        rounded-xl outline-none 
-        border border-gray-200 dark:border-gray-700 
-        bg-gray-50/50 dark:bg-gray-800/50 
-        text-gray-900 dark:text-white 
-        placeholder-gray-400 dark:placeholder-gray-500
-        transition-all duration-500 
-        focus:bg-white dark:focus:bg-gray-800
-        focus:border-green-500 dark:focus:border-green-400
-        focus:ring-4 focus:ring-green-100 dark:focus:ring-green-900/40
-    `;
+    const handleRoleSelect = (roleId) => {
+        setIsChangingState(true);
+        setTimeout(() => {
+            setSelectedRole(roleId);
+            setStep('login-form');
+            setIsChangingState(false);
+        }, 500);
+    };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-stone-900 dark:bg-gray-950 transition-colors duration-500">
+        <div className="h-screen w-full bg-[#070707] relative overflow-hidden font-outfit selection:bg-[#018F64]/30">
+            <LoginStatusModal loginStatus={loginStatus} statusMessage={statusMessage} selectedRole={selectedRole} setLoginStatus={setLoginStatus} />
 
-            {/* ... (Tus Slides y Bubbles se mantienen IGUAL) ... */}
-            {slides.map((slide, index) => (
-                <div key={slide.id} className={`absolute inset-0 z-0 transition-opacity duration-2000 ${currentSlide === index ? 'opacity-100' : 'opacity-0'}`}>
-                    <img src={slide.image} alt="Background" className="w-full h-full object-cover opacity-100 transition-opacity duration-500 blur-sm scale-105" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-stone-900/90 via-stone-900/50 to-stone-900/30 dark:from-gray-950/90 dark:via-gray-900/50 dark:to-gray-900/30" />
+            {/* --- BACKGROUND IMAGE (DESKTOP) --- */}
+            <div className={`hidden md:block absolute top-0 w-1/2 h-full z-10 transition-all duration-1000 ease-[cubic-bezier(0.645,0.045,0.355,1)] overflow-hidden ${step === 'select-role' ? 'left-1/2' : 'left-0'}`}>
+                {slides.map((slide, index) => (
+                    <div key={slide.id} className={`absolute inset-0 transition-opacity duration-1000 ${currentSlide === index ? 'opacity-100' : 'opacity-0'}`}>
+                        <img src={slide.image} alt="Background" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-[#070707]" />
+                    </div>
+                ))}
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-12 text-center select-none z-20">
+                    <h2 className="text-5xl font-black text-white uppercase tracking-tight leading-none mb-4">RECYCLE<span className="text-[#018F64]">APP</span></h2>
+                    <p className="text-white/40 text-[10px] font-bold uppercase tracking-[0.6em]">NOS PLANET 2026</p>
                 </div>
-            ))}
-            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-                {bubbles.map((bubble) => (
-                    <div key={bubble.id} className="absolute top-0 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 animate-float-up" style={{ left: bubble.left, width: bubble.width, height: bubble.width, animationDuration: bubble.animationDuration, animationDelay: bubble.animationDelay, opacity: bubble.opacity }} />
+            </div>
+
+            {/* --- CONTENT CAPA --- */}
+            <div className={`absolute top-0 w-full md:w-1/2 h-full z-20 flex flex-col items-center justify-center p-6 sm:p-10 transition-all duration-1000 ease-[cubic-bezier(0.645,0.045,0.355,1)] ${step === 'select-role' ? 'left-0' : 'md:left-1/2'}`}>
+                <div className={`w-full max-w-lg transition-all duration-500 ${isChangingState ? 'opacity-0 scale-95 blur-sm' : 'opacity-100 scale-100 blur-0'}`}>
+                    {step === 'select-role' ? (
+                        <LoginRoleSelection onRoleSelect={handleRoleSelect} navigate={navigate} />
+                    ) : (
+                        <LoginForm
+                            email={email} setEmail={setEmail}
+                            password={password} setPassword={setPassword}
+                            showPassword={showPassword} setShowPassword={setShowPassword}
+                            selectedRole={selectedRole} loginStatus={loginStatus}
+                            handleBackToSelect={() => { setIsChangingState(true); setTimeout(() => { setStep('select-role'); setIsChangingState(false); }, 500); }}
+                            handleSubmit={handleSubmit}
+                        />
+                    )}
+                </div>
+            </div>
+
+            {/* BACKGROUND BUBBLES */}
+            <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
+                {bubbles.map((b) => (
+                    <div key={b.id} className="absolute top-0 rounded-full bg-[#018F64] animate-float-up" style={{ left: b.left, width: b.width, height: b.width, animationDuration: b.animationDuration, animationDelay: b.animationDelay }} />
                 ))}
             </div>
 
-            <div className="bg-white/95 dark:bg-gray-900/90 p-8 md:p-10 rounded-3xl shadow-2xl w-full max-w-md relative z-10 border border-white/50 dark:border-gray-800 backdrop-blur-md animate-in fade-in zoom-in duration-500">
-
-                <div className="text-center mb-8">
-                    <h2 className="text-3xl text-gray-900 dark:text-white tracking-tight">{t.admin.portalTitle}</h2>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">{t.admin.portalSubtitle}</p>
-                </div>
-
-                {error && (
-                    <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-xl text-sm mb-6 flex items-center gap-3 animate-in shake border border-red-100 dark:border-red-900/50">
-                        <XCircle size={18} /> {error}
-                    </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="space-y-5">
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 ml-1">
-                            {t.admin.emailLabel}
-                        </label>
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className={inputClasses}
-                            placeholder="admin@recycle.com"
-                            required
-                            disabled={isLoading} // Deshabilitar si carga
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 ml-1">
-                            {t.admin.passLabel}
-                        </label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className={inputClasses}
-                            placeholder="••••••••"
-                            required
-                            disabled={isLoading} // Deshabilitar si carga
-                        />
-                    </div>
-
-                    {/* Botón con Estado de Carga */}
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="w-full flex items-center justify-center gap-2 py-3.5 px-4 mt-2 text-base font-medium text-white bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-500 rounded-xl shadow-lg shadow-green-600/20 transition-all duration-300 transform active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
-                    >
-                        {isLoading ? (
-                            <>
-                                <Loader2 className="animate-spin" size={20} />
-                                Iniciando sesión...
-                            </>
-                        ) : (
-                            t.admin.loginBtn
-                        )}
-                    </button>
-                </form>
-
-                <div className="mt-8 text-center border-t border-gray-100 dark:border-gray-800 pt-6">
-                    <button
-                        onClick={onCancel}
-                        disabled={isLoading}
-                        className="text-sm text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 font-medium flex items-center justify-center gap-2 mx-auto transition-colors duration-300"
-                    >
-                        <ArrowRight size={14} className="rotate-180" /> {t.admin.backBtn}
-                    </button>
-                </div>
-            </div>
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                @keyframes float-up { 0% { transform: translateY(110vh) scale(0.5); opacity: 0; } 50% { opacity: 0.5; } 100% { transform: translateY(-20vh) scale(1.2); opacity: 0; } }
+                .animate-float-up { animation: float-up linear infinite; }
+            `}} />
         </div>
     );
 };

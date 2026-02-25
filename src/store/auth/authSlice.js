@@ -19,8 +19,9 @@ export const authSlice = createSlice({
             state.user = payload.user; // Asume que el backend devuelve { user, token }
             state.token = payload.token;
             state.errorMessage = undefined;
-            // Opcional: Guardar en localStorage aquí o mediante middleware
-            localStorage.setItem('token', payload.token);
+            if (payload.token) {
+                localStorage.setItem('token', payload.token);
+            }
         },
         onLogout: (state, { payload }) => {
             state.status = 'not-authenticated';

@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Plus, Edit2, Trash2, MapPin, Users, Search, Target, Globe, Activity, Layout, Filter } from 'lucide-react';
+import { Plus, Edit2, Trash2, MapPin, Users, Search, Target, Globe, Activity, Layout, Filter, RotateCw, Calendar } from 'lucide-react';
 
 import { useGetProgramsQuery, useDeleteProgramMutation } from '../../../store/programs';
 import { onSetActiveProgram } from '../../../store/programs';
 import ProgramFormModal from './program-modal';
 import ConfirmModal from '../../../components/shared/ConfirmModal';
 
-const ProgramsList = () => {
+const ProgramsList = ({ themeColor }) => {
     const dispatch = useDispatch();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState('Todos');
     const [searchQuery, setSearchQuery] = useState('');
+    const [dateFilter, setDateFilter] = useState('');
     const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '', variant: 'danger', onConfirm: null });
+    const accent = themeColor || '#018F64';
 
-    const { data: programs = [], isLoading } = useGetProgramsQuery();
+    const { data: programs = [], isLoading, refetch } = useGetProgramsQuery();
     const [startDelete] = useDeleteProgramMutation();
 
     const categories = ['Todos', ...new Set(programs.map(p => p.category || 'Sin categoría'))];
@@ -24,7 +26,8 @@ const ProgramsList = () => {
         const matchesSearch = program.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             (program.description || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
             (program.location || '').toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesCategory && matchesSearch;
+        const matchesDate = !dateFilter || (program.date && program.date.includes(dateFilter));
+        return matchesCategory && matchesSearch && matchesDate;
     });
 
     const handleCreate = () => {
@@ -51,146 +54,172 @@ const ProgramsList = () => {
         });
     };
 
-    if (isLoading) return <div className="p-10 text-center text-gray-500">Cargando programas...</div>;
-
-    // Estadísticas para el mini panel
     const stats = [
-        { label: 'Total Programas', value: programs.length, icon: Layout, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
-        { label: 'Participantes', value: programs.reduce((acc, curr) => acc + (curr.participants || 0), 0), icon: Users, color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-        { label: 'Ubicaciones', value: new Set(programs.map(p => p.location)).size, icon: MapPin, color: 'text-orange-600', bg: 'bg-orange-50 dark:bg-orange-900/20' },
-        { label: 'Impacto Global', value: '+45%', icon: Globe, color: 'text-purple-600', bg: 'bg-purple-50 dark:bg-purple-900/20' },
+        { label: 'Total', value: programs.length, icon: Layout, color: '#10b981', bg: 'bg-emerald-50 dark:bg-emerald-500/10' },
+        { label: 'Participantes', value: programs.reduce((acc, curr) => acc + (curr.participants || 0), 0), icon: Users, color: '#2563eb', bg: 'bg-blue-50 dark:bg-blue-500/10' },
+        { label: 'Ubicaciones', value: new Set(programs.map(p => p.location)).size, icon: MapPin, color: '#f97316', bg: 'bg-orange-50 dark:bg-orange-500/10' },
     ];
 
     return (
-        <div className="space-y-10 animate-fade-in relative min-h-[50vh]">
-
-            {/* MINI PANEL DE ESTADÍSTICAS */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {stats.map((stat, i) => (
-                    <div key={i} className="bg-white/80 dark:bg-gray-900/40 backdrop-blur-xl p-5 rounded-3xl border border-gray-100 dark:border-white/5 flex items-center gap-4 transition-all hover:shadow-lg hover:shadow-gray-200/20 dark:hover:shadow-none">
-                        <div className={`p-3 rounded-2xl ${stat.bg} ${stat.color}`}>
-                            <stat.icon size={20} />
-                        </div>
-                        <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500">{stat.label}</p>
-                            <p className="text-xl font-black text-gray-900 dark:text-white tabular-nums">{stat.value}</p>
-                        </div>
+        <div className="space-y-6 animate-fade-in pb-20">
+            {/* ── Header ── */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-2xl text-white shadow-lg" style={{ background: `linear-gradient(135deg, ${accent}, ${accent}dd)` }}>
+                        <Target size={22} strokeWidth={1.75} />
                     </div>
-                ))}
-            </div>
-
-            {/* BARRA DE FILTROS Y BÚSQUEDA */}
-            <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-white/50 dark:bg-gray-900/20 p-4 rounded-[2rem] border border-gray-100 dark:border-white/5 backdrop-blur-md">
-                <div className="flex items-center gap-3 w-full md:w-auto">
-                    <div className="relative w-full md:w-64">
-                        <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
-                        <select
-                            value={selectedCategory}
-                            onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="w-full bg-gray-100 dark:bg-white/5 border-none rounded-full pl-11 pr-10 py-3 text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-300 outline-none focus:ring-2 focus:ring-[#018F64]/20 appearance-none cursor-pointer transition-all"
-                        >
-                            {categories.map(cat => (
-                                <option key={cat} value={cat} className="bg-white dark:bg-gray-900">
-                                    Filtrar: {cat}
-                                </option>
-                            ))}
-                        </select>
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                            <Plus size={14} className="rotate-45" />
-                        </div>
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
+                            Programas de Eco-Acción
+                        </h2>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                            Administra las iniciativas y programas de reciclaje activos.
+                        </p>
                     </div>
                 </div>
+                <button
+                    onClick={handleCreate}
+                    className="flex items-center gap-2 px-5 py-2.5 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition-all active:scale-95 shadow-md"
+                    style={{ background: `linear-gradient(135deg, ${accent}, ${accent}dd)`, boxShadow: `0 4px 14px ${accent}40` }}
+                >
+                    <Plus size={16} strokeWidth={2.5} /> Nuevo programa
+                </button>
+            </div>
 
-                <div className="relative w-full md:w-80">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+            {/* ── Search and Filter ── */}
+            <div className="flex flex-col md:flex-row gap-3">
+                <div className="relative flex-1">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={15} strokeWidth={1.75} />
                     <input
                         type="text"
                         placeholder="Buscar programas..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-gray-100 dark:bg-white/5 border-none rounded-full pl-11 pr-5 py-3 text-xs font-medium focus:ring-2 focus:ring-[#018F64]/20 outline-none transition-all dark:text-white"
+                        className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 rounded-xl text-sm outline-none transition-all text-gray-900 dark:text-white placeholder:text-gray-400"
+                        style={{ outline: 'none' }}
+                        onFocus={(e) => {
+                            e.target.style.borderColor = `${accent}80`;
+                            e.target.style.boxShadow = `0 0 0 2px ${accent}20`;
+                        }}
+                        onBlur={(e) => {
+                            e.target.style.borderColor = '';
+                            e.target.style.boxShadow = '';
+                        }}
                     />
+                </div>
+                <div className="flex items-center gap-2">
+                    <div className="relative">
+                        <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={15} />
+                        <select
+                            value={selectedCategory}
+                            onChange={(e) => setSelectedCategory(e.target.value)}
+                            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 rounded-xl pl-9 pr-8 py-2.5 text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 outline-none appearance-none cursor-pointer transition-all"
+                        >
+                            {categories.map(cat => (
+                                <option key={cat} value={cat}>{cat}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={15} />
+                        <input
+                            type="date"
+                            value={dateFilter}
+                            onChange={(e) => setDateFilter(e.target.value)}
+                            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-xs font-bold uppercase text-gray-600 dark:text-gray-300 outline-none transition-all"
+                        />
+                    </div>
+                    <button
+                        onClick={() => { refetch(); setSearchQuery(''); setDateFilter(''); setSelectedCategory('Todos'); }}
+                        className="p-2.5 text-gray-500 hover:text-gray-800 dark:hover:text-white bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 rounded-xl transition-all"
+                    >
+                        <RotateCw size={15} strokeWidth={1.75} className={isLoading ? 'animate-spin' : ''} />
+                    </button>
                 </div>
             </div>
 
-            {/* GRID DE TARJETAS */}
-            {filteredPrograms.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-24">
-                    {filteredPrograms.map((program) => (
-                        <div key={program._id} className="bg-white dark:bg-gray-900 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-xl hover:-translate-y-1 transition-all group relative overflow-hidden flex flex-col h-full">
+            {/* ── Stats Row ── */}
+            <div className="flex items-center justify-end gap-2">
+                {stats.map((stat, i) => (
+                    <span key={i} className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${stat.bg} ${stat.color} border border-black/5 dark:border-white/5`}>
+                        <stat.icon size={11} strokeWidth={2.5} />
+                        {stat.value} {stat.label}
+                    </span>
+                ))}
+            </div>
 
-                            {/* Imagen de portada */}
-                            <div className="h-40 w-full overflow-hidden relative">
+            {/* ── Grid of Cards ── */}
+            {isLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[1, 2, 3].map(i => (
+                        <div key={i} className="h-64 bg-slate-100 dark:bg-white/5 animate-pulse rounded-3xl" />
+                    ))}
+                </div>
+            ) : filteredPrograms.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredPrograms.map((program) => (
+                        <div key={program._id} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 hover:shadow-xl hover:-translate-y-1 transition-all group relative overflow-hidden flex flex-col">
+                            <div className="h-32 w-full overflow-hidden relative bg-slate-100 dark:bg-white/5">
                                 {program.imageUrl ? (
                                     <img src={program.imageUrl} alt={program.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                                 ) : (
-                                    <div className="w-full h-full bg-gradient-to-tr from-emerald-100 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 flex items-center justify-center text-[#018F64]">
+                                    <div className="w-full h-full flex items-center justify-center text-slate-300">
                                         <Activity size={40} />
                                     </div>
                                 )}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                                    <span className="text-white text-[10px] font-black uppercase tracking-widest italic flex items-center gap-2">
-                                        <Target size={12} /> Ver detalles del programa
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="p-6 flex-1 flex flex-col">
-                                <div className="flex justify-between items-start mb-3">
-                                    <h3 className="text-lg font-black text-gray-900 dark:text-white pr-4 truncate tracking-tight uppercase italic">
-                                        {program.title}
-                                    </h3>
-                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-y-1 group-hover:translate-y-0 shrink-0">
-                                        <button onClick={() => handleEdit(program)} className="p-2 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg shadow-sm hover:bg-[#018F64] hover:text-white transition-all">
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                                    <div className="flex gap-2 w-full justify-end">
+                                        <button onClick={() => handleEdit(program)} className="p-2 bg-white/20 backdrop-blur-md text-white rounded-lg hover:bg-white/40 transition-all">
                                             <Edit2 size={14} />
                                         </button>
-                                        <button onClick={() => handleDelete(program._id)} className="p-2 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg shadow-sm hover:bg-red-500 hover:text-white transition-all">
+                                        <button onClick={() => handleDelete(program._id)} className="p-2 bg-red-500/20 backdrop-blur-md text-red-200 rounded-lg hover:bg-red-500/40 transition-all">
                                             <Trash2 size={14} />
                                         </button>
                                     </div>
                                 </div>
+                            </div>
 
-                                <p className="text-gray-500 dark:text-gray-400 text-xs line-clamp-2 h-8 font-medium italic mb-6">
+                            <div className="p-5 flex-1 flex flex-col">
+                                <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2 line-clamp-1">{program.title}</h3>
+                                <p className="text-gray-400 dark:text-gray-500 text-xs line-clamp-2 mb-4 font-medium italic">
                                     {program.description}
                                 </p>
-
-                                <div className="mt-auto flex justify-between items-center border-t border-gray-50 dark:border-gray-800/50 pt-4">
-                                    <span className="flex items-center gap-1.5 text-[#018F64] font-black bg-[#018F64]/10 dark:bg-[#018F64]/20 px-3 py-1.5 rounded-xl text-[10px] uppercase tracking-widest">
-                                        <MapPin size={12} strokeWidth={3} />
-                                        {program.location}
-                                    </span>
-                                    <span className="flex items-center gap-1.5 text-gray-400 text-[10px] font-black uppercase tracking-widest">
-                                        <Users size={12} />
-                                        {program.participants} Participantes
-                                    </span>
+                                <div className="mt-auto flex flex-col gap-2 border-t border-gray-50 dark:border-white/5 pt-4">
+                                    <div className="flex justify-between items-center">
+                                        <span className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase tracking-widest">
+                                            <MapPin size={12} style={{ color: accent }} />
+                                            {program.location || 'N/A'}
+                                        </span>
+                                        <span className="flex items-center gap-1.5 text-slate-400 text-[10px] font-black uppercase tracking-widest">
+                                            <Users size={12} />
+                                            {program.participants || 0}
+                                        </span>
+                                    </div>
+                                    {program.date && (
+                                        <span className="flex items-center gap-1.5 text-orange-500 dark:text-orange-400 text-[9px] font-black uppercase tracking-widest">
+                                            <Calendar size={11} />
+                                            {new Date(program.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         </div>
                     ))}
                 </div>
             ) : (
-                <div className="py-20 text-center space-y-4">
-                    <div className="inline-flex p-6 rounded-[2.5rem] bg-gray-50 dark:bg-white/5 text-gray-300">
-                        <Activity size={48} />
+                <div className="py-20 text-center bg-white dark:bg-gray-900 rounded-3xl border border-dashed border-gray-200 dark:border-white/10">
+                    <div className="inline-flex p-6 rounded-3xl bg-gray-50 dark:bg-white/5 text-gray-300 mb-4">
+                        <Target size={48} />
                     </div>
-                    <p className="text-gray-500 dark:text-gray-400 font-black uppercase text-xs tracking-widest italic">No se encontraron programas</p>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Sin programas</h3>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">No se encontraron programas que coincidan.</p>
                 </div>
             )}
-
-            {/* BOTÓN FLOTANTE */}
-            <button
-                onClick={handleCreate}
-                className="fixed bottom-10 right-10 bg-[#018F64] text-white p-5 rounded-full shadow-2xl shadow-[#018F64]/30 hover:bg-[#05835D] hover:scale-110 active:scale-95 transition-all z-50 group flex items-center justify-center border-4 border-white dark:border-gray-950"
-            >
-                <Plus size={28} strokeWidth={4} />
-                <span className="absolute right-full mr-4 px-4 py-2 bg-gray-900 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap pointer-events-none translate-x-4 group-hover:translate-x-0 shadow-xl">
-                    Crear Nuevo Programa
-                </span>
-            </button>
 
             <ProgramFormModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
+                themeColor={accent}
             />
 
             <ConfirmModal

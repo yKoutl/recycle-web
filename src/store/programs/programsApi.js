@@ -5,6 +5,13 @@ export const programsApi = createApi({
     reducerPath: 'programsApi',
     baseQuery: fetchBaseQuery({
         baseUrl: API_URLS.BASE,
+        prepareHeaders: (headers, { getState }) => {
+            const token = getState().auth.token || localStorage.getItem('token');
+            if (token) {
+                headers.set('authorization', `Bearer ${token}`);
+            }
+            return headers;
+        },
     }),
     tagTypes: ['Programs'], // Etiqueta para el caché
 
@@ -37,7 +44,13 @@ export const programsApi = createApi({
             invalidatesTags: ['Programs'],
         }),
 
-        // 4. DELETE (Eliminar)
+        // 4. GET BY ID
+        getProgramById: builder.query({
+            query: (id) => `/programs/${id}`,
+            providesTags: ['Programs'],
+        }),
+
+        // 5. DELETE (Eliminar)
         deleteProgram: builder.mutation({
             query: (id) => ({
                 url: `/programs/${id}`,
@@ -51,6 +64,7 @@ export const programsApi = createApi({
 // Exportamos los hooks generados automáticamente
 export const {
     useGetProgramsQuery,
+    useGetProgramByIdQuery,
     useCreateProgramMutation,
     useUpdateProgramMutation,
     useDeleteProgramMutation

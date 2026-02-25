@@ -6,6 +6,7 @@ import { partnerRequestsApi } from "./partners/partnerRequestsApi";
 import { authSlice, authApi } from "./auth";
 import { usersSlice, usersApi } from "./user";
 import { ecoHistoriesApi } from "./eco-histories/ecoHistoriesApi";
+import { donationsApi } from "./donations/donationsApi";
 
 export const store = configureStore({
     reducer: {
@@ -25,6 +26,7 @@ export const store = configureStore({
         [authApi.reducerPath]: authApi.reducer,
         [usersApi.reducerPath]: usersApi.reducer,
         [ecoHistoriesApi.reducerPath]: ecoHistoriesApi.reducer,
+        [donationsApi.reducerPath]: donationsApi.reducer,
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware()
         .concat(rewardsApi.middleware)
@@ -33,5 +35,6 @@ export const store = configureStore({
         .concat(partnerRequestsApi.middleware)
         .concat(authApi.middleware)
         .concat(usersApi.middleware)
-        .concat(ecoHistoriesApi.middleware),
+        .concat(ecoHistoriesApi.middleware)
+        .concat(donationsApi.middleware),
 });

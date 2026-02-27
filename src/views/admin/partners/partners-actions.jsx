@@ -69,9 +69,9 @@ const PartnersView = ({ themeColor }) => {
     };
 
     const stats = [
-        { label: 'Socios', value: partners.length, icon: Handshake, color: '#f59e0b', bg: 'bg-amber-50 dark:bg-amber-500/10' },
-        { label: 'Empresas', value: partners.filter(p => p.typeLabel === 'Empresa').length, icon: Building2, color: '#2563eb', bg: 'bg-blue-50 dark:bg-blue-500/10' },
-        { label: 'Inactivos', value: partners.filter(p => !p.isVisible).length, icon: EyeOff, color: '#64748b', bg: 'bg-slate-50 dark:bg-slate-500/10' },
+        { label: 'Socios', value: partners.length, icon: Handshake, color: 'text-amber-500 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-500/10' },
+        { label: 'Empresas', value: partners.filter(p => p.typeLabel === 'Empresa').length, icon: Building2, color: 'text-blue-500 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-500/10' },
+        { label: 'Inactivos', value: partners.filter(p => !p.isVisible).length, icon: EyeOff, color: 'text-slate-500 dark:text-slate-400', bg: 'bg-slate-50 dark:bg-slate-500/10' },
     ];
 
     if (isLoading) return <div className="p-10 text-center animate-pulse text-gray-400">Cargando socios...</div>;

@@ -17,7 +17,7 @@ const GestorFormModal = ({ isOpen, onClose, activeUser = null, isDetailOnly = fa
         documentNumber: '',
         phone: '',
         institution: '',
-        role: 'OFFICIAL'
+        role: 'MANAGER'
     });
 
     const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '', variant: 'success' });
@@ -32,8 +32,8 @@ const GestorFormModal = ({ isOpen, onClose, activeUser = null, isDetailOnly = fa
                     password: '',
                     documentNumber: activeUser.documentNumber || '',
                     phone: activeUser.phone || '',
-                    institution: activeUser.institution || '',
-                    role: 'OFFICIAL'
+                    institution: activeUser.profile?.institution || activeUser.institution || '',
+                    role: 'MANAGER'
                 });
             } else {
                 const tempPassword = Math.random().toString(36).slice(-8).toUpperCase();
@@ -44,7 +44,7 @@ const GestorFormModal = ({ isOpen, onClose, activeUser = null, isDetailOnly = fa
                     documentNumber: '',
                     phone: '',
                     institution: '',
-                    role: 'OFFICIAL'
+                    role: 'MANAGER'
                 });
             }
         }
@@ -231,16 +231,37 @@ const GestorFormModal = ({ isOpen, onClose, activeUser = null, isDetailOnly = fa
                             />
                         </div>
 
-                        <div className="space-y-2 md:col-span-2">
+                        <div className="space-y-3 md:col-span-2">
                             <label className="text-[10px] font-black uppercase tracking-widest ml-1 flex items-center gap-2" style={{ color: accent }}>
                                 <Shield size={12} /> Rol Asignado
                             </label>
                             <div
-                                className="w-full bg-white dark:bg-white/5 border rounded-2xl px-5 py-4 text-xs font-black uppercase flex items-center gap-2 italic"
-                                style={{ borderColor: `${accent}40`, color: accent }}
+                                className="w-full bg-slate-50 dark:bg-white/[0.02] border-2 border-dashed rounded-[2rem] px-8 py-6 transition-all duration-300 relative overflow-hidden group"
+                                style={{ borderColor: formData.institution ? `${accent}40` : '#e2e8f0' }}
                             >
-                                <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: accent }}></div>
-                                Rol: Gestor de Portal ({formData.institution || 'Sin asignar'})
+                                <div className="relative z-10 flex items-center gap-5">
+                                    <div className={`p-3 rounded-2xl shadow-lg transition-transform group-hover:scale-110 ${formData.institution ? 'text-white' : 'text-gray-400 bg-gray-100 dark:bg-white/5'}`}
+                                        style={formData.institution ? { backgroundColor: accent, boxShadow: `0 8px 20px ${accent}30` } : {}}>
+                                        <Shield size={22} strokeWidth={2.5} />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">Perfil de Acceso</p>
+                                        <h4 className={`text-sm font-black uppercase tracking-tight ${formData.institution ? 'text-gray-900 dark:text-white' : 'text-gray-400 italic'}`}>
+                                            Gestor Institucional {formData.institution ? `— ${formData.institution}` : '(Pendiente asignar entidad)'}
+                                        </h4>
+                                        <p className="text-[10px] font-bold text-gray-500 dark:text-gray-500 mt-1">
+                                            {formData.institution
+                                                ? 'Acceso total para la gestión de programas y validación de puntos.'
+                                                : 'El rol requiere una institución o municipio válido para activarse.'}
+                                        </p>
+                                    </div>
+                                </div>
+                                {/* Background Accent Decor */}
+                                {formData.institution && (
+                                    <div className="absolute top-0 right-0 w-24 h-full opacity-[0.03] pointer-events-none">
+                                        <Shield size={120} className="-mr-10 -mt-5 rotate-12" />
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

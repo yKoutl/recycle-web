@@ -16,8 +16,11 @@ const AdminHeader = ({ t, darkMode, setDarkMode, setIsSidebarOpen, isSidebarOpen
         <>
             {/* ── Mobile Header ── */}
             <header
-                className="h-20 flex items-center justify-between px-6 sticky top-0 z-40 md:hidden border-b"
-                style={{ background: '#0f172a', borderColor: 'rgba(255,255,255,0.06)' }}
+                className="h-20 flex items-center justify-between px-6 sticky top-0 z-40 md:hidden border-b shadow-2xl"
+                style={{
+                    background: 'linear-gradient(to bottom, #0f172a, #0b1121)',
+                    borderColor: 'rgba(255,255,255,0.08)'
+                }}
             >
                 <div className="flex items-center gap-4">
                     <button
@@ -42,10 +45,14 @@ const AdminHeader = ({ t, darkMode, setDarkMode, setIsSidebarOpen, isSidebarOpen
                 <div className="flex items-center gap-4">
                     <div className="relative">
                         <button
-                            className={iconBtn}
+                            className={`relative ${iconBtn}`}
                             onClick={() => setShowNotifications(!showNotifications)}
                         >
-                            <Bell size={22} strokeWidth={2} />
+                            <Bell size={24} strokeWidth={2} />
+                            <span
+                                className="absolute top-2 right-2 w-2 h-2 rounded-full ring-2 ring-[#0f172a] animate-pulse"
+                                style={{ backgroundColor: accent }}
+                            />
                         </button>
                         <AnimatePresence>
                             {showNotifications && (
@@ -58,27 +65,26 @@ const AdminHeader = ({ t, darkMode, setDarkMode, setIsSidebarOpen, isSidebarOpen
                                         onClick={() => setShowNotifications(false)}
                                     />
                                     <motion.div
-                                        initial={{ opacity: 0, y: -20, scale: 0.95, transformOrigin: 'top right' }}
-                                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                                        transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                                        className="absolute right-0 mt-4 w-[calc(100vw-2rem)] sm:w-80 bg-[#1e293b] border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden"
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="fixed top-24 inset-x-4 bg-slate-900/98 backdrop-blur-3xl border border-white/20 rounded-[2.5rem] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.9)] z-50 overflow-hidden"
                                     >
-                                        <div className="p-4 border-b border-white/5 flex justify-between items-center bg-white/2">
-                                            <h3 className="text-white font-bold text-xs uppercase tracking-widest">Notificaciones</h3>
+                                        <div className="p-5 border-b border-white/10 flex justify-between items-center bg-white/[0.03]">
+                                            <h3 className="text-white font-black text-[10px] uppercase tracking-[0.2em]">Notificaciones</h3>
                                             <span
-                                                className="text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-widest"
-                                                style={{ backgroundColor: `${accent}20`, color: accent }}
+                                                className="text-[9px] px-3 py-1 rounded-full font-black uppercase tracking-widest bg-white/10 text-white"
                                             >
                                                 0 NUEVAS
                                             </span>
                                         </div>
-                                        <div className="p-10 flex flex-col items-center justify-center text-center">
-                                            <div className="w-16 h-16 bg-white/[0.03] rounded-full flex items-center justify-center mb-4 ring-1 ring-white/5">
-                                                <Bell size={28} className="text-slate-600" />
+                                        <div className="p-12 flex flex-col items-center justify-center text-center">
+                                            <div className="w-20 h-20 bg-white/[0.05] rounded-full flex items-center justify-center mb-6 ring-1 ring-white/10 relative">
+                                                <div className="absolute inset-0 rounded-full blur-xl opacity-20" style={{ backgroundColor: accent }} />
+                                                <Bell size={28} className="text-white opacity-40 relative z-10" />
                                             </div>
-                                            <p className="text-white font-bold text-sm">Todo despejado</p>
-                                            <p className="text-slate-500 text-[10px] mt-1 leading-relaxed">No hay alertas pendientes.</p>
+                                            <p className="text-white font-bold text-base">Todo despejado</p>
+                                            <p className="text-slate-400 text-xs mt-2 font-medium leading-relaxed opacity-80">No hay alertas pendientes en tu bandeja.</p>
                                         </div>
                                     </motion.div>
                                 </>
@@ -151,26 +157,26 @@ const AdminHeader = ({ t, darkMode, setDarkMode, setIsSidebarOpen, isSidebarOpen
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                         exit={{ opacity: 0, y: -20, scale: 0.95 }}
                                         transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                                        className="absolute right-0 mt-4 w-80 bg-[#1e293b] border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden"
+                                        className="absolute right-0 mt-6 w-80 bg-slate-900/95 backdrop-blur-3xl border border-white/20 rounded-[2.5rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)] z-50 overflow-hidden"
                                     >
-                                        <div className="p-4 border-b border-white/5 flex justify-between items-center bg-white/2">
-                                            <h3 className="text-white font-bold text-xs uppercase tracking-widest">Notificaciones</h3>
+                                        <div className="p-5 border-b border-white/10 flex justify-between items-center bg-white/[0.04]">
+                                            <h3 className="text-white font-black text-[10px] uppercase tracking-[0.2em]">Centro de Alertas</h3>
                                             <span
-                                                className="text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-widest"
-                                                style={{ backgroundColor: `${accent}20`, color: accent }}
+                                                className="text-[9px] px-3 py-1 rounded-full font-black uppercase tracking-widest ring-1 ring-white/20 text-white"
                                             >
                                                 0 NUEVAS
                                             </span>
                                         </div>
-                                        <div className="p-10 flex flex-col items-center justify-center text-center">
-                                            <div className="w-20 h-20 bg-white/[0.03] rounded-full flex items-center justify-center mb-5 ring-1 ring-white/5">
-                                                <Bell size={32} className="text-slate-600" />
+                                        <div className="p-14 flex flex-col items-center justify-center text-center">
+                                            <div className="w-24 h-24 bg-white/[0.04] rounded-[2rem] flex items-center justify-center mb-8 ring-1 ring-white/10 relative -rotate-3 group-hover:rotate-0 transition-transform">
+                                                <div className="absolute inset-x-0 bottom-0 h-1/2 rounded-full blur-2xl opacity-20" style={{ backgroundColor: accent }} />
+                                                <Bell size={36} className="text-white opacity-40 relative z-10" />
                                             </div>
-                                            <p className="text-white font-bold text-sm">¡Todo despejado!</p>
-                                            <p className="text-slate-500 text-xs mt-2 leading-relaxed">No tienes alertas pendientes en este momento.</p>
+                                            <p className="text-white font-bold text-lg tracking-tight">¡Todo en orden!</p>
+                                            <p className="text-slate-400 text-xs mt-3 leading-relaxed font-medium opacity-70">No tienes alertas pendientes en este momento. ¡Sigue así!</p>
                                         </div>
-                                        <button className="w-full p-4 bg-white/2 hover:bg-white/5 text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] transition-all border-t border-white/5">
-                                            Ver todas las actividades
+                                        <button className="w-full p-5 bg-white/[0.03] hover:bg-white/[0.08] text-white/50 text-[9px] font-black uppercase tracking-[0.3em] transition-all border-t border-white/10 hover:text-white">
+                                            Historial de actividad
                                         </button>
                                     </motion.div>
                                 </>

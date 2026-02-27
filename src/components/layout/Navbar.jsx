@@ -32,7 +32,7 @@ const Navbar = ({ lang, setLang, darkMode, setDarkMode, t, isAuthenticated, user
 
     const handleLoginClick = () => {
         if (isAuthenticated) {
-            if (['ADMIN', 'OFFICIAL'].includes(user?.role?.toUpperCase())) {
+            if (['ADMIN', 'MANAGER'].includes(user?.role?.toUpperCase())) {
                 navigate('/admin/dashboard');
             }
         } else {
@@ -121,25 +121,25 @@ const Navbar = ({ lang, setLang, darkMode, setDarkMode, t, isAuthenticated, user
                                             className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-2xl transition-all duration-500 hover:scale-[1.02] active:scale-95 border min-w-[140px] h-[48px]
                                                 ${isScrolled
                                                     ? (isProfileHovered && user?.role?.toUpperCase() === 'ADMIN' ? 'bg-red-600 border-red-500 shadow-xl shadow-red-900/40 text-white' :
-                                                        isProfileHovered && user?.role?.toUpperCase() === 'OFFICIAL' ? 'bg-orange-600 border-orange-500 shadow-xl shadow-orange-900/40 text-white' :
+                                                        isProfileHovered && user?.role?.toUpperCase() === 'MANAGER' ? 'bg-orange-600 border-orange-500 shadow-xl shadow-orange-900/40 text-white' :
                                                             user?.role?.toUpperCase() === 'ADMIN' ? 'bg-red-50/50 dark:bg-red-900/10 border-red-500/20 shadow-lg shadow-red-900/5' :
-                                                                user?.role?.toUpperCase() === 'OFFICIAL' ? 'bg-orange-50/50 dark:bg-orange-900/10 border-orange-500/20 shadow-lg shadow-orange-900/5' :
+                                                                user?.role?.toUpperCase() === 'MANAGER' ? 'bg-orange-50/50 dark:bg-orange-900/10 border-orange-500/20 shadow-lg shadow-orange-900/5' :
                                                                     'bg-indigo-50/50 dark:bg-indigo-900/10 border-indigo-500/20 shadow-lg shadow-indigo-900/5')
                                                     : (isProfileHovered && user?.role?.toUpperCase() === 'ADMIN' ? 'bg-red-600 border-red-500 shadow-2xl text-white' :
-                                                        isProfileHovered && user?.role?.toUpperCase() === 'OFFICIAL' ? 'bg-orange-600 border-orange-500 shadow-2xl text-white' :
+                                                        isProfileHovered && user?.role?.toUpperCase() === 'MANAGER' ? 'bg-orange-600 border-orange-500 shadow-2xl text-white' :
                                                             'bg-white/10 backdrop-blur-md border-white/20 shadow-2xl')}`}
                                         >
                                             <div className={`w-8 h-8 rounded-xl flex items-center justify-center shadow-lg transition-all shrink-0
                                                 ${isProfileHovered ? 'bg-white text-gray-900' :
                                                     user?.role?.toUpperCase() === 'ADMIN' ? 'bg-red-600 text-white shadow-red-500/30' :
-                                                        user?.role?.toUpperCase() === 'OFFICIAL' ? 'bg-orange-600 text-white shadow-orange-500/30' :
+                                                        user?.role?.toUpperCase() === 'MANAGER' ? 'bg-orange-600 text-white shadow-orange-500/30' :
                                                             user?.membershipStatus === 'PENDING' ? 'bg-amber-500 text-white shadow-amber-500/30' :
                                                                 user?.membershipTier === 'HERO' ? 'bg-indigo-600 text-white shadow-indigo-500/30' :
                                                                     user?.membershipTier === 'GROWTH' ? 'bg-emerald-600 text-white shadow-emerald-500/30' :
                                                                         user?.membershipTier === 'STARTER' ? 'bg-lime-600 text-white shadow-lime-500/30' : 'bg-emerald-600 text-white shadow-emerald-500/20'} group-hover:rotate-6`}>
                                                 {user?.role?.toUpperCase() === 'ADMIN' ? (
                                                     <ShieldCheck size={16} strokeWidth={2.5} />
-                                                ) : user?.role?.toUpperCase() === 'OFFICIAL' ? (
+                                                ) : user?.role?.toUpperCase() === 'MANAGER' ? (
                                                     <Handshake size={16} strokeWidth={2.5} />
                                                 ) : user?.membershipStatus === 'PENDING' ? (
                                                     <Loader2 size={16} strokeWidth={2.5} className="animate-spin" />
@@ -154,7 +154,7 @@ const Navbar = ({ lang, setLang, darkMode, setDarkMode, t, isAuthenticated, user
                                                 )}
                                             </div>
                                             <div className="flex flex-col flex-1 items-center justify-center leading-none">
-                                                {isProfileHovered && ['ADMIN', 'OFFICIAL'].includes(user?.role?.toUpperCase()) ? (
+                                                {isProfileHovered && ['ADMIN', 'MANAGER'].includes(user?.role?.toUpperCase()) ? (
                                                     <div className="flex flex-col items-center gap-1 animate-in fade-in slide-in-from-bottom-1 duration-300">
                                                         <span className="text-[8px] font-black tracking-wider whitespace-nowrap">PANEL CONTROL</span>
                                                         <LayoutGrid size={11} strokeWidth={3} className="opacity-80" />
@@ -167,20 +167,20 @@ const Navbar = ({ lang, setLang, darkMode, setDarkMode, t, isAuthenticated, user
                                                         <div className="flex items-center gap-1.5">
                                                             <div className={`w-2 h-[px] bg-gradient-to-l opacity-60
                                                                  ${user?.role?.toUpperCase() === 'ADMIN' ? 'from-red-500' :
-                                                                    user?.role?.toUpperCase() === 'OFFICIAL' ? 'from-orange-500' :
+                                                                    user?.role?.toUpperCase() === 'MANAGER' ? 'from-orange-500' :
                                                                         user?.membershipStatus === 'PENDING' ? 'from-amber-500' :
                                                                             user?.membershipTier === 'HERO' ? 'from-indigo-500' :
                                                                                 user?.membershipTier === 'GROWTH' ? 'from-emerald-500' :
                                                                                     user?.membershipTier === 'STARTER' ? 'from-lime-500' : 'from-emerald-500'} to-transparent`} />
                                                             <span className={`text-[6.5px] font-black uppercase tracking-[0.2em]
                                                                  ${user?.role?.toUpperCase() === 'ADMIN' ? 'text-red-500' :
-                                                                    user?.role?.toUpperCase() === 'OFFICIAL' ? 'text-orange-500' :
+                                                                    user?.role?.toUpperCase() === 'MANAGER' ? 'text-orange-500' :
                                                                         user?.membershipStatus === 'PENDING' ? 'text-amber-500 animate-pulse' :
                                                                             user?.membershipTier === 'HERO' ? 'text-indigo-400' :
                                                                                 user?.membershipTier === 'GROWTH' ? 'text-emerald-400' :
                                                                                     user?.membershipTier === 'STARTER' ? 'text-lime-400' : 'text-emerald-400'}`}>
                                                                 {user?.role?.toUpperCase() === 'ADMIN' ? 'Admin' :
-                                                                    user?.role?.toUpperCase() === 'OFFICIAL' ? 'Gestor' :
+                                                                    user?.role?.toUpperCase() === 'MANAGER' ? 'Gestor' :
                                                                         user?.membershipStatus === 'PENDING' ? 'Validando' :
                                                                             user?.membershipTier === 'HERO' ? 'Visionario' :
                                                                                 user?.membershipTier === 'GROWTH' ? 'Embajador' :
@@ -188,7 +188,7 @@ const Navbar = ({ lang, setLang, darkMode, setDarkMode, t, isAuthenticated, user
                                                             </span>
                                                             <div className={`w-2 h-[1px] bg-gradient-to-r opacity-60
                                                                  ${user?.role?.toUpperCase() === 'ADMIN' ? 'from-red-500' :
-                                                                    user?.role?.toUpperCase() === 'OFFICIAL' ? 'from-orange-500' :
+                                                                    user?.role?.toUpperCase() === 'MANAGER' ? 'from-orange-500' :
                                                                         user?.membershipStatus === 'PENDING' ? 'from-amber-500' :
                                                                             user?.membershipTier === 'HERO' ? 'from-indigo-500' :
                                                                                 user?.membershipTier === 'GROWTH' ? 'from-emerald-500' :
@@ -285,14 +285,14 @@ const Navbar = ({ lang, setLang, darkMode, setDarkMode, t, isAuthenticated, user
                                         onClick={() => { handleLoginClick(); setIsMobileMenuOpen(false); }}
                                         className={`w-full relative flex items-center gap-5 p-5 rounded-[2.5rem] border shadow-2xl overflow-hidden group text-left
                                             ${user?.role?.toUpperCase() === 'ADMIN' ? 'bg-red-600 border-red-400 shadow-red-500/30' :
-                                                user?.role?.toUpperCase() === 'OFFICIAL' ? 'bg-orange-600 border-orange-400 shadow-orange-500/30' :
+                                                user?.role?.toUpperCase() === 'MANAGER' ? 'bg-orange-600 border-orange-400 shadow-orange-500/30' :
                                                     'bg-indigo-600 border-indigo-400 shadow-indigo-500/30'}`}
                                     >
                                         <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
                                         <div className="w-14 h-14 rounded-2xl bg-white shadow-xl flex items-center justify-center shrink-0 group-active:scale-95 transition-transform"
-                                            style={{ color: user?.role?.toUpperCase() === 'ADMIN' ? '#dc2626' : user?.role?.toUpperCase() === 'OFFICIAL' ? '#ea580c' : '#4f46e5' }}>
+                                            style={{ color: user?.role?.toUpperCase() === 'ADMIN' ? '#dc2626' : user?.role?.toUpperCase() === 'MANAGER' ? '#ea580c' : '#4f46e5' }}>
                                             {user?.role?.toUpperCase() === 'ADMIN' ? <ShieldCheck size={28} strokeWidth={2.5} /> :
-                                                user?.role?.toUpperCase() === 'OFFICIAL' ? <Handshake size={28} strokeWidth={2.5} /> :
+                                                user?.role?.toUpperCase() === 'MANAGER' ? <Handshake size={28} strokeWidth={2.5} /> :
                                                     <Rocket size={28} strokeWidth={2.5} />}
                                         </div>
                                         <div className="flex flex-col items-start leading-none gap-2">
@@ -303,7 +303,7 @@ const Navbar = ({ lang, setLang, darkMode, setDarkMode, t, isAuthenticated, user
                                                 <div className="w-5 h-[1px] bg-white/30" />
                                                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/90">
                                                     {user?.role?.toUpperCase() === 'ADMIN' ? 'Administrador' :
-                                                        user?.role?.toUpperCase() === 'OFFICIAL' ? 'Gestor' : 'Eco-Héroe'}
+                                                        user?.role?.toUpperCase() === 'MANAGER' ? 'Gestor' : 'Eco-Héroe'}
                                                 </span>
                                                 <div className="w-5 h-[1px] bg-white/30" />
                                             </div>

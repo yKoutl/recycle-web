@@ -39,7 +39,7 @@ const ProgramManagementView = ({ themeColor }) => {
 
     // Obtener usuarios reales para listar gestores
     const { data: usersData = [] } = useGetUsersQuery();
-    const gestores = usersData.filter(u => u.role === 'OFFICIAL' || u.role === 'ADMIN');
+    const gestores = usersData.filter(u => u.role === 'MANAGER' || u.role === 'ADMIN');
     const [selectedGestorId, setSelectedGestorId] = useState('');
 
     const handleAddLead = (e) => {

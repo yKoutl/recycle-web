@@ -58,8 +58,8 @@ const LoginView = ({ t }) => {
             // Mapeo de UI Roles a DB Roles
             const roleMapping = {
                 'admin': ['ADMIN'],
-                'gestor': ['OFFICIAL'],
-                'ecoheroe': ['USER', 'VOLUNTEER'] // Asumiendo estos roles para usuarios normales
+                'gestor': ['MANAGER', 'ADMIN'],
+                'ecoheroe': ['CITIZEN', 'RECYCLER', 'BUSINESS', 'MANAGER', 'ADMIN']
             };
 
             const allowedRoles = roleMapping[selectedRole] || [];
@@ -80,7 +80,7 @@ const LoginView = ({ t }) => {
                 const token = result.access_token || result.token;
                 dispatch(setAuthCredentials({ user: userData, token }));
 
-                navigate(['ADMIN', 'OFFICIAL'].includes(dbRole) ? '/admin/dashboard' : '/');
+                navigate(['ADMIN', 'MANAGER'].includes(dbRole) ? '/admin/dashboard' : '/');
             }, 2000);
 
         } catch (err) {

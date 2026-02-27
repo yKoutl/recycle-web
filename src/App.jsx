@@ -6,9 +6,25 @@ import { onLogin, onLogout, useCheckStatusQuery } from './store/auth';
 import { useSelector, useDispatch } from 'react-redux';
 
 const App = () => {
-  const [lang, setLang] = useState('es');
-  const [darkMode, setDarkMode] = useState(false);
+  const [lang, setLang] = useState(localStorage.getItem('app_lang') || 'es');
+  const [darkMode, setDarkMode] = useState(localStorage.getItem('app_darkMode') === 'true');
+  const [themeColor, setThemeColor] = useState(localStorage.getItem('app_themeColor') || '#018F64');
   const [showBot, setShowBot] = useState(true);
+
+  // Persistir preferencias
+  useEffect(() => {
+    localStorage.setItem('app_lang', lang);
+  }, [lang]);
+
+  useEffect(() => {
+    localStorage.setItem('app_darkMode', darkMode);
+  }, [darkMode]);
+
+  useEffect(() => {
+    localStorage.setItem('app_themeColor', themeColor);
+    // Actualizar variable CSS global para que todo use el color elegido
+    document.documentElement.style.setProperty('--primary-accent', themeColor);
+  }, [themeColor]);
 
   const dispatch = useDispatch();
   const location = useLocation();
@@ -58,6 +74,8 @@ const App = () => {
           setLang={setLang}
           darkMode={darkMode}
           setDarkMode={setDarkMode}
+          themeColor={themeColor}
+          setThemeColor={setThemeColor}
           onLogout={handleLogout}
           showBot={showBot}
           setShowBot={setShowBot}

@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
     LayoutGrid, Leaf, MapPin,
     LogOut, Bell, UserPlus,
-    Settings, Gift, FileText, ChevronDown, Users2, Users, Activity
+    Settings, Gift, FileText, ChevronDown, Users2, Users, Activity, CreditCard
 } from 'lucide-react';
 import { useGetProgramsQuery } from '../../../store/programs';
 
@@ -143,6 +143,14 @@ const AdminSidebar = ({ t, requestsCount, onLogout, user, isOpen, themeColor }) 
                         label="Solicitudes"
                         icon={FileText}
                         badge={requestsCount}
+                    />
+                )}
+
+                {isAdmin && (
+                    <NavItem
+                        id="donations"
+                        label={t.admin.menu.donations || 'Donaciones'}
+                        icon={CreditCard}
                     />
                 )}
 

@@ -29,7 +29,13 @@ export const donationsApi = createApi({
                 method: 'PATCH',
             }),
         }),
+        rejectDonation: builder.mutation({
+            query: (id) => ({
+                url: `/donations/${id}/reject`,
+                method: 'PATCH',
+            }),
+        }),
     }),
 });
 
-export const { useCreateDonationMutation, useGetDonationsQuery, useApproveDonationMutation } = donationsApi;
+export const { useCreateDonationMutation, useGetDonationsQuery, useApproveDonationMutation, useRejectDonationMutation } = donationsApi;

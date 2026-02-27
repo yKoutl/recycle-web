@@ -14,13 +14,14 @@ import EcoHistoriesTable from '../EcoHistoriesTable';
 import AdminSettings from './AdminSettings';
 import GestoresManagementView from '../GestoresManagementView';
 import ProgramManagementView from '../programs/ProgramManagementView';
+import DonationsTable from '../DonationsTable';
 import { MOCK_REQUESTS, MOCK_STATS } from '../../../data/mockData';
 import { useDispatch, useSelector } from 'react-redux';
 import { onLogout } from '../../../store/auth/authSlice';
 
 import StatusModal from '../../../components/shared/StatusModal';
 
-const AdminView = ({ t, darkMode, setDarkMode, lang, setLang, showBot, setShowBot }) => {
+const AdminView = ({ t, darkMode, setDarkMode, lang, setLang, showBot, setShowBot, themeColor, setThemeColor }) => {
     const dispatch = useDispatch();
     const location = useLocation();
     const { user } = useSelector(state => state.auth);
@@ -28,12 +29,6 @@ const AdminView = ({ t, darkMode, setDarkMode, lang, setLang, showBot, setShowBo
     const [isRewardModalOpen, setIsRewardModalOpen] = useState(false);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [themeColor, setThemeColor] = useState(localStorage.getItem('adminThemeColor') || '#018F64');
-
-    // Persistir el color del tema
-    useEffect(() => {
-        localStorage.setItem('adminThemeColor', themeColor);
-    }, [themeColor]);
 
     const handleLogout = () => {
         setShowLogoutModal(true);
@@ -232,6 +227,7 @@ const AdminView = ({ t, darkMode, setDarkMode, lang, setLang, showBot, setShowBo
                                 <Route path="users" element={<div className="animate-fade-in"><UsersTable t={t} themeColor={themeColor} /></div>} />
                                 <Route path="gestores" element={<div className="animate-fade-in"><GestoresManagementView t={t} themeColor={themeColor} /></div>} />
                                 <Route path="requests" element={<div className="animate-fade-in"><RequestsList requests={requests} t={t} onStatusChange={handleStatusChange} themeColor={themeColor} /></div>} />
+                                <Route path="donations" element={<div className="animate-fade-in"><DonationsTable t={t} themeColor={themeColor} /></div>} />
                                 <Route path="rewards" element={
                                     <div className="animate-fade-in">
                                         <RewardsList t={t} onAdd={() => setIsRewardModalOpen(true)} themeColor={themeColor} />

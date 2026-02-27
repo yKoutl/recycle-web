@@ -94,10 +94,38 @@ const PartnerRequestsTable = ({ themeColor }) => {
 
     const getStatusParams = (status) => {
         switch (status) {
-            case 'APPROVED': return { label: 'Aprobado', color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/20', border: 'border-emerald-100 dark:border-emerald-800', icon: CheckCircle };
-            case 'REJECTED': return { label: 'Rechazado', color: 'text-red-600 dark:text-red-400', bg: 'bg-red-50 dark:bg-red-900/20', border: 'border-red-100 dark:border-red-800', icon: XCircle };
-            case 'CONTACTED': return { label: 'Contactado', color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-900/20', border: 'border-blue-100 dark:border-blue-800', icon: Phone };
-            default: return { label: 'Pendiente', color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-900/20', border: 'border-amber-100 dark:border-amber-800', icon: Clock };
+            case 'APPROVED': return {
+                label: 'Aprobado',
+                color: 'text-emerald-700 dark:text-emerald-400',
+                bg: 'bg-emerald-500/10 dark:bg-emerald-500/10',
+                border: 'border-emerald-200/50 dark:border-emerald-500/20',
+                icon: CheckCircle,
+                glow: 'shadow-emerald-500/20'
+            };
+            case 'REJECTED': return {
+                label: 'Rechazado',
+                color: 'text-rose-700 dark:text-rose-400',
+                bg: 'bg-rose-500/10 dark:bg-rose-500/10',
+                border: 'border-rose-200/50 dark:border-rose-500/20',
+                icon: XCircle,
+                glow: 'shadow-rose-500/20'
+            };
+            case 'CONTACTED': return {
+                label: 'Contactado',
+                color: 'text-blue-700 dark:text-blue-400',
+                bg: 'bg-blue-500/10 dark:bg-blue-500/10',
+                border: 'border-blue-200/50 dark:border-blue-500/20',
+                icon: Phone,
+                glow: 'shadow-blue-500/20'
+            };
+            default: return {
+                label: 'Pendiente',
+                color: 'text-amber-700 dark:text-amber-400',
+                bg: 'bg-amber-500/10 dark:bg-amber-500/10',
+                border: 'border-amber-200/50 dark:border-amber-500/20',
+                icon: Clock,
+                glow: 'shadow-amber-500/20'
+            };
         }
     };
 
@@ -173,8 +201,9 @@ const PartnerRequestsTable = ({ themeColor }) => {
                                             </div>
 
                                             {/* Status Badge Mobile */}
-                                            <div className={`md:hidden px-2.5 py-1 rounded-lg text-xs font-semibold border ${status.bg} ${status.color} ${status.border}`}>
-                                                {status.label.toUpperCase()}
+                                            <div className={`md:hidden inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm ${status.bg} ${status.color} ${status.border} ${status.glow}`}>
+                                                <status.icon size={11} strokeWidth={2.5} />
+                                                {status.label}
                                             </div>
                                         </div>
 
@@ -236,8 +265,9 @@ const PartnerRequestsTable = ({ themeColor }) => {
                                     <div className="flex md:flex-col items-center justify-between md:justify-center gap-3 w-full md:w-auto md:min-w-[90px] md:pl-5 md:border-l md:border-gray-100 md:dark:border-white/5 self-stretch">
 
                                         {/* Status Badge Desktop */}
-                                        <div className={`hidden md:flex mb-auto px-2.5 py-1 rounded-lg text-xs font-semibold border w-full justify-center ${status.bg} ${status.color} ${status.border}`}>
-                                            {status.label.toUpperCase()}
+                                        <div className={`hidden md:inline-flex mb-auto items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm w-full justify-center ${status.bg} ${status.color} ${status.border} ${status.glow}`}>
+                                            <status.icon size={11} strokeWidth={2.5} />
+                                            {status.label}
                                         </div>
 
                                         <div className="flex items-center gap-1 md:mt-auto w-full justify-end md:justify-center">

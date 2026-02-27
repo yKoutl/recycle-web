@@ -8,7 +8,7 @@ const UsersTable = ({ t, themeColor }) => {
     const [isLoading, setIsLoading] = useState(false);
     const users = [
         { _id: '1', fullName: 'Juan Perez', email: 'juan@example.com', role: 'ADMIN', isActive: true, createdAt: '2023-10-01' },
-        { _id: '2', fullName: 'Maria Garcia', email: 'maria@example.com', role: 'OFFICIAL', isActive: true, createdAt: '2023-10-05' },
+        { _id: '2', fullName: 'Maria Garcia', email: 'maria@example.com', role: 'MANAGER', isActive: true, createdAt: '2023-10-05' },
         { _id: '3', fullName: 'Carlos Lopez', email: 'carlos@example.com', role: 'USER', isActive: false, createdAt: '2023-10-10' },
         { _id: '4', fullName: 'Ana Martinez', email: 'ana@example.com', role: 'USER', isActive: true, createdAt: '2023-10-15' },
     ];
@@ -125,10 +125,10 @@ const UsersTable = ({ t, themeColor }) => {
                                     </td>
                                     <td className="px-6 py-4 text-center">
                                         <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border ${u.role === 'ADMIN' ? 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 border-orange-200 dark:border-orange-500/20' :
-                                            u.role === 'OFFICIAL' ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 border-blue-200 dark:border-blue-500/20' :
+                                            u.role === 'MANAGER' ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 border-blue-200 dark:border-blue-500/20' :
                                                 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/10'
                                             }`}>
-                                            {u.role === 'ADMIN' ? 'ADMINISTRADOR' : u.role === 'OFFICIAL' ? 'GESTOR' : 'ECO-HÉROE'}
+                                            {u.role === 'ADMIN' ? 'ADMINISTRADOR' : u.role === 'MANAGER' ? 'GESTOR' : 'ECO-HÉROE'}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-center">

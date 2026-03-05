@@ -1,14 +1,75 @@
-import { Bell, Moon, Sun, Menu, X, Leaf, Check } from 'lucide-react';
+import { Bell, Moon, Sun, Menu, X, Leaf, Check, MessageSquare, Mail, Wallet, AlertCircle } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useGetAllHistoriesQuery } from '../../../store/eco-histories/ecoHistoriesApi';
+import { useGetPartnerRequestsQuery } from '../../../store/partners/partnerRequestsApi';
+import { useGetDonationsQuery } from '../../../store/donations/donationsApi';
 
 const AdminHeader = ({ t, darkMode, setDarkMode, setIsSidebarOpen, isSidebarOpen, themeColor }) => {
     const navigate = useNavigate();
     const { user } = useSelector(state => state.auth);
     const accent = themeColor || '#018F64';
     const [showNotifications, setShowNotifications] = useState(false);
+
+    // Fetching pending data for notifications (con auto-refresh cada 15 segundos)
+    const { data: histories = [] } = useGetAllHistoriesQuery(undefined, { pollingInterval: 15000 });
+    const { data: partnerReqs = [] } = useGetPartnerRequestsQuery(undefined, { pollingInterval: 15000 });
+    const { data: donations = [] } = useGetDonationsQuery(undefined, { pollingInterval: 15000 });
+
+    const notifications = useMemo(() => {
+        const list = [];
+
+        // Pendientes Eco-Historias
+        const pendingHistories = histories.filter(h => h.status === 'PENDING');
+        if (pendingHistories.length > 0) {
+            list.push({
+                type: 'eco-history',
+                count: pendingHistories.length,
+                label: `Eco-Historias pendientes`,
+                desc: `Tienes ${pendingHistories.length} testimonios por revisar`,
+                icon: MessageSquare,
+                color: 'text-purple-500',
+                bg: 'bg-purple-500/10',
+                link: '/admin/histories'
+            });
+        }
+
+        // Pendientes Partner Requests
+        const pendingPartners = partnerReqs.filter(p => !p.status || p.status === 'PENDING');
+        if (pendingPartners.length > 0) {
+            list.push({
+                type: 'partner',
+                count: pendingPartners.length,
+                label: `Solicitudes de Socios`,
+                desc: `${pendingPartners.length} empresas quieren unirse`,
+                icon: Mail,
+                color: 'text-blue-500',
+                bg: 'bg-blue-500/10',
+                link: '/admin/partners/requests'
+            });
+        }
+
+        // Pendientes Donaciones
+        const pendingDonations = donations.filter(d => d.status === 'PENDING');
+        if (pendingDonations.length > 0) {
+            list.push({
+                type: 'donation',
+                count: pendingDonations.length,
+                label: `Donaciones pendientes`,
+                desc: `${pendingDonations.length} pagos esperan validación`,
+                icon: Wallet,
+                color: 'text-emerald-500',
+                bg: 'bg-emerald-500/10',
+                link: '/admin/donations'
+            });
+        }
+
+        return list;
+    }, [histories, partnerReqs, donations]);
+
+    const totalAlerts = notifications.length;
 
     const iconBtn = `p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-all active:scale-95 cursor-pointer flex items-center justify-center`;
 
@@ -49,10 +110,14 @@ const AdminHeader = ({ t, darkMode, setDarkMode, setIsSidebarOpen, isSidebarOpen
                             onClick={() => setShowNotifications(!showNotifications)}
                         >
                             <Bell size={24} strokeWidth={2} />
-                            <span
-                                className="absolute top-2 right-2 w-2 h-2 rounded-full ring-2 ring-[#0f172a] animate-pulse"
-                                style={{ backgroundColor: accent }}
-                            />
+                            {totalAlerts > 0 && (
+                                <span
+                                    className="absolute top-2 right-2 w-4 h-4 rounded-full ring-2 ring-[#0f172a] flex items-center justify-center text-[8px] font-black text-white"
+                                    style={{ backgroundColor: accent }}
+                                >
+                                    {totalAlerts}
+                                </span>
+                            )}
                         </button>
                         <AnimatePresence>
                             {showNotifications && (
@@ -61,7 +126,7 @@ const AdminHeader = ({ t, darkMode, setDarkMode, setIsSidebarOpen, isSidebarOpen
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         exit={{ opacity: 0 }}
-                                        className="fixed inset-0 z-40"
+                                        className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
                                         onClick={() => setShowNotifications(false)}
                                     />
                                     <motion.div
@@ -73,18 +138,43 @@ const AdminHeader = ({ t, darkMode, setDarkMode, setIsSidebarOpen, isSidebarOpen
                                         <div className="p-5 border-b border-white/10 flex justify-between items-center bg-white/[0.03]">
                                             <h3 className="text-white font-black text-[10px] uppercase tracking-[0.2em]">Notificaciones</h3>
                                             <span
-                                                className="text-[9px] px-3 py-1 rounded-full font-black uppercase tracking-widest bg-white/10 text-white"
+                                                className={`text-[9px] px-3 py-1 rounded-full font-black uppercase tracking-widest ${totalAlerts > 0 ? 'bg-amber-500 text-white' : 'bg-white/10 text-white'}`}
                                             >
-                                                0 NUEVAS
+                                                {totalAlerts} NUEVAS
                                             </span>
                                         </div>
-                                        <div className="p-12 flex flex-col items-center justify-center text-center">
-                                            <div className="w-20 h-20 bg-white/[0.05] rounded-full flex items-center justify-center mb-6 ring-1 ring-white/10 relative">
-                                                <div className="absolute inset-0 rounded-full blur-xl opacity-20" style={{ backgroundColor: accent }} />
-                                                <Bell size={28} className="text-white opacity-40 relative z-10" />
-                                            </div>
-                                            <p className="text-white font-bold text-base">Todo despejado</p>
-                                            <p className="text-slate-400 text-xs mt-2 font-medium leading-relaxed opacity-80">No hay alertas pendientes en tu bandeja.</p>
+                                        <div className="max-h-[60vh] overflow-y-auto">
+                                            {totalAlerts > 0 ? (
+                                                <div className="divide-y divide-white/5">
+                                                    {notifications.map((notif, i) => (
+                                                        <div
+                                                            key={i}
+                                                            className="p-4 flex gap-4 hover:bg-white/5 transition-colors cursor-pointer"
+                                                            onClick={() => {
+                                                                navigate(notif.link);
+                                                                setShowNotifications(false);
+                                                            }}
+                                                        >
+                                                            <div className={`w-10 h-10 rounded-2xl ${notif.bg} ${notif.color} flex items-center justify-center shrink-0`}>
+                                                                <notif.icon size={18} />
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-white font-bold text-xs uppercase tracking-tight">{notif.label}</p>
+                                                                <p className="text-slate-400 text-[10px] mt-0.5">{notif.desc}</p>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="p-12 flex flex-col items-center justify-center text-center">
+                                                    <div className="w-20 h-20 bg-white/[0.05] rounded-full flex items-center justify-center mb-6 ring-1 ring-white/10 relative">
+                                                        <div className="absolute inset-0 rounded-full blur-xl opacity-20" style={{ backgroundColor: accent }} />
+                                                        <Bell size={28} className="text-white opacity-40 relative z-10" />
+                                                    </div>
+                                                    <p className="text-white font-bold text-base">Todo despejado</p>
+                                                    <p className="text-slate-400 text-xs mt-2 font-medium leading-relaxed opacity-80">No hay alertas pendientes en tu bandeja.</p>
+                                                </div>
+                                            )}
                                         </div>
                                     </motion.div>
                                 </>
@@ -136,10 +226,14 @@ const AdminHeader = ({ t, darkMode, setDarkMode, setIsSidebarOpen, isSidebarOpen
                             onClick={() => setShowNotifications(!showNotifications)}
                         >
                             <Bell size={26} strokeWidth={2} />
-                            <span
-                                className="absolute top-2.5 right-2.5 w-2.5 h-2.5 rounded-full ring-2 ring-[#1e293b] animate-pulse"
-                                style={{ backgroundColor: accent }}
-                            />
+                            {totalAlerts > 0 && (
+                                <span
+                                    className="absolute top-2.5 right-2.5 w-4.5 h-4.5 min-w-[18px] px-1 rounded-full ring-2 ring-[#1e293b] flex items-center justify-center text-[9px] font-black text-white"
+                                    style={{ backgroundColor: accent }}
+                                >
+                                    {totalAlerts}
+                                </span>
+                            )}
                         </button>
 
                         <AnimatePresence>
@@ -162,22 +256,55 @@ const AdminHeader = ({ t, darkMode, setDarkMode, setIsSidebarOpen, isSidebarOpen
                                         <div className="p-5 border-b border-white/10 flex justify-between items-center bg-white/[0.04]">
                                             <h3 className="text-white font-black text-[10px] uppercase tracking-[0.2em]">Centro de Alertas</h3>
                                             <span
-                                                className="text-[9px] px-3 py-1 rounded-full font-black uppercase tracking-widest ring-1 ring-white/20 text-white"
+                                                className={`text-[9px] px-3 py-1 rounded-full font-black uppercase tracking-widest ring-1 ring-white/20 ${totalAlerts > 0 ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' : 'text-white'}`}
                                             >
-                                                0 NUEVAS
+                                                {totalAlerts} NUEVAS
                                             </span>
                                         </div>
-                                        <div className="p-14 flex flex-col items-center justify-center text-center">
-                                            <div className="w-24 h-24 bg-white/[0.04] rounded-[2rem] flex items-center justify-center mb-8 ring-1 ring-white/10 relative -rotate-3 group-hover:rotate-0 transition-transform">
-                                                <div className="absolute inset-x-0 bottom-0 h-1/2 rounded-full blur-2xl opacity-20" style={{ backgroundColor: accent }} />
-                                                <Bell size={36} className="text-white opacity-40 relative z-10" />
-                                            </div>
-                                            <p className="text-white font-bold text-lg tracking-tight">¡Todo en orden!</p>
-                                            <p className="text-slate-400 text-xs mt-3 leading-relaxed font-medium opacity-70">No tienes alertas pendientes en este momento. ¡Sigue así!</p>
+                                        <div className="max-h-[400px] overflow-y-auto">
+                                            {totalAlerts > 0 ? (
+                                                <div className="divide-y divide-white/5">
+                                                    {notifications.map((notif, i) => (
+                                                        <div
+                                                            key={i}
+                                                            className="p-5 flex gap-4 hover:bg-white/5 transition-all cursor-pointer group/item"
+                                                            onClick={() => {
+                                                                navigate(notif.link);
+                                                                setShowNotifications(false);
+                                                            }}
+                                                        >
+                                                            <div className={`w-11 h-11 rounded-2xl ${notif.bg} ${notif.color} flex items-center justify-center shrink-0 group-hover/item:scale-110 transition-transform`}>
+                                                                <notif.icon size={20} />
+                                                            </div>
+                                                            <div className="min-w-0">
+                                                                <p className="text-white font-bold text-[11px] uppercase tracking-wide truncate">{notif.label}</p>
+                                                                <p className="text-slate-400 text-[10px] mt-1 leading-tight">{notif.desc}</p>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="p-14 flex flex-col items-center justify-center text-center">
+                                                    <div className="w-24 h-24 bg-white/[0.04] rounded-[2rem] flex items-center justify-center mb-8 ring-1 ring-white/10 relative -rotate-3 group-hover:rotate-0 transition-transform">
+                                                        <div className="absolute inset-x-0 bottom-0 h-1/2 rounded-full blur-2xl opacity-20" style={{ backgroundColor: accent }} />
+                                                        <Bell size={36} className="text-white opacity-40 relative z-10" />
+                                                    </div>
+                                                    <p className="text-white font-bold text-lg tracking-tight">¡Todo en orden!</p>
+                                                    <p className="text-slate-400 text-xs mt-3 leading-relaxed font-medium opacity-70">No tienes alertas pendientes en este momento. ¡Sigue así!</p>
+                                                </div>
+                                            )}
                                         </div>
-                                        <button className="w-full p-5 bg-white/[0.03] hover:bg-white/[0.08] text-white/50 text-[9px] font-black uppercase tracking-[0.3em] transition-all border-t border-white/10 hover:text-white">
-                                            Historial de actividad
-                                        </button>
+                                        {totalAlerts > 0 && (
+                                            <button
+                                                onClick={() => {
+                                                    navigate('/admin/dashboard');
+                                                    setShowNotifications(false);
+                                                }}
+                                                className="w-full p-5 bg-white/[0.03] hover:bg-white/[0.08] text-emerald-400 text-[9px] font-black uppercase tracking-[0.3em] transition-all border-t border-white/10"
+                                            >
+                                                Ver resumen general
+                                            </button>
+                                        )}
                                     </motion.div>
                                 </>
                             )}

@@ -15,7 +15,9 @@ import AdminSettings from './AdminSettings';
 import GestoresManagementView from '../GestoresManagementView';
 import ProgramManagementView from '../programs/ProgramManagementView';
 import DonationsTable from '../DonationsTable';
+import ContactRequests from '../ContactRequests';
 import { MOCK_REQUESTS, MOCK_STATS } from '../../../data/mockData';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { onLogout } from '../../../store/auth/authSlice';
 
@@ -227,6 +229,7 @@ const AdminView = ({ t, darkMode, setDarkMode, lang, setLang, showBot, setShowBo
                                 <Route path="users" element={<div className="animate-fade-in"><UsersTable t={t} themeColor={themeColor} /></div>} />
                                 <Route path="gestores" element={<div className="animate-fade-in"><GestoresManagementView t={t} themeColor={themeColor} /></div>} />
                                 <Route path="requests" element={<div className="animate-fade-in"><RequestsList requests={requests} t={t} onStatusChange={handleStatusChange} themeColor={themeColor} /></div>} />
+                                <Route path="contact-requests" element={<div className="animate-fade-in"><ContactRequests themeColor={themeColor} /></div>} />
                                 <Route path="donations" element={<div className="animate-fade-in"><DonationsTable t={t} themeColor={themeColor} /></div>} />
                                 <Route path="rewards" element={
                                     <div className="animate-fade-in">

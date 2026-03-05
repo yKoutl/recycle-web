@@ -22,7 +22,7 @@ const CommunitySection = ({ t, isAuthenticated }) => {
         if (featuredReviews && featuredReviews.length > 0) {
             const mappedReviews = featuredReviews.map(h => ({
                 id: h._id,
-                name: h.user?.fullName || 'Eco-Héroe',
+                name: h.user?.fullName || 'Usuario',
                 tier: h.user?.membershipTier || 'NONE',
                 comment: h.message,
                 likes: 0,
@@ -175,7 +175,7 @@ const CommunitySection = ({ t, isAuthenticated }) => {
                         className="px-8 py-3 bg-[#018F64]/10 dark:bg-[#B0EEDE]/5 border border-[#018F64]/20 dark:border-[#B0EEDE]/10 rounded-full backdrop-blur-sm"
                     >
                         <span className="text-[#018F64] dark:text-[#B0EEDE] font-black text-[11px] uppercase tracking-[0.3em]">
-                            Más de 10,000 ecos-guardianes activos
+                            Más de 10,000 Eco-Héroes activos
                         </span>
                     </motion.div>
                 </div>

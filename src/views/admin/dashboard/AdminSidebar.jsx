@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
-    LayoutGrid, Leaf, MapPin,
+    LayoutGrid, Leaf, MapPin, Mail,
     LogOut, Bell, UserPlus,
     Settings, Gift, FileText, ChevronDown, Users2, Users, Activity, CreditCard
 } from 'lucide-react';
+
 import { useGetProgramsQuery } from '../../../store/programs';
+import { useGetContactsQuery } from '../../../store/contact/contactApi';
 
 const AdminSidebar = ({ t, requestsCount, onLogout, user, isOpen, themeColor }) => {
     const navigate = useNavigate();
@@ -14,11 +16,14 @@ const AdminSidebar = ({ t, requestsCount, onLogout, user, isOpen, themeColor }) 
     const [partnersOpen, setPartnersOpen] = useState(false);
     const [programsOpen, setProgramsOpen] = useState(false);
     const { data: programs = [], isLoading: programsLoading } = useGetProgramsQuery();
+    const { data: contacts = [] } = useGetContactsQuery();
 
     const activeTab = location.pathname.split('/')[2] || 'dashboard';
     const activeSubTab = location.pathname.split('/')[3];
     const accent = themeColor || '#018F64';
     const isAdmin = user?.role?.toUpperCase() === 'ADMIN';
+
+    const pendingContacts = contacts.filter(c => c.status === 'PENDING').length;
 
     const isActive = (id, isSub = false) =>
         (!isSub && activeTab === id) || (isSub && activeSubTab === id);
@@ -143,6 +148,15 @@ const AdminSidebar = ({ t, requestsCount, onLogout, user, isOpen, themeColor }) 
                         label="Solicitudes"
                         icon={FileText}
                         badge={requestsCount}
+                    />
+                )}
+
+                {isAdmin && (
+                    <NavItem
+                        id="contact-requests"
+                        label="Contacto"
+                        icon={Mail}
+                        badge={pendingContacts}
                     />
                 )}
 

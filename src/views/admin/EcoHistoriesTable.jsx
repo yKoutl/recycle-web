@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     CheckCircle2,
     XCircle,
@@ -10,7 +10,11 @@ import {
     Filter,
     Search,
     RotateCw,
-    Star
+    Star,
+    Award,
+    Rocket,
+    UserRound,
+    Leaf
 } from 'lucide-react';
 import {
     useGetAllHistoriesQuery,
@@ -24,7 +28,7 @@ const EcoHistoriesTable = ({ themeColor }) => {
     const { data: histories = [], isLoading, refetch } = useGetAllHistoriesQuery();
     const [updateStatus] = useUpdateHistoryStatusMutation();
     const [toggleFeatured] = useToggleFeaturedHistoryMutation();
-    const [deleteHistory] = useDeleteHistoryMutation();
+    const [deleteHistory, deleteResult] = useDeleteHistoryMutation();
 
     const [filter, setFilter] = useState('ALL');
     const [searchTerm, setSearchTerm] = useState('');
@@ -33,6 +37,15 @@ const EcoHistoriesTable = ({ themeColor }) => {
     // Estados para el Modal de Confirmación
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
+
+    // Cerrar modal automáticamente cuando la eliminación sea exitosa
+    useEffect(() => {
+        if (deleteResult.isSuccess) {
+            setIsConfirmOpen(false);
+            setSelectedId(null);
+            deleteResult.reset(); // Resetear estado de la mutación
+        }
+    }, [deleteResult.isSuccess]);
 
     // Estados para el Modal de Detalles
     const [isDetailsOpen, setIsDetailsOpen] = useState(false);
@@ -112,7 +125,8 @@ const EcoHistoriesTable = ({ themeColor }) => {
                 title="Eliminar EcoHistoria"
                 message="Esta acción no se puede deshacer. ¿Estás seguro de que quieres borrar este testimonio de forma permanente?"
                 confirmText="Eliminar Historia"
-                type="danger"
+                variant="danger"
+                isLoading={deleteResult.isLoading}
             />
 
             {/* Modal de Detalles */}
@@ -316,10 +330,24 @@ const EcoHistoriesTable = ({ themeColor }) => {
                                                 )}
                                             </div>
                                             <div>
-                                                <div className="font-semibold text-gray-900 dark:text-white leading-none mb-0.5">
+                                                <div className="font-semibold text-gray-900 dark:text-white leading-none mb-1">
                                                     {item.user?.fullName || 'Usuario Anónimo'}
                                                 </div>
-                                                <div className="text-xs text-gray-400">{item.user?.email || 'S/E'}</div>
+                                                <div className="flex flex-col gap-0.5">
+                                                    <div className="text-[10px] text-gray-400 font-medium">{item.user?.email || 'S/E'}</div>
+                                                    <div className={`flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest ${item.user?.membershipTier === 'ECO_VISIONARIO' ? 'text-indigo-500' :
+                                                        item.user?.membershipTier === 'ECO_EMBAJADOR' ? 'text-teal-500' :
+                                                            item.user?.membershipTier === 'ECO_SOCIO' ? 'text-emerald-600' : 'text-slate-400'
+                                                        }`}>
+                                                        {item.user?.membershipTier === 'ECO_VISIONARIO' && <Rocket size={10} />}
+                                                        {item.user?.membershipTier === 'ECO_EMBAJADOR' && <Award size={10} />}
+                                                        {item.user?.membershipTier === 'ECO_SOCIO' && <UserRound size={10} />}
+                                                        {!['ECO_VISIONARIO', 'ECO_EMBAJADOR', 'ECO_SOCIO'].includes(item.user?.membershipTier) && <Leaf size={10} />}
+                                                        {item.user?.membershipTier === 'ECO_VISIONARIO' ? 'Eco-Visionario' :
+                                                            item.user?.membershipTier === 'ECO_EMBAJADOR' ? 'Eco-Embajador' :
+                                                                item.user?.membershipTier === 'ECO_SOCIO' ? 'Eco-Socio' : 'Eco-Héroe'}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </td>

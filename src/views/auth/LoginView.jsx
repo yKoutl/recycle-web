@@ -57,7 +57,7 @@ const LoginView = ({ t }) => {
 
             // Mapeo de UI Roles a DB Roles
             const roleMapping = {
-                'admin': ['ADMIN'],
+
                 'gestor': ['MANAGER', 'ADMIN'],
                 'ecoheroe': ['CITIZEN', 'RECYCLER', 'BUSINESS', 'MANAGER', 'ADMIN']
             };

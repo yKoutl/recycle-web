@@ -27,7 +27,7 @@ const StatusModal = ({ status, message, onClose }) => {
         },
         error: {
             icon: <XCircle className="w-12 h-12 text-red-500" />,
-            title: "Acceso Denegado",
+            title: "¡Algo salió mal!",
             bgColor: "bg-white dark:bg-gray-900"
         }
     };

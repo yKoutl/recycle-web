@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle2, AlertCircle, X, HelpCircle, Info } from 'lucide-react';
+import { CheckCircle2, AlertCircle, X, HelpCircle, Info, Loader2 } from 'lucide-react';
 
 const ConfirmModal = ({
     isOpen,
@@ -9,7 +9,8 @@ const ConfirmModal = ({
     message,
     confirmText = "Aceptar",
     cancelText = "Cancelar",
-    variant = "info" // 'info', 'success', 'warning', 'danger'
+    variant = "info", // 'info', 'success', 'warning', 'danger'
+    isLoading = false
 }) => {
     if (!isOpen) return null;
 
@@ -74,12 +75,15 @@ const ConfirmModal = ({
                 <div className="space-y-3">
                     <button
                         onClick={() => {
+                            if (isLoading) return;
                             onConfirm?.();
                             if (!onConfirm) onClose();
                         }}
-                        className={`w-full py-4 ${current.accent} text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-xl transition-all hover:scale-[1.02] active:scale-95`}
+                        disabled={isLoading}
+                        className={`w-full py-4 ${current.accent} text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-95'}`}
                     >
-                        {confirmText}
+                        {isLoading && <Loader2 size={16} className="animate-spin" />}
+                        {isLoading ? "Procesando..." : confirmText}
                     </button>
 
                     {onConfirm && (

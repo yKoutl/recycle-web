@@ -134,10 +134,18 @@ const AddCommentModal = ({ isOpen, onClose, t }) => {
                                     <div className="p-5 bg-gray-50/60 dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/5">
                                         <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Autor</p>
                                         <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight">{user?.fullName}</p>
+                                        <p className="text-[10px] font-medium text-gray-400 dark:text-gray-500 truncate mt-1">{user?.email}</p>
                                     </div>
                                     <div className="p-5 bg-gray-50/60 dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/5">
-                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Email</p>
-                                        <p className="text-sm font-black text-gray-900 dark:text-white truncate">{user?.email}</p>
+                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Tu Rango</p>
+                                        <p className={`text-sm font-black uppercase tracking-tight ${user?.membershipTier === 'ECO_VISIONARIO' ? 'text-indigo-500' :
+                                            user?.membershipTier === 'ECO_EMBAJADOR' ? 'text-teal-500' :
+                                                user?.membershipTier === 'ECO_SOCIO' ? 'text-emerald-700' : 'text-slate-500'
+                                            }`}>
+                                            {user?.membershipTier === 'ECO_VISIONARIO' ? 'Eco-Visionario' :
+                                                user?.membershipTier === 'ECO_EMBAJADOR' ? 'Eco-Embajador' :
+                                                    user?.membershipTier === 'ECO_SOCIO' ? 'Eco-Socio' : 'Eco-Héroe'}
+                                        </p>
                                     </div>
                                 </div>
 
@@ -202,13 +210,13 @@ const AddCommentModal = ({ isOpen, onClose, t }) => {
                 <div className="py-10 text-center mt-auto">
                     <p className="text-[9px] font-black text-gray-200 dark:text-gray-800 uppercase tracking-[1em]">RECYCLEAPP</p>
                 </div>
-            </div>
+            </div >
             <style dangerouslySetInnerHTML={{
                 __html: `
                 @keyframes slide-in-right { from { transform: translateX(100%); } to { transform: translateX(0); } }
                 .animate-slide-in-right { animation: slide-in-right 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
             `}} />
-        </div>
+        </div >
     );
 };
 

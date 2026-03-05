@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { Sun, Moon, Languages, LogIn, LogOut, X, Menu, ChevronRight, Home, Sprout, Globe, Users, Handshake, Leaf, Mail, ShieldCheck, UserPlus, Award, Rocket, Loader2, User as UserIcon, LayoutGrid } from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Sun, Moon, Languages, LogIn, LogOut, X, Menu, ChevronRight, Home, Sprout, Globe, Users, Handshake, Leaf, Mail, ShieldCheck, UserPlus, Award, Rocket, Loader2, User as UserIcon, LayoutGrid, Heart, Star, UserRound } from 'lucide-react';
 
 import Button from '../shared/Button';
 import logoNosPlanet from '../../assets/logo_nos_planet.webp';
@@ -8,6 +9,8 @@ import logoNosPlanet from '../../assets/logo_nos_planet.webp';
 const Navbar = ({ lang, setLang, darkMode, setDarkMode, t, isAuthenticated, user, onLogout, forceScrolled = false }) => {
     const navigate = useNavigate();
     const location = useLocation();
+    const dispatch = useDispatch();
+    const { isProcessingAction } = useSelector((state) => state.auth);
     const [isScrolled, setIsScrolled] = useState(forceScrolled);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isProfileHovered, setIsProfileHovered] = useState(false);
@@ -118,7 +121,7 @@ const Navbar = ({ lang, setLang, darkMode, setDarkMode, t, isAuthenticated, user
                                             onClick={handleLoginClick}
                                             onMouseEnter={() => setIsProfileHovered(true)}
                                             onMouseLeave={() => setIsProfileHovered(false)}
-                                            className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-2xl transition-all duration-500 hover:scale-[1.02] active:scale-95 border min-w-[140px] h-[48px]
+                                            className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-2xl transition-all duration-500 hover:scale-[1.02] active:scale-95 border min-w-[150px] h-[52px]
                                                 ${isScrolled
                                                     ? (isProfileHovered && user?.role?.toUpperCase() === 'ADMIN' ? 'bg-red-600 border-red-500 shadow-xl shadow-red-900/40 text-white' :
                                                         isProfileHovered && user?.role?.toUpperCase() === 'MANAGER' ? 'bg-orange-600 border-orange-500 shadow-xl shadow-orange-900/40 text-white' :
@@ -127,72 +130,79 @@ const Navbar = ({ lang, setLang, darkMode, setDarkMode, t, isAuthenticated, user
                                                                     'bg-indigo-50/50 dark:bg-indigo-900/10 border-indigo-500/20 shadow-lg shadow-indigo-900/5')
                                                     : (isProfileHovered && user?.role?.toUpperCase() === 'ADMIN' ? 'bg-red-600 border-red-500 shadow-2xl text-white' :
                                                         isProfileHovered && user?.role?.toUpperCase() === 'MANAGER' ? 'bg-orange-600 border-orange-500 shadow-2xl text-white' :
-                                                            'bg-white/10 backdrop-blur-md border-white/20 shadow-2xl')}`}
+                                                            user?.role?.toUpperCase() === 'ADMIN' ? 'bg-red-950/90 backdrop-blur-xl border-red-500/20 shadow-2xl shadow-red-950/40' :
+                                                                user?.role?.toUpperCase() === 'MANAGER' ? 'bg-orange-950/90 backdrop-blur-xl border-orange-500/20 shadow-2xl shadow-orange-950/40' :
+                                                                    'bg-[#06281C]/90 backdrop-blur-xl border-emerald-500/20 shadow-2xl shadow-emerald-950/40')}`}
                                         >
-                                            <div className={`w-8 h-8 rounded-xl flex items-center justify-center shadow-lg transition-all shrink-0
-                                                ${isProfileHovered ? 'bg-white text-gray-900' :
-                                                    user?.role?.toUpperCase() === 'ADMIN' ? 'bg-red-600 text-white shadow-red-500/30' :
-                                                        user?.role?.toUpperCase() === 'MANAGER' ? 'bg-orange-600 text-white shadow-orange-500/30' :
-                                                            user?.membershipStatus === 'PENDING' ? 'bg-amber-500 text-white shadow-amber-500/30' :
-                                                                user?.membershipTier === 'HERO' ? 'bg-indigo-600 text-white shadow-indigo-500/30' :
-                                                                    user?.membershipTier === 'GROWTH' ? 'bg-emerald-600 text-white shadow-emerald-500/30' :
-                                                                        user?.membershipTier === 'STARTER' ? 'bg-lime-600 text-white shadow-lime-500/30' : 'bg-emerald-600 text-white shadow-emerald-500/20'} group-hover:rotate-6`}>
-                                                {user?.role?.toUpperCase() === 'ADMIN' ? (
-                                                    <ShieldCheck size={16} strokeWidth={2.5} />
-                                                ) : user?.role?.toUpperCase() === 'MANAGER' ? (
-                                                    <Handshake size={16} strokeWidth={2.5} />
-                                                ) : user?.membershipStatus === 'PENDING' ? (
-                                                    <Loader2 size={16} strokeWidth={2.5} className="animate-spin" />
-                                                ) : user?.membershipTier === 'HERO' ? (
-                                                    <Rocket size={16} strokeWidth={2.5} />
-                                                ) : user?.membershipTier === 'GROWTH' ? (
-                                                    <Award size={16} strokeWidth={2.5} />
-                                                ) : user?.membershipTier === 'STARTER' ? (
-                                                    <UserPlus size={16} strokeWidth={2.5} />
-                                                ) : (
-                                                    <UserIcon size={16} strokeWidth={2.5} />
-                                                )}
+                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center relative shadow-lg transition-all duration-500 shrink-0
+                                            ${user?.role?.toUpperCase() === 'ADMIN' ? 'bg-red-500 shadow-red-500/20' :
+                                                    user?.role?.toUpperCase() === 'MANAGER' ? 'bg-emerald-500 shadow-emerald-500/20' :
+                                                        user?.membershipTier?.includes('VISIONARIO') || user?.membershipTier?.includes('HERO') ? 'bg-indigo-600 shadow-indigo-600/40' :
+                                                            user?.membershipTier?.includes('EMBAJADOR') || user?.membershipTier?.includes('GROWTH') ? 'bg-teal-500 shadow-teal-500/40' :
+                                                                user?.membershipTier?.includes('SOCIO') || user?.membershipTier?.includes('STARTER') ? 'bg-emerald-400 shadow-emerald-400/40' :
+                                                                    'bg-emerald-600 shadow-emerald-600/40'}`}>
+                                                <div className="text-white">
+                                                    {isProcessingAction ? (
+                                                        <Loader2 size={16} strokeWidth={2.5} className="animate-spin" />
+                                                    ) : user?.role?.toUpperCase() === 'ADMIN' ? (
+                                                        <ShieldCheck size={16} strokeWidth={2.5} />
+                                                    ) : user?.membershipTier?.includes('VISIONARIO') || user?.membershipTier?.includes('HERO') ? (
+                                                        <Rocket size={16} strokeWidth={2.5} />
+                                                    ) : user?.membershipTier?.includes('EMBAJADOR') || user?.membershipTier?.includes('GROWTH') ? (
+                                                        <Award size={16} strokeWidth={2.5} />
+                                                    ) : user?.membershipTier?.includes('SOCIO') || user?.membershipTier?.includes('STARTER') ? (
+                                                        <UserRound size={16} strokeWidth={2.5} />
+                                                    ) : (
+                                                        <Leaf size={16} strokeWidth={2.5} />
+                                                    )}
+                                                </div>
                                             </div>
                                             <div className="flex flex-col flex-1 items-center justify-center leading-none">
                                                 {isProfileHovered && ['ADMIN', 'MANAGER'].includes(user?.role?.toUpperCase()) ? (
-                                                    <div className="flex flex-col items-center gap-1 animate-in fade-in slide-in-from-bottom-1 duration-300">
-                                                        <span className="text-[8px] font-black tracking-wider whitespace-nowrap">PANEL CONTROL</span>
-                                                        <LayoutGrid size={11} strokeWidth={3} className="opacity-80" />
+                                                    <div className="flex flex-col items-center leading-tight animate-in fade-in slide-in-from-bottom-1 duration-300">
+                                                        <span className="text-[8px] font-black tracking-[0.3em] whitespace-nowrap">— PANEL —</span>
+                                                        <span className="text-[11px] font-black tracking-widest uppercase">
+                                                            {user?.role?.toUpperCase() === 'ADMIN' ? 'ADMIN' : 'GESTOR'}
+                                                        </span>
+                                                        <span className="text-[8px] font-black opacity-40">—</span>
                                                     </div>
                                                 ) : (
                                                     <>
-                                                        <span className={`text-[9px] font-black tracking-tight mb-1 ${isScrolled ? 'text-gray-900 dark:text-white' : 'text-white'}`}>
-                                                            Hola, {user?.fullName?.split(' ')[0] || 'Admin'}
+                                                        <span className={`text-[11px] font-black tracking-tight mb-1 ${isScrolled ? 'text-gray-900 dark:text-white' : 'text-white'}`}>
+                                                            Hola, {user?.fullName?.split(' ')[0] || 'Usuario'}
                                                         </span>
                                                         <div className="flex items-center gap-1.5">
-                                                            <div className={`w-2 h-[px] bg-gradient-to-l opacity-60
+                                                            <div className={`w-2 h-[1px] bg-gradient-to-l opacity-60
                                                                  ${user?.role?.toUpperCase() === 'ADMIN' ? 'from-red-500' :
-                                                                    user?.role?.toUpperCase() === 'MANAGER' ? 'from-orange-500' :
-                                                                        user?.membershipStatus === 'PENDING' ? 'from-amber-500' :
-                                                                            user?.membershipTier === 'HERO' ? 'from-indigo-500' :
-                                                                                user?.membershipTier === 'GROWTH' ? 'from-emerald-500' :
-                                                                                    user?.membershipTier === 'STARTER' ? 'from-lime-500' : 'from-emerald-500'} to-transparent`} />
+                                                                    user?.role?.toUpperCase() === 'MANAGER' ? 'from-emerald-500' :
+                                                                        isProcessingAction ? 'from-amber-400' :
+                                                                            user?.membershipTier?.includes('VISIONARIO') || user?.membershipTier?.includes('HERO') ? 'from-indigo-500' :
+                                                                                user?.membershipTier?.includes('EMBAJADOR') || user?.membershipTier?.includes('GROWTH') ? 'from-teal-400' :
+                                                                                    user?.membershipTier?.includes('SOCIO') || user?.membershipTier?.includes('STARTER') ? 'from-emerald-400' :
+                                                                                        'from-emerald-600'} to-transparent`} />
                                                             <span className={`text-[6.5px] font-black uppercase tracking-[0.2em]
                                                                  ${user?.role?.toUpperCase() === 'ADMIN' ? 'text-red-500' :
-                                                                    user?.role?.toUpperCase() === 'MANAGER' ? 'text-orange-500' :
-                                                                        user?.membershipStatus === 'PENDING' ? 'text-amber-500 animate-pulse' :
-                                                                            user?.membershipTier === 'HERO' ? 'text-indigo-400' :
-                                                                                user?.membershipTier === 'GROWTH' ? 'text-emerald-400' :
-                                                                                    user?.membershipTier === 'STARTER' ? 'text-lime-400' : 'text-emerald-400'}`}>
-                                                                {user?.role?.toUpperCase() === 'ADMIN' ? 'Admin' :
-                                                                    user?.role?.toUpperCase() === 'MANAGER' ? 'Gestor' :
-                                                                        user?.membershipStatus === 'PENDING' ? 'Validando' :
-                                                                            user?.membershipTier === 'HERO' ? 'Visionario' :
-                                                                                user?.membershipTier === 'GROWTH' ? 'Embajador' :
-                                                                                    user?.membershipTier === 'STARTER' ? 'Socio' : 'Eco'}
+                                                                    user?.role?.toUpperCase() === 'MANAGER' ? 'text-emerald-400' :
+                                                                        isProcessingAction ? 'text-amber-400 animate-pulse' :
+                                                                            user?.membershipTier?.includes('VISIONARIO') || user?.membershipTier?.includes('HERO') ? 'text-indigo-400' :
+                                                                                user?.membershipTier?.includes('EMBAJADOR') || user?.membershipTier?.includes('GROWTH') ? 'text-teal-400' :
+                                                                                    user?.membershipTier?.includes('SOCIO') || user?.membershipTier?.includes('STARTER') ? 'text-[#10B981]' :
+                                                                                        'text-emerald-500'}`}>
+                                                                {isProcessingAction ? 'Validando' :
+                                                                    user?.role?.toUpperCase() === 'ADMIN' ? 'Administrador' :
+                                                                        user?.role?.toUpperCase() === 'MANAGER' ? 'Gestor' :
+                                                                            user?.membershipTier?.includes('VISIONARIO') ? 'Eco Visionario' :
+                                                                                user?.membershipTier?.includes('EMBAJADOR') ? 'Eco Embajador' :
+                                                                                    user?.membershipTier?.includes('SOCIO') ? 'Eco Socio' : 'Eco Héroe'}
                                                             </span>
                                                             <div className={`w-2 h-[1px] bg-gradient-to-r opacity-60
                                                                  ${user?.role?.toUpperCase() === 'ADMIN' ? 'from-red-500' :
-                                                                    user?.role?.toUpperCase() === 'MANAGER' ? 'from-orange-500' :
-                                                                        user?.membershipStatus === 'PENDING' ? 'from-amber-500' :
-                                                                            user?.membershipTier === 'HERO' ? 'from-indigo-500' :
-                                                                                user?.membershipTier === 'GROWTH' ? 'from-emerald-500' :
-                                                                                    user?.membershipTier === 'STARTER' ? 'from-lime-500' : 'from-emerald-500'} to-transparent`} />
+                                                                    user?.role?.toUpperCase() === 'MANAGER' ? 'from-emerald-500' :
+                                                                        isProcessingAction ? 'from-amber-400' :
+                                                                            user?.membershipTier?.includes('VISIONARIO') || user?.membershipTier?.includes('HERO') ? 'from-indigo-500' :
+                                                                                user?.membershipTier?.includes('EMBAJADOR') || user?.membershipTier?.includes('GROWTH') ? 'from-teal-400' :
+                                                                                    user?.membershipTier?.includes('SOCIO') || user?.membershipTier?.includes('STARTER') ? 'from-emerald-400' :
+                                                                                        'from-emerald-600'} to-transparent`} />
                                                         </div>
                                                     </>
                                                 )}
@@ -237,102 +247,130 @@ const Navbar = ({ lang, setLang, darkMode, setDarkMode, t, isAuthenticated, user
             </div>
 
             {/* Mobile Menu */}
-            {isMobileMenuOpen && (
-                <div className="xl:hidden fixed inset-0 z-[60] bg-white dark:bg-gray-950 animate-in fade-in zoom-in-95 duration-300">
-                    <div className="flex flex-col h-full">
-                        <div className="flex justify-between items-center p-6 border-b border-gray-100 dark:border-gray-900">
-                            <div className="flex items-center gap-3">
-                                <img src={logoNosPlanet} alt="Logo" className="w-8 h-8 object-contain" />
-                                <span className="text-xl font-extrabold dark:text-white">Recycle<span className="text-emerald-500">App</span></span>
-                            </div>
-                            <button onClick={() => setIsMobileMenuOpen(false)} className="w-12 h-12 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center dark:text-white">
-                                <X size={24} />
-                            </button>
-                        </div>
-
-                        <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                            {navLinks.map((link) => (
-                                <button
-                                    key={link.id}
-                                    onClick={() => scrollToSection(link.id)}
-                                    className="w-full flex items-center justify-between p-4 rounded-2xl bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-all hover:bg-emerald-50 dark:hover:bg-emerald-900/20 group"
-                                >
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 shadow-sm flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
-                                            <link.icon size={20} />
-                                        </div>
-                                        <span className="font-bold text-lg">{link.name}</span>
-                                    </div>
-                                    <ChevronRight size={20} className="text-gray-400" />
-                                </button>
-                            ))}
-                        </div>
-
-                        <div className="p-6 border-t border-gray-100 dark:border-gray-900 bg-gray-50/50 dark:bg-gray-900/50">
-                            <div className="grid grid-cols-2 gap-4 mb-4">
-                                <button onClick={() => setDarkMode(!darkMode)} className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-300">
-                                    {darkMode ? <Sun size={24} /> : <Moon size={24} />}
-                                    <span className="text-xs font-bold uppercase">{darkMode ? 'Claro' : 'Oscuro'}</span>
-                                </button>
-                                <button onClick={() => setLang(lang === 'es' ? 'en' : 'es')} className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-300">
-                                    <Languages size={24} />
-                                    <span className="text-xs font-bold uppercase">{lang === 'es' ? 'English' : 'Español'}</span>
+            {
+                isMobileMenuOpen && (
+                    <div className="xl:hidden fixed inset-0 z-[60] bg-white dark:bg-gray-950 animate-in fade-in zoom-in-95 duration-300">
+                        <div className="flex flex-col h-full">
+                            <div className="flex justify-between items-center p-6 border-b border-gray-100 dark:border-gray-900">
+                                <div className="flex items-center gap-3">
+                                    <img src={logoNosPlanet} alt="Logo" className="w-8 h-8 object-contain" />
+                                    <span className="text-xl font-extrabold dark:text-white">Recycle<span className="text-emerald-500">App</span></span>
+                                </div>
+                                <button onClick={() => setIsMobileMenuOpen(false)} className="w-12 h-12 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center dark:text-white">
+                                    <X size={24} />
                                 </button>
                             </div>
-                            <div className="space-y-4">
-                                {isAuthenticated ? (
+
+                            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                                {navLinks.map((link) => (
                                     <button
-                                        onClick={() => { handleLoginClick(); setIsMobileMenuOpen(false); }}
-                                        className={`w-full relative flex items-center gap-5 p-5 rounded-[2.5rem] border shadow-2xl overflow-hidden group text-left
-                                            ${user?.role?.toUpperCase() === 'ADMIN' ? 'bg-red-600 border-red-400 shadow-red-500/30' :
-                                                user?.role?.toUpperCase() === 'MANAGER' ? 'bg-orange-600 border-orange-400 shadow-orange-500/30' :
-                                                    'bg-indigo-600 border-indigo-400 shadow-indigo-500/30'}`}
+                                        key={link.id}
+                                        onClick={() => scrollToSection(link.id)}
+                                        className="w-full flex items-center justify-between p-4 rounded-2xl bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-all hover:bg-emerald-50 dark:hover:bg-emerald-900/20 group"
                                     >
-                                        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
-                                        <div className="w-14 h-14 rounded-2xl bg-white shadow-xl flex items-center justify-center shrink-0 group-active:scale-95 transition-transform"
-                                            style={{ color: user?.role?.toUpperCase() === 'ADMIN' ? '#dc2626' : user?.role?.toUpperCase() === 'MANAGER' ? '#ea580c' : '#4f46e5' }}>
-                                            {user?.role?.toUpperCase() === 'ADMIN' ? <ShieldCheck size={28} strokeWidth={2.5} /> :
-                                                user?.role?.toUpperCase() === 'MANAGER' ? <Handshake size={28} strokeWidth={2.5} /> :
-                                                    <Rocket size={28} strokeWidth={2.5} />}
-                                        </div>
-                                        <div className="flex flex-col items-start leading-none gap-2">
-                                            <span className="text-base font-black text-white italic tracking-tight">
-                                                Hola, {user?.fullName?.split(' ')[0] || 'Raúl'}
-                                            </span>
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-5 h-[1px] bg-white/30" />
-                                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/90">
-                                                    {user?.role?.toUpperCase() === 'ADMIN' ? 'Administrador' :
-                                                        user?.role?.toUpperCase() === 'MANAGER' ? 'Gestor' : 'Eco-Héroe'}
-                                                </span>
-                                                <div className="w-5 h-[1px] bg-white/30" />
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 shadow-sm flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
+                                                <link.icon size={20} />
                                             </div>
+                                            <span className="font-bold text-lg">{link.name}</span>
                                         </div>
+                                        <ChevronRight size={20} className="text-gray-400" />
                                     </button>
-                                ) : (
-                                    <Button
-                                        onClick={() => { handleLoginClick(); setIsMobileMenuOpen(false); }}
-                                        className="w-full h-14 rounded-2xl text-lg font-extrabold shadow-xl shadow-emerald-500/20"
-                                        icon={LogIn}
-                                    >
-                                        {t.nav.login}
-                                    </Button>
-                                )}
+                                ))}
+                            </div>
 
-                                {isAuthenticated && (
-                                    <button
-                                        onClick={() => { onLogout(); setIsMobileMenuOpen(false); }}
-                                        className="w-full flex items-center justify-center gap-3 p-4 rounded-2xl text-red-500 font-bold uppercase tracking-widest text-xs hover:bg-red-50 dark:hover:bg-red-900/20 transition-all border border-red-100 dark:border-red-900/30"
-                                    >
-                                        <LogOut size={18} /> Cerrar Sesión
+                            <div className="p-6 border-t border-gray-100 dark:border-gray-900 bg-gray-50/50 dark:bg-gray-900/50">
+                                <div className="grid grid-cols-2 gap-4 mb-4">
+                                    <button onClick={() => setDarkMode(!darkMode)} className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-300">
+                                        {darkMode ? <Sun size={24} /> : <Moon size={24} />}
+                                        <span className="text-xs font-bold uppercase">{darkMode ? 'Claro' : 'Oscuro'}</span>
                                     </button>
-                                )}
+                                    <button onClick={() => setLang(lang === 'es' ? 'en' : 'es')} className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-300">
+                                        <Languages size={24} />
+                                        <span className="text-xs font-bold uppercase">{lang === 'es' ? 'English' : 'Español'}</span>
+                                    </button>
+                                </div>
+                                <div className="space-y-4">
+                                    {isAuthenticated ? (
+                                        <button
+                                            onClick={() => { handleLoginClick(); setIsMobileMenuOpen(false); }}
+                                            className={`w-full relative flex items-center gap-5 p-5 rounded-[2.5rem] border shadow-2xl overflow-hidden group text-left
+                                            ${user?.role?.toUpperCase() === 'ADMIN' ? 'bg-red-600 border-red-400 shadow-red-500/30' :
+                                                    user?.role?.toUpperCase() === 'MANAGER' ? 'bg-emerald-600 border-emerald-400 shadow-emerald-500/30' :
+                                                        user?.membershipTier?.includes('VISIONARIO') || user?.membershipTier?.includes('HERO') ? 'bg-indigo-600 border-indigo-400 shadow-indigo-500/30' :
+                                                            user?.membershipTier?.includes('EMBAJADOR') || user?.membershipTier?.includes('GROWTH') ? 'bg-teal-600 border-teal-400 shadow-teal-500/30' :
+                                                                user?.membershipTier?.includes('SOCIO') || user?.membershipTier?.includes('STARTER') ? 'bg-emerald-700 border-emerald-500 shadow-emerald-500/30' :
+                                                                    'bg-emerald-600 border-emerald-400 shadow-emerald-500/30'}`}
+                                        >
+                                            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+                                            <div className="w-14 h-14 rounded-2xl bg-white shadow-xl flex items-center justify-center shrink-0 group-active:scale-95 transition-transform"
+                                                style={{
+                                                    color: user?.role?.toUpperCase() === 'ADMIN' ? '#dc2626' :
+                                                        user?.role?.toUpperCase() === 'MANAGER' ? '#10B981' :
+                                                            user?.membershipTier?.includes('VISIONARIO') || user?.membershipTier?.includes('HERO') ? '#6366f1' :
+                                                                user?.membershipTier?.includes('EMBAJADOR') || user?.membershipTier?.includes('GROWTH') ? '#2dd4bf' :
+                                                                    user?.membershipTier?.includes('SOCIO') || user?.membershipTier?.includes('STARTER') ? '#10B981' :
+                                                                        '#059669'
+                                                }}>
+                                                {isProcessingAction ? (
+                                                    <Loader2 size={28} strokeWidth={2.5} className="animate-spin" />
+                                                ) : user?.role?.toUpperCase() === 'ADMIN' ? (
+                                                    <ShieldCheck size={28} strokeWidth={2.5} />
+                                                ) : user?.role?.toUpperCase() === 'MANAGER' ? (
+                                                    <Handshake size={28} strokeWidth={2.5} />
+                                                ) : user?.membershipTier?.includes('VISIONARIO') || user?.membershipTier?.includes('HERO') ? (
+                                                    <Rocket size={28} strokeWidth={2.5} />
+                                                ) : user?.membershipTier?.includes('EMBAJADOR') || user?.membershipTier?.includes('GROWTH') ? (
+                                                    <Award size={28} strokeWidth={2.5} />
+                                                ) : user?.membershipTier?.includes('SOCIO') || user?.membershipTier?.includes('STARTER') ? (
+                                                    <UserRound size={28} strokeWidth={2.5} />
+                                                ) : (
+                                                    <Leaf size={28} strokeWidth={2.5} />
+                                                )}
+                                            </div>
+                                            <div className="flex flex-col items-start leading-none gap-2">
+                                                <span className="text-base font-black text-white italic tracking-tight">
+                                                    Hola, {user?.fullName?.split(' ')[0] || 'Usuario'}
+                                                </span>
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-5 h-[1px] bg-white/30" />
+                                                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/90">
+                                                        {isProcessingAction ? 'Validando...' :
+                                                            user?.role?.toUpperCase() === 'ADMIN' ? 'Administrador' :
+                                                                user?.role?.toUpperCase() === 'MANAGER' ? 'Gestor' :
+                                                                    user?.membershipTier?.includes('VISIONARIO') ? 'Visionario' :
+                                                                        user?.membershipTier?.includes('EMBAJADOR') ? 'Embajador' :
+                                                                            user?.membershipTier?.includes('SOCIO') ? 'Socio' : 'Eco Héroe'}
+                                                    </span>
+                                                    <div className="w-5 h-[1px] bg-white/30" />
+                                                </div>
+                                            </div>
+                                        </button>
+                                    ) : (
+                                        <Button
+                                            onClick={() => { handleLoginClick(); setIsMobileMenuOpen(false); }}
+                                            className="w-full h-14 rounded-2xl text-lg font-extrabold shadow-xl shadow-emerald-500/20"
+                                            icon={LogIn}
+                                        >
+                                            {t.nav.login}
+                                        </Button>
+                                    )}
+
+                                    {isAuthenticated && (
+                                        <button
+                                            onClick={() => { onLogout(); setIsMobileMenuOpen(false); }}
+                                            className="w-full flex items-center justify-center gap-3 p-4 rounded-2xl text-red-500 font-bold uppercase tracking-widest text-xs hover:bg-red-50 dark:hover:bg-red-900/20 transition-all border border-red-100 dark:border-red-900/30"
+                                        >
+                                            <LogOut size={18} /> Cerrar Sesión
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </nav>
+                )
+            }
+        </nav >
     );
 };
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Sparkles, QrCode, HandHelping } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { onUpdateUser } from '../../store/auth/authSlice';
+import { onUpdateUser, setProcessingAction } from '../../store/auth/authSlice';
 import { useCreateDonationMutation } from '../../store/donations/donationsApi';
 
 // Sub-components
@@ -28,6 +28,8 @@ const DonationSection = ({ t }) => {
     const [payerName, setPayerName] = useState('');
     const [isPayerSelf, setIsPayerSelf] = useState(true);
 
+    const [successCountdown, setSuccessCountdown] = useState(0);
+
     const tiers = getDonationTiers();
     const [createDonation] = useCreateDonationMutation();
 
@@ -40,12 +42,31 @@ const DonationSection = ({ t }) => {
         let timer;
         if (isModalOpen && contributionStep === 'payment' && countdown > 0) {
             timer = setInterval(() => setCountdown(prev => prev - 1), 1000);
+        } else if (isModalOpen && contributionStep === 'payment' && countdown === 0) {
+            setIsModalOpen(false);
+            setCountdown(300); // Reset timer for next time
         }
         return () => clearInterval(timer);
     }, [isModalOpen, contributionStep, countdown]);
 
+    // Timer para el cierre automático tras el éxito
+    useEffect(() => {
+        let timer;
+        if (isSuccess && successCountdown > 0) {
+            timer = setInterval(() => setSuccessCountdown(prev => prev - 1), 1000);
+        } else if (isSuccess && successCountdown === 0) {
+            setIsModalOpen(false);
+            setSelectedTier(null);
+            setContributionStep('selection');
+            setIsSuccess(false);
+        }
+        return () => clearInterval(timer);
+    }, [isSuccess, successCountdown]);
+
     const handleOpenModal = (tier) => {
         setIsProcessing(false);
+        setIsSuccess(false);
+        setSuccessCountdown(0);
         setContributionStep('selection');
         setCountdown(300);
         setAcceptedTerms(false);
@@ -58,41 +79,44 @@ const DonationSection = ({ t }) => {
 
     const handleConfirmContribution = async () => {
         setIsProcessing(true);
+        dispatch(setProcessingAction(true));
+        // Duración de 2 segundos según solicitud
         await new Promise(resolve => setTimeout(resolve, 2000));
         setIsProcessing(false);
+        dispatch(setProcessingAction(false));
         setContributionStep('payment');
     };
 
     const handleFinalizePayment = async () => {
         if (!acceptedTerms) return;
         setIsPaymentConfirmed(true);
+        dispatch(setProcessingAction(true));
         try {
             await createDonation({
                 payerName: payerName,
-                tier: selectedTier.id.toUpperCase(),
+                membershipTier: selectedTier.id,
                 amount: parseFloat(t.donation.tiers[selectedTier.key].amount.replace(/[^\d.]/g, '')),
             }).unwrap();
 
-            dispatch(onUpdateUser({ membershipStatus: 'PENDING' }));
+            // 🏆 ACTUALIZACIÓN INSTANTÁNEA
+            dispatch(onUpdateUser({
+                membershipTier: selectedTier.id,
+                membershipStatus: 'ACTIVE'
+            }));
+
             setIsPaymentConfirmed(false);
             setIsSuccess(true);
+            setSuccessCountdown(3);
 
+            // Mantener "Validando" por 6 segundos en total
             setTimeout(() => {
-                dispatch(onUpdateUser({
-                    membershipTier: selectedTier.id.toUpperCase(),
-                    membershipStatus: 'ACTIVE'
-                }));
+                dispatch(setProcessingAction(false));
             }, 6000);
 
-            setTimeout(() => {
-                setIsModalOpen(false);
-                setSelectedTier(null);
-                setContributionStep('selection');
-                setIsSuccess(false);
-            }, 3000);
         } catch (error) {
             console.error('Error al procesar el aporte:', error);
             setIsPaymentConfirmed(false);
+            dispatch(setProcessingAction(false));
         }
     };
 
@@ -118,6 +142,7 @@ const DonationSection = ({ t }) => {
                 t={t}
                 navigate={navigate}
                 countdown={countdown}
+                successCountdown={successCountdown}
                 formatTime={formatTime}
                 isProcessing={isProcessing}
                 isSuccess={isSuccess}

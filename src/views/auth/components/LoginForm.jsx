@@ -16,14 +16,14 @@ const LoginForm = ({
     const getRoleColor = () => {
         if (selectedRole === 'gestor') return '#f97316';
         if (selectedRole === 'ecoheroe') return '#10b981';
-        if (selectedRole === 'admin') return '#FF3B3B';
+
         return '#f97316';
     };
 
     const getRoleRing = () => {
         if (selectedRole === 'gestor') return 'focus:ring-orange-500/30 focus:border-orange-500 focus:bg-white/10';
         if (selectedRole === 'ecoheroe') return 'focus:ring-emerald-500/30 focus:border-emerald-500 focus:bg-white/10';
-        if (selectedRole === 'admin') return 'focus:ring-red-500/30 focus:border-red-500 focus:bg-white/10';
+
         return 'focus:ring-orange-500/30 focus:border-orange-500 focus:bg-white/10';
     };
 
@@ -55,7 +55,8 @@ const LoginForm = ({
                     ACCESO AL <span style={{ color: getRoleColor() }}>PORTAL</span>
                 </h1>
                 <p className="text-gray-500 text-[10px] font-bold uppercase tracking-[0.4em]">
-                    Perfil: <span style={{ color: getRoleColor() }}>{selectedRole === 'admin' ? 'Administrador' : selectedRole === 'gestor' ? 'Gestor' : 'Eco-Héroe'}</span>
+                    Perfil: <span style={{ color: getRoleColor() }}>{selectedRole === 'gestor' ? 'Gestor' : 'Eco-Héroe'}</span>
+
                 </p>
             </div>
 

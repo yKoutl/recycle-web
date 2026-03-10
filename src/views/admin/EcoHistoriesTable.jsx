@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     CheckCircle2,
     XCircle,
@@ -10,7 +10,11 @@ import {
     Filter,
     Search,
     RotateCw,
-    Star
+    Star,
+    Award,
+    Rocket,
+    UserRound,
+    Leaf
 } from 'lucide-react';
 import {
     useGetAllHistoriesQuery,
@@ -24,7 +28,7 @@ const EcoHistoriesTable = ({ themeColor }) => {
     const { data: histories = [], isLoading, refetch } = useGetAllHistoriesQuery();
     const [updateStatus] = useUpdateHistoryStatusMutation();
     const [toggleFeatured] = useToggleFeaturedHistoryMutation();
-    const [deleteHistory] = useDeleteHistoryMutation();
+    const [deleteHistory, deleteResult] = useDeleteHistoryMutation();
 
     const [filter, setFilter] = useState('ALL');
     const [searchTerm, setSearchTerm] = useState('');
@@ -33,6 +37,15 @@ const EcoHistoriesTable = ({ themeColor }) => {
     // Estados para el Modal de Confirmación
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
+
+    // Cerrar modal automáticamente cuando la eliminación sea exitosa
+    useEffect(() => {
+        if (deleteResult.isSuccess) {
+            setIsConfirmOpen(false);
+            setSelectedId(null);
+            deleteResult.reset(); // Resetear estado de la mutación
+        }
+    }, [deleteResult.isSuccess]);
 
     // Estados para el Modal de Detalles
     const [isDetailsOpen, setIsDetailsOpen] = useState(false);
@@ -74,27 +87,32 @@ const EcoHistoriesTable = ({ themeColor }) => {
 
     if (isLoading) return <div className="p-10 text-center text-sm text-gray-400 animate-pulse">Cargando historias...</div>;
 
-    const getStatusStyle = (status) => {
+    const getStatusParams = (status) => {
         switch (status) {
-            case 'APPROVED': return 'bg-green-100 text-green-700 border-green-200';
-            case 'REJECTED': return 'bg-red-100 text-red-700 border-red-200';
-            default: return 'bg-orange-100 text-orange-700 border-orange-200';
-        }
-    };
-
-    const getStatusLabel = (status) => {
-        switch (status) {
-            case 'APPROVED': return 'APROBADO';
-            case 'REJECTED': return 'RECHAZADO';
-            default: return 'PENDIENTE';
-        }
-    };
-
-    const getStatusIcon = (status) => {
-        switch (status) {
-            case 'APPROVED': return <CheckCircle2 size={13} strokeWidth={2} />;
-            case 'REJECTED': return <XCircle size={13} strokeWidth={2} />;
-            default: return <Clock size={13} strokeWidth={1.75} />;
+            case 'APPROVED': return {
+                label: 'Aprobado',
+                color: 'text-emerald-700 dark:text-emerald-400',
+                bg: 'bg-emerald-500/10 dark:bg-emerald-500/10',
+                border: 'border-emerald-200/50 dark:border-emerald-500/20',
+                icon: CheckCircle2,
+                glow: 'shadow-emerald-500/20'
+            };
+            case 'REJECTED': return {
+                label: 'Rechazado',
+                color: 'text-rose-700 dark:text-rose-400',
+                bg: 'bg-rose-500/10 dark:bg-rose-500/10',
+                border: 'border-rose-200/50 dark:border-rose-500/20',
+                icon: XCircle,
+                glow: 'shadow-rose-500/20'
+            };
+            default: return {
+                label: 'Pendiente',
+                color: 'text-amber-700 dark:text-amber-400',
+                bg: 'bg-amber-500/10 dark:bg-amber-500/10',
+                border: 'border-amber-200/50 dark:border-amber-500/20',
+                icon: Clock,
+                glow: 'shadow-amber-500/20'
+            };
         }
     };
 
@@ -107,7 +125,8 @@ const EcoHistoriesTable = ({ themeColor }) => {
                 title="Eliminar EcoHistoria"
                 message="Esta acción no se puede deshacer. ¿Estás seguro de que quieres borrar este testimonio de forma permanente?"
                 confirmText="Eliminar Historia"
-                type="danger"
+                variant="danger"
+                isLoading={deleteResult.isLoading}
             />
 
             {/* Modal de Detalles */}
@@ -155,10 +174,15 @@ const EcoHistoriesTable = ({ themeColor }) => {
                                     </div>
                                     <div className="p-3 bg-gray-50 dark:bg-white/5 rounded-xl">
                                         <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider block mb-1">Estado Actual</label>
-                                        <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border ${getStatusStyle(selectedHistory.status)}`}>
-                                            {getStatusIcon(selectedHistory.status)}
-                                            {getStatusLabel(selectedHistory.status)}
-                                        </div>
+                                        {(() => {
+                                            const s = getStatusParams(selectedHistory.status);
+                                            return (
+                                                <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm ${s.bg} ${s.color} ${s.border} ${s.glow}`}>
+                                                    <s.icon size={11} strokeWidth={2.5} />
+                                                    {s.label}
+                                                </div>
+                                            );
+                                        })()}
                                     </div>
                                     {selectedHistory.status === 'REJECTED' && (
                                         <div className="col-span-2 p-3 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20 rounded-xl flex items-center justify-between">
@@ -306,10 +330,24 @@ const EcoHistoriesTable = ({ themeColor }) => {
                                                 )}
                                             </div>
                                             <div>
-                                                <div className="font-semibold text-gray-900 dark:text-white leading-none mb-0.5">
+                                                <div className="font-semibold text-gray-900 dark:text-white leading-none mb-1">
                                                     {item.user?.fullName || 'Usuario Anónimo'}
                                                 </div>
-                                                <div className="text-xs text-gray-400">{item.user?.email || 'S/E'}</div>
+                                                <div className="flex flex-col gap-0.5">
+                                                    <div className="text-[10px] text-gray-400 font-medium">{item.user?.email || 'S/E'}</div>
+                                                    <div className={`flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest ${item.user?.membershipTier === 'ECO_VISIONARIO' ? 'text-indigo-500' :
+                                                        item.user?.membershipTier === 'ECO_EMBAJADOR' ? 'text-teal-500' :
+                                                            item.user?.membershipTier === 'ECO_SOCIO' ? 'text-emerald-600' : 'text-slate-400'
+                                                        }`}>
+                                                        {item.user?.membershipTier === 'ECO_VISIONARIO' && <Rocket size={10} />}
+                                                        {item.user?.membershipTier === 'ECO_EMBAJADOR' && <Award size={10} />}
+                                                        {item.user?.membershipTier === 'ECO_SOCIO' && <UserRound size={10} />}
+                                                        {!['ECO_VISIONARIO', 'ECO_EMBAJADOR', 'ECO_SOCIO'].includes(item.user?.membershipTier) && <Leaf size={10} />}
+                                                        {item.user?.membershipTier === 'ECO_VISIONARIO' ? 'Eco-Visionario' :
+                                                            item.user?.membershipTier === 'ECO_EMBAJADOR' ? 'Eco-Embajador' :
+                                                                item.user?.membershipTier === 'ECO_SOCIO' ? 'Eco-Socio' : 'Eco-Héroe'}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
@@ -326,10 +364,15 @@ const EcoHistoriesTable = ({ themeColor }) => {
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="space-y-1">
-                                            <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border ${getStatusStyle(item.status)}`}>
-                                                {getStatusIcon(item.status)}
-                                                {getStatusLabel(item.status)}
-                                            </div>
+                                            {(() => {
+                                                const s = getStatusParams(item.status);
+                                                return (
+                                                    <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm ${s.bg} ${s.color} ${s.border} ${s.glow}`}>
+                                                        <s.icon size={11} strokeWidth={2.5} />
+                                                        {s.label}
+                                                    </div>
+                                                );
+                                            })()}
                                             {item.status === 'REJECTED' && (
                                                 <div className="text-[10px] font-bold text-red-500/80 flex items-center gap-1 px-1">
                                                     <Clock size={10} />
@@ -386,9 +429,15 @@ const EcoHistoriesTable = ({ themeColor }) => {
                                     </div>
                                 </div>
                                 <div className="flex flex-col items-end gap-1">
-                                    <div className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border ${getStatusStyle(item.status)}`}>
-                                        {getStatusLabel(item.status)}
-                                    </div>
+                                    {(() => {
+                                        const s = getStatusParams(item.status);
+                                        return (
+                                            <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${s.bg} ${s.color} ${s.border} ${s.glow}`}>
+                                                <s.icon size={10} strokeWidth={2.5} />
+                                                {s.label}
+                                            </div>
+                                        );
+                                    })()}
                                     {item.status === 'REJECTED' && (
                                         <div className="text-[9px] font-bold text-red-500/70 flex items-center gap-1">
                                             <Clock size={9} />

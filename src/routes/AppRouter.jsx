@@ -28,7 +28,7 @@ const PageLoader = () => (
 );
 
 
-const AppRouter = ({ lang, setLang, darkMode, setDarkMode, onLogout, showBot, setShowBot }) => {
+const AppRouter = ({ lang, setLang, darkMode, setDarkMode, themeColor, setThemeColor, onLogout, showBot, setShowBot }) => {
     const t = TRANSLATIONS[lang];
     const { status, user } = useSelector((state) => state.auth);
 
@@ -68,7 +68,7 @@ const AppRouter = ({ lang, setLang, darkMode, setDarkMode, onLogout, showBot, se
                 </Route>
 
                 {/* Rutas Privadas (Admin y Gestor) */}
-                <Route element={<PrivateRoute allowedRoles={['ADMIN', 'OFFICIAL']} />}>
+                <Route element={<PrivateRoute allowedRoles={['ADMIN', 'MANAGER']} />}>
                     <Route path="/admin/*" element={
                         <AdminView
                             t={t}
@@ -78,6 +78,8 @@ const AppRouter = ({ lang, setLang, darkMode, setDarkMode, onLogout, showBot, se
                             setLang={setLang}
                             showBot={showBot}
                             setShowBot={setShowBot}
+                            themeColor={themeColor}
+                            setThemeColor={setThemeColor}
                         />
                     } />
                 </Route>

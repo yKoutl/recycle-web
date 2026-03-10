@@ -253,19 +253,25 @@ const AdminSettings = ({ t, darkMode, setDarkMode, lang, setLang, user, showBot,
                             </p>
                         </div>
 
-                        <button className="w-full group/btn overflow-hidden p-6 rounded-2xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 transition-all duration-500 hover:shadow-lg shadow-md">
-                            <div className="flex items-center justify-between">
+                        <button className="w-full group/btn relative overflow-hidden p-5 rounded-[1.5rem] bg-gray-50/50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/5 transition-all duration-500 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-white/5 hover:-translate-y-1 active:scale-[0.98]">
+                            {/* Glow Effect on Hover */}
+                            <div
+                                className="absolute inset-0 opacity-0 group-hover/btn:opacity-10 transition-opacity duration-500"
+                                style={{ background: `radial-gradient(circle at center, ${accent}, transparent 70%)` }}
+                            />
+
+                            <div className="flex items-center justify-between relative z-10">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-white/10 dark:bg-black/5 flex items-center justify-center border border-white/10">
-                                        <Lock size={22} strokeWidth={2.5} />
+                                    <div className="w-12 h-12 rounded-2xl bg-white dark:bg-white/5 flex items-center justify-center shadow-sm border border-gray-100 dark:border-white/10 group-hover/btn:scale-110 transition-transform duration-500">
+                                        <Lock size={20} strokeWidth={2.5} style={{ color: accent }} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-base font-black uppercase tracking-tight leading-none">Restablecer Acceso</p>
-                                        <p className="text-[9px] font-bold opacity-40 uppercase tracking-widest mt-1.5">Cambiar contraseña maestra</p>
+                                        <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight leading-none">Restablecer Acceso</p>
+                                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1.5">Cambiar contraseña maestra</p>
                                     </div>
                                 </div>
-                                <div className="p-2 rounded-xl bg-white/5 transition-all group-hover/btn:bg-white/20">
-                                    <ChevronRight size={20} strokeWidth={3} />
+                                <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-400 dark:text-white/20 transition-all group-hover/btn:bg-gray-900 dark:group-hover/btn:bg-white group-hover/btn:text-white dark:group-hover/btn:text-gray-900">
+                                    <ChevronRight size={18} strokeWidth={3} />
                                 </div>
                             </div>
                         </button>

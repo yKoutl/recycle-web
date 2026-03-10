@@ -55,9 +55,9 @@ const ProgramsList = ({ themeColor }) => {
     };
 
     const stats = [
-        { label: 'Total', value: programs.length, icon: Layout, color: '#10b981', bg: 'bg-emerald-50 dark:bg-emerald-500/10' },
-        { label: 'Participantes', value: programs.reduce((acc, curr) => acc + (curr.participants || 0), 0), icon: Users, color: '#2563eb', bg: 'bg-blue-50 dark:bg-blue-500/10' },
-        { label: 'Ubicaciones', value: new Set(programs.map(p => p.location)).size, icon: MapPin, color: '#f97316', bg: 'bg-orange-50 dark:bg-orange-500/10' },
+        { label: 'Total', value: programs.length, icon: Layout, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-500/20' },
+        { label: 'Participantes', value: programs.reduce((acc, curr) => acc + (curr.participants || 0), 0), icon: Users, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-500/10 border-blue-500/20' },
+        { label: 'Ubicaciones', value: new Set(programs.map(p => p.location)).size, icon: MapPin, color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-500/10 border-orange-500/20' },
     ];
 
     return (

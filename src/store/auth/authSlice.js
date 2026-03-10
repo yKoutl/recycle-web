@@ -7,6 +7,7 @@ export const authSlice = createSlice({
         user: null,         // Aquí guardaremos los datos del usuario logueado (id, email, role, etc.)
         token: null,        // El JWT
         errorMessage: undefined,
+        isProcessingAction: false,
     },
     reducers: {
         onChecking: (state) => {
@@ -36,10 +37,13 @@ export const authSlice = createSlice({
         // Acción especial para actualizar datos del usuario sin reloguear (ej: cambiar foto)
         onUpdateUser: (state, { payload }) => {
             state.user = { ...state.user, ...payload };
+        },
+        setProcessingAction: (state, { payload }) => {
+            state.isProcessingAction = payload;
         }
     }
 });
 
-export const { onChecking, onLogin, onLogout, onClearError, onUpdateUser } = authSlice.actions;
+export const { onChecking, onLogin, onLogout, onClearError, onUpdateUser, setProcessingAction } = authSlice.actions;
 
 export default authSlice.reducer;

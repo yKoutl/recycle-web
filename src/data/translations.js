@@ -140,7 +140,9 @@ export const TRANSLATIONS = {
                 dashboard: 'Tablero',
                 management: 'Gestión',
                 users: 'Usuarios',
-                requests: 'Solicitudes'
+                gestores: 'Gestores',
+                requests: 'Solicitudes',
+                donations: 'Donaciones',
             },
             stats: {
                 activeUsers: 'Usuarios Activos',
@@ -178,17 +180,17 @@ export const TRANSLATIONS = {
                 starter: {
                     title: 'Eco-Socio',
                     desc: 'Aporta el impulso inicial para nuestras tareas diarias.',
-                    amount: 'S/ 15 /mensual'
+                    amount: 'S/ 3'
                 },
                 growth: {
                     title: 'Eco-Embajador',
                     desc: 'Fortalece la red y permite llegar a más comunidades.',
-                    amount: 'S/ 30 /mensual'
+                    amount: 'S/ 5'
                 },
                 hero: {
                     title: 'Eco-Visionario',
                     desc: 'Lidera la transformación tecnológica del reciclaje.',
-                    amount: 'S/ 55 /mensual'
+                    amount: 'S/ 8'
                 }
             },
             qrTitle: 'Aporta vía QR',
@@ -425,17 +427,17 @@ export const TRANSLATIONS = {
                 starter: {
                     title: 'Eco-Partner',
                     desc: 'Provide the initial boost for our daily tasks.',
-                    amount: 'S/ 15 /monthly'
+                    amount: '$3'
                 },
                 growth: {
                     title: 'Eco-Ambassador',
                     desc: 'Strengthen the network and reach more communities.',
-                    amount: 'S/ 30 /monthly'
+                    amount: '$5'
                 },
                 hero: {
                     title: 'Eco-Visionary',
                     desc: 'Lead the technological transformation of recycling.',
-                    amount: 'S/ 55 /monthly'
+                    amount: '$8'
                 }
             },
             qrTitle: 'Contribute via QR',

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, RotateCw, UserPlus, Mail, Trash2, Fingerprint, Plus, Eye, Pencil, Power, CheckCircle2, XCircle, Users } from 'lucide-react';
+import { Search, RotateCw, UserPlus, Mail, Trash2, Fingerprint, Plus, Eye, Pencil, Power, CheckCircle2, XCircle, Users, Shield } from 'lucide-react';
 import { useGetUsersQuery, useDeleteUserMutation, useUpdateUserMutation } from '../../store/user/usersApi';
 import GestorFormModal from './GestorFormModal';
 
@@ -14,7 +14,7 @@ const GestoresManagementView = ({ t, themeColor }) => {
     const accent = themeColor || '#018F64';
 
     const gestores = users?.filter(u =>
-        u.role?.toUpperCase() === 'OFFICIAL' &&
+        u.role?.toUpperCase() === 'MANAGER' &&
         (u.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             u.email?.toLowerCase().includes(searchTerm.toLowerCase()))
     ) || [];
@@ -65,10 +65,13 @@ const GestoresManagementView = ({ t, themeColor }) => {
                 </div>
                 <button
                     onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 px-5 py-2.5 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition-all active:scale-95 shadow-md"
-                    style={{ background: `linear-gradient(135deg, ${accent}, ${accent}dd)`, boxShadow: `0 4px 14px ${accent}40` }}
+                    className="flex items-center gap-2 px-6 py-3 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest hover:opacity-100 transition-all active:scale-95 shadow-xl hover:-translate-y-1 hover:scale-105"
+                    style={{
+                        background: `linear-gradient(135deg, ${accent}, ${accent}dd)`,
+                        boxShadow: `0 10px 25px ${accent}40`
+                    }}
                 >
-                    <Plus size={16} strokeWidth={2.5} /> Nuevo gestor
+                    <Plus size={16} strokeWidth={3} /> Nuevo gestor
                 </button>
             </div>
 
@@ -167,10 +170,13 @@ const GestoresManagementView = ({ t, themeColor }) => {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                                                <Fingerprint size={14} strokeWidth={1.75} className="text-gray-300 dark:text-gray-600" />
-                                                {gestor.documentNumber || 'N/A'}
+                                                <Shield size={14} strokeWidth={1.75} className="text-gray-300 dark:text-gray-600" />
+                                                {gestor.profile?.institution || 'Sin Institución'}
                                             </div>
-                                            <div className="text-xs text-gray-400 mt-0.5 ml-5">{gestor.phone || 'Sin teléfono'}</div>
+                                            <div className="text-[10px] text-gray-400 mt-1 flex items-center gap-2">
+                                                <Fingerprint size={12} strokeWidth={1.75} />
+                                                {gestor.documentNumber || 'N/D'} • {gestor.phone || 'S/T'}
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4">
                                             {gestor.isActive !== false ? (
@@ -189,11 +195,11 @@ const GestoresManagementView = ({ t, themeColor }) => {
                                             )}
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <div className="flex items-center justify-end gap-1">
-                                                <button onClick={() => handleOpenModal(gestor, true)} className="p-2 rounded-lg text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all"><Eye size={16} /></button>
-                                                <button onClick={() => handleOpenModal(gestor, false)} className="p-2 rounded-lg text-gray-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-500/10 transition-all"><Pencil size={16} /></button>
-                                                <button onClick={() => toggleStatus(gestor)} className="p-2 rounded-lg text-gray-400 transition-all" style={gestor.isActive === false ? { color: accent } : {}}><Power size={16} /></button>
-                                                <button onClick={() => handleDelete(gestor._id)} className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all"><Trash2 size={16} /></button>
+                                            <div className="flex items-center justify-end gap-1.5 px-2">
+                                                <button onClick={() => handleOpenModal(gestor, true)} className="p-2.5 rounded-xl text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all hover:scale-110 active:scale-90 shadow-sm hover:shadow-md"><Eye size={16} strokeWidth={2.5} /></button>
+                                                <button onClick={() => handleOpenModal(gestor, false)} className="p-2.5 rounded-xl text-gray-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-500/10 transition-all hover:scale-110 active:scale-90 shadow-sm hover:shadow-md"><Pencil size={16} strokeWidth={2.5} /></button>
+                                                <button onClick={() => toggleStatus(gestor)} className="p-2.5 rounded-xl text-gray-400 transition-all hover:scale-110 active:scale-90 shadow-sm hover:shadow-md" style={gestor.isActive === false ? { color: accent } : {}}><Power size={16} strokeWidth={2.5} /></button>
+                                                <button onClick={() => handleDelete(gestor._id)} className="p-2.5 rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all hover:scale-110 active:scale-90 shadow-sm hover:shadow-md"><Trash2 size={16} strokeWidth={2.5} /></button>
                                             </div>
                                         </td>
                                     </tr>
@@ -229,6 +235,10 @@ const GestoresManagementView = ({ t, themeColor }) => {
                                 )}
                             </div>
                             <div className="grid grid-cols-2 gap-2 text-xs">
+                                <div className="p-2 bg-gray-50 dark:bg-white/5 rounded-lg col-span-2">
+                                    <div className="text-[9px] uppercase text-gray-400 font-bold mb-0.5">Institución</div>
+                                    <div className="font-medium text-gray-700 dark:text-gray-300 truncate">{gestor.profile?.institution || '-'}</div>
+                                </div>
                                 <div className="p-2 bg-gray-50 dark:bg-white/5 rounded-lg">
                                     <div className="text-[9px] uppercase text-gray-400 font-bold mb-0.5">DNI/ID</div>
                                     <div className="font-medium text-gray-700 dark:text-gray-300">{gestor.documentNumber || '-'}</div>

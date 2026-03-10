@@ -1,5 +1,4 @@
-import React from 'react';
-import { Heart, Quote, Sparkles, Leaf } from 'lucide-react';
+import { Heart, Quote, Sparkles, Leaf, Award, Rocket, UserRound } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const ReviewCard = ({ review, t, onToggleLike, index, variant = 'landing' }) => {
@@ -9,42 +8,54 @@ const ReviewCard = ({ review, t, onToggleLike, index, variant = 'landing' }) => 
 
     const isWall = variant === 'wall';
 
-    // Tier-based specific styling
+    // Tier-based specific styling - Balanced Membership Style
     const tierStyles = {
-        HERO: {
-            bg: 'bg-indigo-600 text-white border-indigo-400/30 shadow-[0_20px_50px_rgba(79,70,229,0.3)]',
+        ECO_VISIONARIO: {
+            bg: 'bg-gradient-to-br from-[#1E1B4B] via-[#312E81] to-[#4338CA] border-white/10 shadow-[0_20px_50px_-12px_rgba(67,56,202,0.3)]',
             text: 'text-white',
-            subtext: 'text-indigo-100',
+            subtext: 'text-white/60',
             icon: 'text-white',
-            badge: 'bg-white/20 text-white border-white/30'
+            badge: 'bg-white/10 text-white border-white/20',
+            glow: 'from-white/5 via-transparent to-transparent',
+            Icon: Rocket
         },
-        GROWTH: {
-            bg: 'bg-emerald-600 text-white border-emerald-400/30 shadow-[0_20px_50px_rgba(5,150,105,0.3)]',
+        ECO_EMBAJADOR: {
+            bg: 'bg-gradient-to-br from-[#064E3B] via-[#065F46] to-[#0D9488] border-white/10 shadow-[0_20px_50px_-12px_rgba(13,148,136,0.2)]',
             text: 'text-white',
-            subtext: 'text-emerald-100',
+            subtext: 'text-white/60',
             icon: 'text-white',
-            badge: 'bg-white/20 text-white border-white/30'
+            badge: 'bg-white/10 text-white border-white/20',
+            glow: 'from-white/5 via-transparent to-transparent',
+            Icon: Award
         },
-        STARTER: {
-            bg: 'bg-lime-600 text-white border-lime-400/30 shadow-[0_20px_50px_rgba(101,163,13,0.3)]',
+        ECO_SOCIO: {
+            bg: 'bg-gradient-to-br from-[#022C22] via-[#064E3B] to-[#047857] border-white/10 shadow-[0_20px_50px_-12px_rgba(5,46,22,0.2)]',
             text: 'text-white',
-            subtext: 'text-lime-100',
+            subtext: 'text-white/60',
             icon: 'text-white',
-            badge: 'bg-white/20 text-white border-white/30'
+            badge: 'bg-white/10 text-white border-white/20',
+            glow: 'from-white/5 via-transparent to-transparent',
+            Icon: UserRound
         },
-        NONE: null
+        NONE: {
+            bg: 'bg-white dark:bg-slate-900 border-gray-100 dark:border-white/10 shadow-sm',
+            text: 'text-slate-900 dark:text-slate-100',
+            subtext: 'text-slate-500',
+            glow: 'from-slate-500/5 via-transparent to-transparent',
+            Icon: Leaf
+        }
     };
 
     const currentTierStyle = tierStyles[review.tier] || tierStyles.NONE;
 
     const bgColors = isWall ? [
-        'bg-white/90 dark:bg-emerald-900/30 border-emerald-500/30 backdrop-blur-2xl shadow-[0_20px_50px_rgba(1,143,100,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)]',
-        'bg-emerald-50/90 dark:bg-gray-900/40 border-emerald-400/20 backdrop-blur-2xl shadow-[0_20px_50px_rgba(5,131,93,0.12)]',
-        'bg-[#FEF9E7]/90 dark:bg-yellow-900/20 border-yellow-500/30 backdrop-blur-2xl shadow-[0_20px_50px_rgba(202,138,4,0.12)]',
+        'bg-white dark:bg-slate-900 border-white dark:border-white/10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)]',
+        'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-100/50 dark:border-emerald-500/10 shadow-[0_20px_60px_-15px_rgba(16,185,129,0.05)]',
+        'bg-amber-50/30 dark:bg-amber-950/20 border-amber-100/50 dark:border-amber-500/10 shadow-[0_20px_60px_-15px_rgba(245,158,11,0.05)]',
     ] : [
-        'bg-[#D4F6ED] dark:bg-[#018F64]/20 border-[#B0EEDE]',
-        'bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800',
-        'bg-[#FEF9E7] dark:bg-[#FFD700]/10 border-[#F7DC6F]/50',
+        'bg-white dark:bg-slate-900 border-gray-100 dark:border-white/10',
+        'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-100/50 dark:border-emerald-500/10',
+        'bg-amber-50/30 dark:bg-amber-950/20 border-amber-100/50 dark:border-amber-500/10',
     ];
     const bgColorClass = currentTierStyle ? currentTierStyle.bg : bgColors[index % bgColors.length];
 
@@ -53,16 +64,19 @@ const ReviewCard = ({ review, t, onToggleLike, index, variant = 'landing' }) => 
             initial={isWall ? { opacity: 0, scale: 0.9, y: 20 } : {}}
             whileInView={isWall ? { opacity: 1, scale: 1, y: 0 } : {}}
             viewport={{ once: true }}
-            transition={{ delay: index * 0.1 }}
-            className={`group relative ${bgColorClass} border-2 ${isWall ? 'p-8' : 'p-6'} transition-all duration-500 flex flex-col h-full pointer-events-auto ${isWall ? 'hover:border-[#018F64] dark:hover:border-emerald-400 hover:-translate-y-2' : 'shadow-xl shadow-gray-200/20 dark:shadow-none hover:shadow-2xl hover:shadow-[#018F64]/10'}`}
+            transition={{ delay: index * 0.05 }}
+            className={`group relative overflow-hidden ${currentTierStyle.bg} border-2 ${isWall ? 'p-10' : 'p-8'} transition-all duration-300 flex flex-col h-full pointer-events-auto ${isWall
+                ? 'hover:border-white/60 dark:hover:border-white/20 hover:-translate-y-4'
+                : 'hover:border-white/60 dark:hover:border-white/20'
+                } ${review.isFeatured ? 'ring-2 ring-yellow-400/40 shadow-[0_0_40px_rgba(251,191,36,0.15)]' : ''}`}
             style={{
                 borderRadius: isWall
-                    ? (index % 2 === 0 ? '2rem 4rem 2rem 4rem' : '4rem 2rem 4rem 2rem')
-                    : (index % 2 === 0 ? '1.5rem 3rem 1.5rem 3rem' : '3rem 1.5rem 3rem 1.5rem'),
+                    ? (index % 2 === 0 ? '3rem 6rem 3rem 6rem' : '6rem 3rem 6rem 3rem')
+                    : (index % 2 === 0 ? '2.5rem 5rem 2.5rem 5rem' : '5rem 2.5rem 5rem 2.5rem'),
                 transform: initialRotation,
             }}
             onMouseEnter={(e) => {
-                e.currentTarget.style.transform = isWall ? 'scale(1.02) rotate(0deg)' : 'scale(1.03) rotate(0deg)';
+                e.currentTarget.style.transform = isWall ? 'scale(1.04) rotate(0.5deg)' : 'scale(1.05) rotate(0.5deg)';
                 e.currentTarget.style.zIndex = isWall ? '30' : '20';
             }}
             onMouseLeave={(e) => {
@@ -70,12 +84,35 @@ const ReviewCard = ({ review, t, onToggleLike, index, variant = 'landing' }) => 
                 e.currentTarget.style.zIndex = '1';
             }}
         >
-            {/* Ambient Card Glow - Only for Wall */}
-            {isWall && <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/0 via-emerald-500/5 to-emerald-500/0 rounded-[inherit] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>}
+            {/* Very Sublte Ambient Light */}
+            <div className={`absolute inset-0 bg-gradient-to-br ${currentTierStyle.glow} opacity-20`} />
+
+            {/* Ultra Minimal Noise */}
+            <div className="absolute inset-0 opacity-[0.015] pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
+
+            {/* Sublte Ambient Glow */}
+            {isWall && <div className="absolute -inset-1 bg-gradient-to-r from-white/0 via-white/5 to-white/0 rounded-[inherit] blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>}
+
+            {/* Featured Badge */}
+            {review.isFeatured && (
+                <div className="absolute -top-3 -right-3 z-30">
+                    <motion.div
+                        animate={{ rotate: [0, 5, -5, 0], scale: [1, 1.05, 1] }}
+                        transition={{ repeat: Infinity, duration: 4 }}
+                        className="bg-gradient-to-br from-yellow-400 to-amber-600 p-2 rounded-xl shadow-lg border-2 border-white text-white"
+                    >
+                        <Star size={14} fill="currentColor" />
+                    </motion.div>
+                </div>
+            )}
 
             {/* Stem icon */}
-            <div className={`absolute ${index % 2 === 0 ? '-top-3 -right-3' : '-top-3 -left-3'} w-10 h-10 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-lg z-20 border border-gray-100 dark:border-gray-700`}>
-                <Leaf size={20} className="text-[#018F64] dark:text-[#B0EEDE]" fill="currentColor" />
+            <div className={`absolute ${index % 2 === 0 ? '-top-3 -right-3' : '-top-3 -left-3'} w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center shadow-lg z-20 border border-white/20`}>
+                {currentTierStyle.Icon ? (
+                    <currentTierStyle.Icon size={20} className="text-white" />
+                ) : (
+                    <Leaf size={20} className="text-[#018F64]" fill="currentColor" />
+                )}
             </div>
 
             {/* Quote Icon - Optional for Wall if we use the top mark */}
@@ -87,30 +124,36 @@ const ReviewCard = ({ review, t, onToggleLike, index, variant = 'landing' }) => 
 
             {/* Header */}
             <div className="flex justify-between items-center mb-6 relative z-10">
-                <div className="flex gap-1">
-                    {[...Array(5)].map((_, n) => (
-                        <Sparkles
-                            key={n}
-                            size={10}
-                            className={n < review.rating
-                                ? (currentTierStyle ? "text-white" : "text-[#018F64] dark:text-[#B0EEDE]")
-                                : (currentTierStyle ? "text-white/30" : "text-gray-200 dark:text-gray-700")}
-                            fill={n < review.rating ? "currentColor" : "none"}
-                        />
-                    ))}
+                <div className="flex items-center gap-3">
+                    {/* Icon next to stars */}
+                    {currentTierStyle.Icon && (
+                        <div className={`p-1.5 rounded-lg bg-white/10 border border-white/20 shadow-sm ${currentTierStyle.icon || 'text-white'}`}>
+                            <currentTierStyle.Icon size={14} />
+                        </div>
+                    )}
+                    <div className="flex gap-1">
+                        {[...Array(5)].map((_, n) => (
+                            <Sparkles
+                                key={n}
+                                size={10}
+                                className={n < review.rating
+                                    ? (review.tier !== 'NONE' ? "text-white" : "text-[#018F64] dark:text-[#B0EEDE]")
+                                    : (review.tier !== 'NONE' ? "text-white/30" : "text-gray-200 dark:text-gray-800")}
+                                fill={n < review.rating ? "currentColor" : "none"}
+                            />
+                        ))}
+                    </div>
                 </div>
                 <motion.button
-                    whileHover={{ scale: 1.1 }}
+                    whileHover={{ scale: 1.1, y: -2 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={(e) => {
                         e.stopPropagation();
                         onToggleLike(review.id);
                     }}
-                    className={`flex items-center gap-2 ${isWall ? 'px-3 py-1.5 text-[10px]' : 'px-2 py-1 text-[9px]'} rounded-full font-black uppercase tracking-widest transition-all shadow-md ${review.liked
-                        ? 'bg-rose-500 text-white shadow-rose-500/30'
-                        : (currentTierStyle
-                            ? 'bg-white/20 text-white hover:bg-white/30'
-                            : 'bg-white/80 dark:bg-white/10 text-gray-500 hover:text-rose-500 hover:bg-white')
+                    className={`flex items-center gap-2 ${isWall ? 'px-4 py-2 text-[10px]' : 'px-3 py-1.5 text-[9px]'} rounded-2xl font-black uppercase tracking-widest transition-all backdrop-blur-md ${review.liked
+                        ? 'bg-rose-500 text-white shadow-[0_0_20px_rgba(244,63,94,0.3)]'
+                        : `${currentTierStyle.badge} hover:brightness-110 shadow-sm shadow-black/5`
                         }`}
                 >
                     <Heart
@@ -122,55 +165,46 @@ const ReviewCard = ({ review, t, onToggleLike, index, variant = 'landing' }) => 
             </div>
 
             {/* Content - Testimonial */}
-            <div className={`relative z-10 ${isWall ? 'mb-8 mt-2 flex-grow flex items-center' : 'mb-6 flex-grow'}`}>
-                <div className="relative">
-                    {/* Floating Decorative Quote Mark - Smaller */}
-                    {isWall && <span className={`absolute -top-4 -left-2 text-4xl font-serif leading-none select-none ${currentTierStyle ? 'text-white/20' : 'text-[#018F64]/10 dark:text-emerald-400/10'}`}>“</span>}
-
-                    <p className={`${isWall ? 'text-base md:text-lg font-black' : 'text-sm md:text-base font-bold'} italic leading-relaxed tracking-tight
-                        ${currentTierStyle ? 'text-white' : 'text-gray-800 dark:text-gray-100'}`}>
-                        "{(review.comment || review.text || "").replace(/"/g, '')}"
+            <div className={`relative z-10 ${isWall ? 'mb-12 mt-4 flex-grow flex items-center' : 'mb-8 flex-grow'}`}>
+                <div className="relative w-full">
+                    <p className={`${isWall ? 'text-xl md:text-2xl font-black leading-[1.15]' : 'text-base md:text-lg font-bold'} tracking-tighter
+                        ${currentTierStyle.text}`}>
+                        {(review.comment || review.text || "").replace(/"/g, '')}
                     </p>
                 </div>
             </div>
 
-            {/* User Info */}
-            <div className={`mt-auto flex items-center gap-3 relative z-10 border-t ${isWall ? 'pt-5' : 'pt-4'}
-                ${currentTierStyle ? 'border-white/20' :
-                    review.tier === 'HERO' ? 'border-indigo-500/20' :
-                        review.tier === 'GROWTH' ? 'border-emerald-500/20' :
-                            review.tier === 'STARTER' ? 'border-lime-500/20' : 'border-[#018F64]/10'}`}>
+            <div className={`mt-auto flex items-center gap-4 relative z-10 border-t pt-6
+                ${review.tier !== 'NONE' ? 'border-white/10' : 'border-gray-500/10'}`}>
                 <div className="relative">
                     <img
                         src={review.image || (review.avatar ? `https://i.pravatar.cc/150?img=${review.avatar}` : `https://ui-avatars.com/api/?name=${review.name}&background=018F64&color=fff`)}
                         alt={review.name}
-                        className={`w-10 h-10 rounded-xl object-cover border shadow-sm transition-all duration-500
-                            ${review.tier === 'HERO' ? 'border-indigo-500 shadow-indigo-500/20' :
-                                review.tier === 'GROWTH' ? 'border-emerald-500 shadow-emerald-500/20' :
-                                    review.tier === 'STARTER' ? 'border-lime-500 shadow-lime-500/20' : 'border-white dark:border-gray-800'}`}
+                        className={`w-12 h-12 rounded-xl object-cover border-2 transition-all duration-300
+                            ${review.tier === 'ECO_VISIONARIO' ? 'border-white/30 shadow-lg shadow-indigo-500/10' :
+                                review.tier === 'ECO_EMBAJADOR' ? 'border-white/30 shadow-lg shadow-emerald-500/10' :
+                                    review.tier === 'ECO_SOCIO' ? 'border-white/30 shadow-lg shadow-teal-500/10' : 'border-white/50 dark:border-white/10'}`}
                     />
-                    {review.tier !== 'NONE' && (
-                        <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-[8px] text-white shadow-lg
-                            ${review.tier === 'HERO' ? 'bg-indigo-600' :
-                                review.tier === 'GROWTH' ? 'bg-emerald-600' :
-                                    review.tier === 'STARTER' ? 'bg-lime-600' : ''}`}>
-                            <Sparkles size={8} fill="currentColor" />
+                    {review.tier !== 'NONE' && currentTierStyle.Icon && (
+                        <div className={`absolute -top-2 -right-2 w-5 h-5 rounded-lg flex items-center justify-center text-white shadow-xl ring-1 ring-white/20
+                            ${review.tier === 'ECO_VISIONARIO' ? 'bg-indigo-600' :
+                                review.tier === 'ECO_EMBAJADOR' ? 'bg-emerald-600' :
+                                    review.tier === 'ECO_SOCIO' ? 'bg-teal-600' : ''}`}>
+                            <currentTierStyle.Icon size={10} fill="currentColor" />
                         </div>
                     )}
                 </div>
                 <div className="flex flex-col">
-                    <span className={`font-bold text-xs ${currentTierStyle ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
+                    <div className="flex items-center gap-2">
+                        {currentTierStyle.Icon && <currentTierStyle.Icon size={11} className={currentTierStyle.subtext} />}
+                        <span className={`text-[10px] font-black uppercase tracking-[0.25em] ${currentTierStyle.subtext}`}>
+                            {review.tier === 'ECO_VISIONARIO' ? 'Eco-Visionario' :
+                                review.tier === 'ECO_EMBAJADOR' ? 'Eco-Embajador' :
+                                    review.tier === 'ECO_SOCIO' ? 'Eco-Socio' : 'Eco-Héroe'}
+                        </span>
+                    </div>
+                    <span className={`font-black text-sm tracking-tight ${currentTierStyle.text}`}>
                         {review.name}
-                    </span>
-                    <span className={`text-[9px] font-black uppercase tracking-widest
-                        ${currentTierStyle ? 'text-white/80' :
-                            review.tier === 'HERO' ? 'text-indigo-500 dark:text-indigo-400' :
-                                review.tier === 'GROWTH' ? 'text-emerald-500 dark:text-emerald-400' :
-                                    review.tier === 'STARTER' ? 'text-lime-600 dark:text-lime-400' :
-                                        'text-[#018F64] dark:text-emerald-400'}`}>
-                        {review.tier === 'HERO' ? 'Eco-Visionario' :
-                            review.tier === 'GROWTH' ? 'Eco-Embajador' :
-                                review.tier === 'STARTER' ? 'Eco-Socio' : 'Eco-Guardián'}
                     </span>
                 </div>
             </div>

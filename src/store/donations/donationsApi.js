@@ -29,7 +29,39 @@ export const donationsApi = createApi({
                 method: 'PATCH',
             }),
         }),
+        rejectDonation: builder.mutation({
+            query: (id) => ({
+                url: `/donations/${id}/reject`,
+                method: 'PATCH',
+            }),
+        }),
+        deleteDonation: builder.mutation({
+            query: (id) => ({
+                url: `/donations/${id}`,
+                method: 'DELETE',
+            }),
+        }),
+        toggleMembership: builder.mutation({
+            query: (userId) => ({
+                url: `/donations/user/${userId}/toggle-membership`,
+                method: 'PATCH',
+            }),
+        }),
+        sendThankYouEmail: builder.mutation({
+            query: (id) => ({
+                url: `/donations/${id}/send-email`,
+                method: 'POST',
+            }),
+        }),
     }),
 });
 
-export const { useCreateDonationMutation, useGetDonationsQuery, useApproveDonationMutation } = donationsApi;
+export const {
+    useCreateDonationMutation,
+    useGetDonationsQuery,
+    useApproveDonationMutation,
+    useRejectDonationMutation,
+    useDeleteDonationMutation,
+    useToggleMembershipMutation,
+    useSendThankYouEmailMutation
+} = donationsApi;

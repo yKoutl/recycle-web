@@ -14,6 +14,7 @@ const DonationModal = ({
     t,
     navigate,
     countdown,
+    successCountdown,
     formatTime,
     isProcessing,
     isSuccess,
@@ -27,6 +28,14 @@ const DonationModal = ({
     handleConfirmContribution,
     handleFinalizePayment
 }) => {
+    const scrollContainerRef = React.useRef(null);
+
+    React.useEffect(() => {
+        if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollTop = 0;
+        }
+    }, [contributionStep, isSuccess, isProcessing, isModalOpen]);
+
     if (!isModalOpen) return null;
 
     return (
@@ -57,9 +66,14 @@ const DonationModal = ({
             </div>
 
             {/* Side Panel Content */}
-            <div className={`relative z-10 w-full max-w-xl h-full shadow-[-40px_0_80px_rgba(0,0,0,0.3)] animate-slide-in-right flex flex-col overflow-hidden border-l border-white/5
-                bg-gradient-to-br ${selectedTier?.color} ${selectedTier?.darkColor}
-            `}>
+            <motion.div
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className={`relative z-10 w-full max-w-xl h-full shadow-[-40px_0_80px_rgba(0,0,0,0.3)] flex flex-col overflow-hidden border-l border-white/5
+                    bg-gradient-to-br ${selectedTier?.color} ${selectedTier?.darkColor}
+                `}
+            >
                 {/* Noise Texture */}
                 <div className="absolute inset-0 opacity-[0.03] pointer-events-none brightness-150 contrast-150"
                     style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3e%3cfilter id='noiseFilter'%3e%3cturbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3e%3c/filter%3e%3crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3e%3c/svg%3e")` }}
@@ -85,7 +99,10 @@ const DonationModal = ({
                     </div>
                 </div>
 
-                <div className="flex-1 px-12 lg:pl-16 lg:pr-24 flex flex-col justify-start pt-4 lg:pt-8 overflow-y-auto pb-20">
+                <div
+                    ref={scrollContainerRef}
+                    className="flex-1 px-12 lg:pl-16 lg:pr-24 flex flex-col justify-start pt-4 lg:pt-8 overflow-y-auto pb-20"
+                >
                     {!isAuthenticated ? (
                         <UnauthenticatedStep t={t} selectedTier={selectedTier} navigate={navigate} />
                     ) : contributionStep === 'selection' ? (
@@ -108,111 +125,147 @@ const DonationModal = ({
                         />
                     )}
 
-                    {/* Processing Overlay */}
-                    {(isProcessing || isSuccess) && (
-                        <div className="absolute inset-0 z-[100] bg-white/10 dark:bg-black/20 backdrop-blur-2xl flex flex-col items-center justify-center space-y-8 animate-in fade-in duration-500">
-                            <div className="relative">
-                                {isSuccess ? (
-                                    <div className="w-24 h-24 rounded-full bg-emerald-500 flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.4)] animate-in zoom-in duration-500">
-                                        <CheckCircle size={48} className="text-white" />
-                                    </div>
-                                ) : (
-                                    <>
-                                        <div className="w-24 h-24 rounded-full border-4 border-white/10 border-t-white animate-spin" />
-                                        <div className={`absolute inset-0 flex items-center justify-center ${selectedTier?.textColor}`}>
-                                            {selectedTier && <selectedTier.icon size={32} className="animate-pulse" />}
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                            <div className="text-center space-y-2">
-                                <h4 className={`text-2xl font-black tracking-tighter ${selectedTier?.textColor}`}>
-                                    {isSuccess ? '¡Aporte Recibido!' : 'Procesando Eco-Aporte'}
-                                </h4>
-                                <p className={`text-[10px] font-black uppercase tracking-[0.3em] opacity-40 ${selectedTier?.textColor}`}>
-                                    {isSuccess ? 'Validaremos tu operación en breve' : 'Verificando Compromiso Forestal...'}
-                                </p>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Footer Logo */}
-                    <div className="py-10 text-center mt-auto">
-                        <p className={`text-[9px] font-black uppercase tracking-[1em] opacity-20 ${selectedTier?.textColor}`}>RECYCLEAPP</p>
+                    <div className="py-10 text-center mt-auto border-t border-gray-100 dark:border-white/5">
+                        <p className={`text-[10px] font-black uppercase tracking-[0.8em] opacity-40 ${selectedTier?.textColor}`}>RECYCLEAPP</p>
                     </div>
                 </div>
-            </div>
 
-            <style dangerouslySetInnerHTML={{
-                __html: `
-                @keyframes slide-in-right { from { transform: translateX(100%); } to { transform: translateX(0); } }
-                .animate-slide-in-right { animation: slide-in-right 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-            `}} />
+                {/* Processing/Success Overlay - Diseño Premium Oscuro Responsive */}
+                {(isProcessing || isSuccess) && (
+                    <div className="absolute inset-0 z-[100] bg-[#020617]/95 backdrop-blur-[40px] flex flex-col items-center justify-center p-6 space-y-8 md:space-y-10 animate-in fade-in duration-700">
+                        {/* Efecto de luz radial de fondo - Responsive */}
+                        <div className={`absolute w-[250px] md:w-[400px] h-[250px] md:h-[400px] rounded-full blur-[80px] md:blur-[100px] opacity-20 pointer-events-none ${isSuccess ? 'bg-emerald-500' : 'bg-white'}`} />
+
+                        <div className="relative">
+                            {isSuccess ? (
+                                <motion.div
+                                    initial={{ scale: 0.5, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    className="relative"
+                                >
+                                    <div className="absolute inset-0 bg-emerald-500 rounded-full blur-2xl opacity-40 animate-pulse" />
+                                    <div className="w-20 h-20 md:w-28 md:h-28 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_0_50px_rgba(16,185,129,0.5)] border-4 border-white/20 relative z-10">
+                                        <CheckCircle size={40} className="md:size-[56px] text-white drop-shadow-md" strokeWidth={2.5} />
+                                    </div>
+                                </motion.div>
+                            ) : (
+                                <div className="relative flex items-center justify-center">
+                                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-[3px] border-white/5 border-t-emerald-500 animate-spin" />
+                                    <div className={`absolute inset-0 flex items-center justify-center ${selectedTier?.textColor}`}>
+                                        {selectedTier && <selectedTier.icon size={28} className="md:size-8 animate-pulse opacity-80" />}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="text-center space-y-3 md:space-y-4 relative z-10 px-4">
+                            <motion.h4
+                                initial={{ y: 10, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                className="text-2xl md:text-3xl font-black tracking-tighter text-white"
+                            >
+                                {isSuccess ? '¡Eco-Rango Activado!' : 'Vinculando Aporte'}
+                            </motion.h4>
+                            <motion.p
+                                initial={{ y: 10, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ delay: 0.1 }}
+                                className="text-[10px] md:text-[12px] font-black uppercase tracking-[0.3em] md:tracking-[0.4em] text-emerald-400/80 leading-relaxed"
+                            >
+                                {isSuccess ? 'Tus beneficios ya están listos' : 'Finalizando certificación ecológica...'}
+                            </motion.p>
+                        </div>
+
+                        {isSuccess && successCountdown > 0 && (
+                            <motion.div
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ delay: 0.2 }}
+                                className="absolute bottom-10 md:bottom-20"
+                            >
+                                <div className="flex items-center gap-3 md:gap-4 px-6 md:px-8 py-3 md:py-3.5 bg-white/5 backdrop-blur-xl rounded-full border border-white/10 shadow-2xl group transition-all hover:bg-white/10">
+                                    <div className="relative flex items-center justify-center">
+                                        <div className="w-4 h-4 rounded-full bg-emerald-500/20 animate-ping absolute" />
+                                        <div className="w-2 h-2 rounded-full bg-emerald-500 relative" />
+                                    </div>
+                                    <span className="text-[10px] md:text-[11px] font-black text-white/90 tracking-[0.2em] uppercase">
+                                        Cerrando en <span className="text-emerald-400 text-sm md:text-base ml-1">{successCountdown}s</span>
+                                    </span>
+                                </div>
+                            </motion.div>
+                        )}
+                    </div>
+                )}
+            </motion.div>
         </div>
     );
 };
 
 const UnauthenticatedStep = ({ t, selectedTier, navigate }) => (
     <div className="space-y-10 py-4 animate-in fade-in slide-in-from-right-4 duration-700">
-        <div className="space-y-4">
-            <h3 className={`text-4xl lg:text-5xl font-black leading-tight mb-2 tracking-tighter ${selectedTier?.textColor}`}>
+        <div className="space-y-3">
+            <div className="inline-flex items-center gap-3 px-4 py-2 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-2xl">
+                <Sparkles size={14} className="text-emerald-500" />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">Eco-Comunidad</span>
+            </div>
+            <h3 className="text-5xl lg:text-7xl font-black leading-tight tracking-tighter text-gray-900 dark:text-white">
                 {t.donation.tiers[selectedTier?.key]?.title}
             </h3>
-            <p className={`text-[10px] font-black uppercase tracking-[0.3em] opacity-60 ${selectedTier?.textColor}`}>
-                DETALLES DEL APORTE • ECO-SISTEMA
-            </p>
         </div>
 
         <div className="space-y-6">
-            <div className="p-8 bg-white/20 dark:bg-black/20 backdrop-blur-md rounded-[2.5rem] border border-white/20 shadow-2xl">
-                <div className="flex items-center gap-4 mb-8">
-                    <div className="w-14 h-14 rounded-2xl bg-white/40 backdrop-blur-md flex items-center justify-center shadow-xl border border-white/30">
-                        {selectedTier && <selectedTier.icon size={28} className={selectedTier?.textColor} />}
+            <div className="p-8 bg-white dark:bg-slate-900 rounded-[2.5rem] border border-gray-100 dark:border-white/10 shadow-xl">
+                <div className="flex items-center gap-5 mb-10">
+                    <div className={`w-16 h-16 rounded-[1.5rem] flex items-center justify-center shadow-lg ${selectedTier?.key === 'hero' ? 'bg-indigo-600' : 'bg-emerald-500'}`}>
+                        {selectedTier && <selectedTier.icon size={32} className="text-white" />}
                     </div>
                     <div>
-                        <p className={`text-[10px] font-black uppercase tracking-widest leading-none mb-1 opacity-60 ${selectedTier?.textColor}`}>Monto Sugerido</p>
-                        <p className={`text-3xl font-black tracking-tighter ${selectedTier?.textColor}`}>{t.donation.tiers[selectedTier?.key]?.amount}</p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">Monto Sugerido</p>
+                        <p className="text-4xl font-black tracking-tighter text-gray-900 dark:text-white">{t.donation.tiers[selectedTier?.key]?.amount}</p>
                     </div>
                 </div>
 
                 <div className="space-y-5">
-                    <p className={`text-[10px] font-black uppercase tracking-widest flex items-center gap-2 ${selectedTier?.textColor}`}>
-                        <Sparkles size={12} />
-                        Beneficios para ti
+                    <p className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                        <Sparkles size={14} className="text-amber-400" />
+                        Beneficios Exclusivos
                     </p>
                     <div className="grid gap-3">
                         {selectedTier?.benefits.map((b, i) => (
-                            <div key={i} className={`flex items-center gap-4 p-4 rounded-2xl bg-white/10 border border-white/20 transition-all hover:bg-white/20 group/item`}>
-                                <div className={`w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0 group-hover/item:scale-110 transition-transform ${selectedTier?.textColor}`}>
-                                    <CheckCircle size={14} className="opacity-90" />
+                            <div key={i} className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 transition-colors">
+                                <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
+                                    <CheckCircle size={12} className="text-white" />
                                 </div>
-                                <span className={`text-sm font-bold leading-tight ${selectedTier?.textColor}`}>{b}</span>
+                                <span className="text-[14px] font-bold text-gray-700 dark:text-gray-200">{b}</span>
                             </div>
                         ))}
                     </div>
                 </div>
             </div>
 
-            <div className="p-8 bg-white/95 dark:bg-white/10 backdrop-blur-xl rounded-[2.5rem] border border-white/20 shadow-2xl space-y-6">
-                <div className="flex items-center gap-4 text-gray-700">
-                    <ShieldCheck size={28} style={{ color: '#018F64' }} />
-                    <p className="font-black uppercase text-xs tracking-widest leading-none text-gray-800">Vincular o Regalar</p>
+            <div className="p-8 bg-white dark:bg-slate-900 rounded-[2.5rem] border border-gray-100 dark:border-white/10 shadow-xl space-y-6">
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-white/5 flex items-center justify-center">
+                        <ShieldCheck size={24} className="text-emerald-500" />
+                    </div>
+                    <p className="font-black uppercase text-xs tracking-widest text-gray-800 dark:text-white">Vincular o Regalar</p>
                 </div>
-                <p className="text-sm font-medium leading-relaxed text-gray-600">
-                    Inicia sesión para que estos beneficios se activen en tu cuenta o elige regalar este aporte a otro usuario.
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 leading-relaxed">
+                    Inicia sesión para que estos beneficios se activen en tu cuenta o elige regalar este aporte a otro usuario de la comunidad.
                 </p>
                 <div className="space-y-4">
                     <Button
-                        className={`w-full h-16 rounded-[2rem] text-sm font-black text-white shadow-xl border-none transition-all hover:scale-[1.02] ${selectedTier?.id === 'hero' ? 'bg-[#022C22]' : selectedTier?.id === 'growth' ? 'bg-[#10B981]' : 'bg-[#84CC16]'}`}
+                        className={`w-full h-16 rounded-[2rem] text-sm font-black text-white shadow-2xl border-none transition-all hover:scale-[1.02] active:scale-95 ${selectedTier?.key === 'hero' ? 'bg-indigo-600' : 'bg-emerald-500'}`}
                         onClick={() => navigate('/auth/login')}
                         icon={LogIn}
                     >
                         Iniciar Sesión para Aportar
                     </Button>
-                    <button className={`w-full py-5 bg-white rounded-[2rem] border-2 font-black uppercase text-xs tracking-widest transition-all flex items-center justify-center gap-3 shadow-lg hover:bg-gray-50 active:scale-95
-                        ${selectedTier?.id === 'hero' ? 'border-[#022C22]/20 text-[#022C22]' : selectedTier?.id === 'growth' ? 'border-[#10B981]/20 text-[#10B981]' : 'border-[#84CC16]/20 text-[#3F6212]'}
+
+                    <button className={`w-full py-5 bg-white rounded-[2rem] font-black text-[15px] transition-all flex items-center justify-center gap-3 shadow-2xl hover:scale-[1.02] active:scale-95
+                        ${selectedTier?.key === 'hero' ? 'text-indigo-600' : 'text-emerald-700'}
                     `}>
-                        <Gift size={16} /> Regalar a un Usuario
+                        <Gift size={20} /> Regalar este Eco-Aporte
                     </button>
                 </div>
             </div>
@@ -237,8 +290,8 @@ const TierSelectionStep = ({ t, user, selectedTier, isProcessing, onConfirm }) =
 
         <div className="relative group/card">
             <div className={`absolute -inset-1 bg-gradient-to-br opacity-20 blur-2xl transition duration-1000 group-hover/card:opacity-40
-                ${selectedTier?.id === 'hero' ? 'from-emerald-600 to-green-900' :
-                    selectedTier?.id === 'growth' ? 'from-teal-400 to-emerald-600' :
+                ${selectedTier?.key === 'hero' ? 'from-emerald-600 to-green-900' :
+                    selectedTier?.key === 'growth' ? 'from-teal-400 to-emerald-600' :
                         'from-lime-400 to-emerald-500'}`}
             />
 
@@ -250,22 +303,22 @@ const TierSelectionStep = ({ t, user, selectedTier, isProcessing, onConfirm }) =
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-5">
                             <div className={`w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center shadow-2xl
-                                ${selectedTier?.id === 'starter' ? 'border-emerald-500/30' :
-                                    selectedTier?.id === 'hero' ? 'border-indigo-500/30' : ''}
+                                ${selectedTier?.key === 'starter' ? 'border-emerald-500/30' :
+                                    selectedTier?.key === 'hero' ? 'border-indigo-500/30' : ''}
                             `}>
-                                {selectedTier && <selectedTier.icon size={28} className={selectedTier?.id === 'hero' ? 'text-indigo-300' : 'text-emerald-400'} />}
+                                {selectedTier && <selectedTier.icon size={28} className={selectedTier?.key === 'hero' ? 'text-indigo-300' : 'text-emerald-400'} />}
                             </div>
                             <div>
                                 <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-white/30 mb-1">MEMBRESÍA</p>
-                                <p className={`text-xl font-black tracking-tight text-white ${selectedTier?.id === 'hero' ? 'text-indigo-200' :
-                                    selectedTier?.id === 'starter' ? 'text-emerald-100' : ''}`}>
+                                <p className={`text-xl font-black tracking-tight text-white ${selectedTier?.key === 'hero' ? 'text-indigo-200' :
+                                    selectedTier?.key === 'starter' ? 'text-emerald-100' : ''}`}>
                                     {t.donation.tiers[selectedTier?.key]?.title}
                                 </p>
                             </div>
                         </div>
                         <div className="text-right">
                             <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-white/30 mb-1">TOTAL</p>
-                            <p className={`text-2xl font-black ${selectedTier?.id === 'hero' ? 'text-indigo-300' : 'text-emerald-400'}`}>{t.donation.tiers[selectedTier?.key]?.amount}</p>
+                            <p className={`text-2xl font-black ${selectedTier?.key === 'hero' ? 'text-indigo-300' : 'text-emerald-400'}`}>{t.donation.tiers[selectedTier?.key]?.amount}</p>
                         </div>
                     </div>
 
@@ -290,7 +343,7 @@ const TierSelectionStep = ({ t, user, selectedTier, isProcessing, onConfirm }) =
                             onClick={onConfirm}
                             disabled={isProcessing}
                             className={`w-full h-16 rounded-[2rem] text-[15px] font-black border-none transition-all duration-300 shadow-2xl flex items-center justify-center gap-3 overflow-hidden active:scale-95 group
-                                ${selectedTier?.id === 'hero'
+                                ${selectedTier?.key === 'hero'
                                     ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-500/30 hover:shadow-indigo-500/60'
                                     : 'bg-emerald-500 hover:bg-emerald-400 text-white shadow-emerald-500/30 hover:shadow-emerald-500/60'}
                                 hover:scale-[1.05] hover:-translate-y-1 hover:brightness-110`}
@@ -340,37 +393,40 @@ const PaymentStep = ({
             <div className="absolute -inset-1 bg-gradient-to-br from-emerald-500/20 to-indigo-500/20 blur-2xl opacity-50" />
             <div className="relative bg-white/[0.03] backdrop-blur-3xl rounded-[2.5rem] border border-white/10 p-8 space-y-8 overflow-hidden shadow-2xl">
                 <div className="space-y-8">
-                    <div className="px-8 py-6 bg-white/5 rounded-[2rem] border border-white/10 space-y-4 transition-all focus-within:border-emerald-500/40 focus-within:bg-white/10 group/input shadow-xl shadow-black/20">
-                        <div className="flex items-center justify-between">
+                    <div className="px-5 md:px-8 py-4 md:py-6 bg-white/5 rounded-[1.5rem] md:rounded-[2rem] border border-white/10 space-y-4 transition-all focus-within:border-emerald-500/40 focus-within:bg-white/10 group/input shadow-xl shadow-black/20">
+                        <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-4">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                                <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
                                     <User size={14} className="text-emerald-400" />
                                 </div>
-                                <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] group-focus-within/input:text-emerald-400 transition-colors">{t.donation.payerLabel}</p>
+                                <div className="space-y-0.5">
+                                    <p className="text-[8px] md:text-[9px] font-black text-white/40 uppercase tracking-[0.2em] group-focus-within/input:text-emerald-400 transition-colors leading-none">PAGO POR:</p>
+                                    <p className="text-[10px] md:text-[11px] font-black text-white uppercase tracking-tight">TITULAR DE LA OPERACIÓN</p>
+                                </div>
                             </div>
-                            <div className="flex gap-1.5 p-1 bg-black/40 rounded-xl backdrop-blur-md">
+                            <div className="flex gap-1.5 p-1 bg-black/40 rounded-xl backdrop-blur-md self-end xs:self-center shrink-0">
                                 <button onClick={() => { setIsPayerSelf(true); setPayerName(user?.fullName || ''); }} className={`text-[8px] font-black uppercase px-3 py-1.5 rounded-lg transition-all ${isPayerSelf ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/40' : 'text-white/20 hover:text-white/40'}`}>TITULAR</button>
                                 <button onClick={() => { setIsPayerSelf(false); setPayerName(''); }} className={`text-[8px] font-black uppercase px-3 py-1.5 rounded-lg transition-all ${!isPayerSelf ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/40' : 'text-white/20 hover:text-white/40'}`}>TERCERO</button>
                             </div>
                         </div>
-                        <input type="text" value={payerName} onChange={(e) => { setPayerName(e.target.value); if (isPayerSelf && e.target.value !== user?.fullName) setIsPayerSelf(false); }} placeholder={t.donation.payerPlaceholder} className="w-full bg-transparent border-none p-0 text-lg font-black text-white placeholder:text-white/10 focus:ring-0 outline-none pb-1" />
+                        <input type="text" value={payerName} onChange={(e) => { setPayerName(e.target.value); if (isPayerSelf && e.target.value !== user?.fullName) setIsPayerSelf(false); }} placeholder={t.donation.payerPlaceholder} className="w-full bg-transparent border-none p-0 text-base md:text-lg font-black text-white placeholder:text-white/10 focus:ring-0 outline-none pb-1" />
                     </div>
 
                     <div className="space-y-6">
-                        <div className="relative flex justify-center">
+                        <div className="relative flex justify-center scale-90 sm:scale-100">
                             <div className="relative group/qr-container">
                                 <div className="absolute -inset-10 bg-emerald-500/20 rounded-full blur-[60px] opacity-50 animate-pulse" />
-                                <div className="relative bg-white p-8 rounded-[3rem] shadow-[0_30px_60px_rgba(0,0,0,0.5)] transition-all duration-500 hover:scale-[1.03] active:scale-95 cursor-pointer">
-                                    <QrCode size={180} className="text-[#018F64]" />
+                                <div className="relative bg-white p-6 md:p-8 rounded-[2.5rem] md:rounded-[3rem] shadow-[0_30px_60px_rgba(0,0,0,0.5)] transition-all duration-500 hover:scale-[1.03] active:scale-95 cursor-pointer">
+                                    <QrCode size={140} className="md:size-[180px] text-[#018F64]" />
                                 </div>
                             </div>
                         </div>
                         <div className="text-center space-y-4">
                             <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] mb-3">DESTINATARIO OFICIAL</p>
-                            <h4 className="text-2xl font-black text-white italic tracking-tighter">Nos Planet SAC</h4>
-                            <div className="px-6 py-2 bg-emerald-500/10 rounded-full border border-emerald-500/30 flex items-center gap-3">
+                            <h4 className="text-xl md:text-2xl font-black text-white italic tracking-tighter">Nos Planet SAC</h4>
+                            <div className="px-6 py-2 bg-emerald-500/10 rounded-full border border-emerald-500/30 inline-flex items-center gap-3">
                                 <Zap size={14} className="text-emerald-400 animate-pulse" />
-                                <span className="text-xl font-black text-emerald-400 tracking-widest tabular-nums">982 109 407</span>
+                                <span className="text-lg md:text-xl font-black text-emerald-400 tracking-widest tabular-nums font-mono">982 109 407</span>
                             </div>
                         </div>
                     </div>
@@ -385,8 +441,13 @@ const PaymentStep = ({
                         <div className={`w-6 h-6 rounded-lg border-2 transition-all flex items-center justify-center ${acceptedTerms ? 'bg-emerald-500 border-emerald-500' : 'bg-transparent border-white/20'}`}>{acceptedTerms && <CheckCircle size={14} className="text-white" />}</div>
                         <span className="text-[10px] font-bold text-white/50">Acepto los términos y condiciones.</span>
                     </label>
-                    <button onClick={onFinalize} disabled={!acceptedTerms || isPaymentConfirmed} className={`w-full h-16 rounded-[2rem] text-[15px] font-black transition-all duration-300 shadow-2xl flex items-center justify-center gap-3 ${acceptedTerms && !isPaymentConfirmed ? 'bg-emerald-500 hover:bg-emerald-400 text-white shadow-emerald-500/30' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}>
-                        {isPaymentConfirmed ? "Validando..." : "Confirmar Operación"}
+                    <button
+                        onClick={onFinalize}
+                        disabled={!acceptedTerms || isPaymentConfirmed}
+                        className={`w-full h-16 rounded-[2rem] text-[15px] font-black transition-all duration-300 shadow-2xl flex items-center justify-center gap-3
+                            ${acceptedTerms && !isPaymentConfirmed ? 'bg-emerald-500 hover:bg-emerald-400 text-white shadow-emerald-500/30' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}
+                    >
+                        {isPaymentConfirmed ? "Procesando..." : "Finalizar y Activar"}
                     </button>
                 </div>
             </div>

@@ -1,8 +1,33 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, MessageSquare, Sparkles, ArrowRight, ArrowLeft, User } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, MessageSquare, Sparkles, ArrowRight, ArrowLeft, User, CheckCircle2, Loader2 } from 'lucide-react';
+
+import { useSubmitContactMutation } from '../../store/contact/contactApi';
 
 const ContactSection = ({ t }) => {
     const [showForm, setShowForm] = useState(false);
+    const [submitContact, { isLoading, isSuccess }] = useSubmitContactMutation();
+    const [formData, setFormData] = useState({
+        fullName: '',
+        email: '',
+        message: ''
+    });
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            await submitContact(formData).unwrap();
+            setFormData({ fullName: '', email: '', message: '' });
+            setTimeout(() => setShowForm(false), 3000);
+        } catch (error) {
+            console.error('Error submitting contact:', error);
+            alert('Error al enviar el mensaje. Por favor intenta de nuevo.');
+        }
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
 
     return (
         <section
@@ -109,40 +134,86 @@ const ContactSection = ({ t }) => {
                                         <ArrowLeft size={24} />
                                     </button>
 
-                                    <div className="space-y-10">
-                                        <h3 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter border-b border-gray-100 dark:border-white/5 pb-6">Envíanos un mensaje</h3>
-
-                                        <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
-                                            <div className="space-y-3 group">
-                                                <label className="text-[11px] font-bold text-[#64748b] dark:text-gray-400 uppercase tracking-widest">Nombre Completo</label>
-                                                <div className="flex items-center gap-4 py-3 border-b border-gray-200 dark:border-white/10 focus-within:border-[#018F64] transition-all">
-                                                    <User size={18} className="text-[#94a3b8] group-focus-within:text-[#018F64] transition-colors" />
-                                                    <input type="text" placeholder="Ej. Juan Pérez" className="w-full bg-transparent outline-none text-[#1e293b] dark:text-white placeholder:text-[#cbd5e1] font-semibold" />
-                                                </div>
+                                    {isSuccess ? (
+                                        <div className="flex flex-col items-center justify-center space-y-6 py-10 animate-scale-in">
+                                            <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-500/20 rounded-full flex items-center justify-center text-[#018F64] dark:text-emerald-400">
+                                                <CheckCircle2 size={40} />
                                             </div>
-
-                                            <div className="space-y-3 group">
-                                                <label className="text-[11px] font-bold text-[#64748b] dark:text-gray-400 uppercase tracking-widest">Correo Electrónico</label>
-                                                <div className="flex items-center gap-4 py-3 border-b border-gray-200 dark:border-white/10 focus-within:border-[#018F64] transition-all">
-                                                    <Mail size={18} className="text-[#94a3b8] group-focus-within:text-[#018F64] transition-colors" />
-                                                    <input type="email" placeholder="juan@correo.com" className="w-full bg-transparent outline-none text-[#1e293b] dark:text-white placeholder:text-[#cbd5e1] font-semibold" />
-                                                </div>
+                                            <div className="text-center space-y-2">
+                                                <h3 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">¡Mensaje Enviado!</h3>
+                                                <p className="text-gray-500 font-medium">Gracias por escribirnos. Pronto nos pondremos en contacto contigo.</p>
                                             </div>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-10">
+                                            <h3 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter border-b border-gray-100 dark:border-white/5 pb-6">Envíanos un mensaje</h3>
 
-                                            <div className="space-y-3 group">
-                                                <label className="text-[11px] font-bold text-[#64748b] dark:text-gray-400 uppercase tracking-widest">Mensaje</label>
-                                                <div className="flex items-start gap-4 py-3 border-b border-gray-200 dark:border-white/10 focus-within:border-[#018F64] transition-all">
-                                                    <MessageSquare size={18} className="text-[#94a3b8] mt-1 group-focus-within:text-[#018F64] transition-colors" />
-                                                    <textarea rows="2" placeholder="¿En qué podemos ayudarte?" className="w-full bg-transparent outline-none text-[#1e293b] dark:text-white placeholder:text-[#cbd5e1] font-semibold resize-none text-lg" />
+                                            <form className="space-y-8" onSubmit={handleSubmit}>
+                                                <div className="space-y-3 group">
+                                                    <label className="text-[11px] font-bold text-[#64748b] dark:text-gray-400 uppercase tracking-widest">Nombre Completo</label>
+                                                    <div className="flex items-center gap-4 py-3 border-b border-gray-200 dark:border-white/10 focus-within:border-[#018F64] transition-all">
+                                                        <User size={18} className="text-[#94a3b8] group-focus-within:text-[#018F64] transition-colors" />
+                                                        <input
+                                                            name="fullName"
+                                                            type="text"
+                                                            value={formData.fullName}
+                                                            onChange={handleChange}
+                                                            placeholder="Ej. Juan Pérez"
+                                                            required
+                                                            className="w-full bg-transparent outline-none text-[#1e293b] dark:text-white placeholder:text-[#cbd5e1] font-semibold"
+                                                        />
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <button className="w-full py-5 bg-[#018F64] hover:bg-[#05835D] text-white font-black uppercase tracking-[0.2em] rounded-xl shadow-xl shadow-emerald-950/20 hover:-translate-y-1 transition-all flex items-center justify-center gap-4 group">
-                                                <span className="text-sm font-black">ENVIAR MENSAJE</span>
-                                                <Send size={18} className="group-hover:translate-x-1 transition-transform" />
-                                            </button>
-                                        </form>
-                                    </div>
+                                                <div className="space-y-3 group">
+                                                    <label className="text-[11px] font-bold text-[#64748b] dark:text-gray-400 uppercase tracking-widest">Correo Electrónico</label>
+                                                    <div className="flex items-center gap-4 py-3 border-b border-gray-200 dark:border-white/10 focus-within:border-[#018F64] transition-all">
+                                                        <Mail size={18} className="text-[#94a3b8] group-focus-within:text-[#018F64] transition-colors" />
+                                                        <input
+                                                            name="email"
+                                                            type="email"
+                                                            value={formData.email}
+                                                            onChange={handleChange}
+                                                            placeholder="juan@correo.com"
+                                                            required
+                                                            className="w-full bg-transparent outline-none text-[#1e293b] dark:text-white placeholder:text-[#cbd5e1] font-semibold"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="space-y-3 group">
+                                                    <label className="text-[11px] font-bold text-[#64748b] dark:text-gray-400 uppercase tracking-widest">Mensaje</label>
+                                                    <div className="flex items-start gap-4 py-3 border-b border-gray-200 dark:border-white/10 focus-within:border-[#018F64] transition-all">
+                                                        <MessageSquare size={18} className="text-[#94a3b8] mt-1 group-focus-within:text-[#018F64] transition-colors" />
+                                                        <textarea
+                                                            name="message"
+                                                            rows="2"
+                                                            value={formData.message}
+                                                            onChange={handleChange}
+                                                            placeholder="¿En qué podemos ayudarte?"
+                                                            required
+                                                            className="w-full bg-transparent outline-none text-[#1e293b] dark:text-white placeholder:text-[#cbd5e1] font-semibold resize-none text-lg"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <button
+                                                    disabled={isLoading}
+                                                    type="submit"
+                                                    className="w-full py-5 bg-[#018F64] hover:bg-[#05835D] disabled:opacity-50 disabled:cursor-not-allowed text-white font-black uppercase tracking-[0.2em] rounded-xl shadow-xl shadow-emerald-950/20 hover:-translate-y-1 transition-all flex items-center justify-center gap-4 group"
+                                                >
+                                                    {isLoading ? (
+                                                        <Loader2 className="animate-spin" size={20} />
+                                                    ) : (
+                                                        <>
+                                                            <span className="text-sm font-black">ENVIAR MENSAJE</span>
+                                                            <Send size={18} className="group-hover:translate-x-1 transition-transform" />
+                                                        </>
+                                                    )}
+                                                </button>
+                                            </form>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>

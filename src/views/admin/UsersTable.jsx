@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { Search, RotateCw, User, Mail, Shield, Eye, Trash2, Power, Users } from 'lucide-react';
+import { Search, RotateCw, User, Mail, Shield, Eye, Trash2, Power, Users, Filter } from 'lucide-react';
 
 const UsersTable = ({ t, themeColor }) => {
     const [searchTerm, setSearchTerm] = useState('');
+    const [showFilters, setShowFilters] = useState(false);
+    const [filterRole, setFilterRole] = useState('ALL');
+    const [filterStatus, setFilterStatus] = useState('ALL');
     const accent = themeColor || '#018F64';
 
     const [isLoading, setIsLoading] = useState(false);
@@ -18,10 +21,13 @@ const UsersTable = ({ t, themeColor }) => {
         setTimeout(() => setIsLoading(false), 800);
     };
 
-    const filteredUsers = users.filter(u =>
-        u.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        u.email.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredUsers = users.filter(u => {
+        const matchesSearch = u.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            u.email.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesRole = filterRole === 'ALL' || u.role === filterRole;
+        const matchesStatus = filterStatus === 'ALL' || (filterStatus === 'ACTIVE' ? u.isActive : !u.isActive);
+        return matchesSearch && matchesRole && matchesStatus;
+    });
 
     const activeCount = filteredUsers.filter(u => u.isActive).length;
 
@@ -44,7 +50,7 @@ const UsersTable = ({ t, themeColor }) => {
                 </div>
             </div>
 
-            {/* ── Search ── */}
+            {/* ── Search & Filter Toggle ── */}
             <div className="flex items-center gap-2">
                 <div className="relative flex-1">
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={15} strokeWidth={1.75} />
@@ -68,12 +74,57 @@ const UsersTable = ({ t, themeColor }) => {
                     />
                 </div>
                 <button
+                    onClick={() => setShowFilters(!showFilters)}
+                    className={`p-2.5 rounded-xl border transition-all ${showFilters ? 'bg-gray-100 dark:bg-white/10 border-gray-300 dark:border-white/20 text-gray-900 dark:text-white' : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-white/10 text-gray-500 hover:text-gray-800 dark:hover:text-white'}`}
+                    title="Filtros"
+                >
+                    <Filter size={15} strokeWidth={1.75} />
+                </button>
+                <button
                     onClick={handleRefresh}
                     className="p-2.5 text-gray-500 hover:text-gray-800 dark:hover:text-white bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 rounded-xl transition-all"
                     title="Actualizar"
                 >
                     <RotateCw size={15} strokeWidth={1.75} className={isLoading ? 'animate-spin' : ''} />
                 </button>
+            </div>
+
+            {/* ── Animated Filter Panel ── */}
+            <div
+                className={`overflow-hidden transition-all duration-300 ease-in-out ${showFilters ? 'max-h-60 opacity-100 opacity-100 mt-2' : 'max-h-0 opacity-0 m-0'}`}
+            >
+                <div className="p-5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/5 rounded-2xl shadow-sm flex flex-col md:flex-row gap-6">
+                    <div className="flex-1 space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Rol</label>
+                        <div className="flex flex-wrap gap-2">
+                            {['ALL', 'ADMIN', 'MANAGER', 'USER'].map(role => (
+                                <button
+                                    key={role}
+                                    onClick={() => setFilterRole(role)}
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${filterRole === role ? 'text-white border-transparent' : 'bg-transparent border-gray-200 dark:border-white/10 text-gray-500 hover:bg-gray-50 dark:hover:bg-white/5'}`}
+                                    style={filterRole === role ? { backgroundColor: accent, boxShadow: `0 4px 12px ${accent}30` } : {}}
+                                >
+                                    {role === 'ALL' ? 'Todos' : role === 'ADMIN' ? 'Admin' : role === 'MANAGER' ? 'Gestores' : 'Usuarios'}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="flex-1 space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Estado</label>
+                        <div className="flex flex-wrap gap-2">
+                            {['ALL', 'ACTIVE', 'INACTIVE'].map(status => (
+                                <button
+                                    key={status}
+                                    onClick={() => setFilterStatus(status)}
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${filterStatus === status ? 'text-white border-transparent' : 'bg-transparent border-gray-200 dark:border-white/10 text-gray-500 hover:bg-gray-50 dark:hover:bg-white/5'}`}
+                                    style={filterStatus === status ? { backgroundColor: accent, boxShadow: `0 4px 12px ${accent}30` } : {}}
+                                >
+                                    {status === 'ALL' ? 'Todos' : status === 'ACTIVE' ? 'Activos' : 'Inactivos'}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* ── Stats bar ── */}

@@ -127,7 +127,7 @@ const AdminSidebar = ({ t, requestsCount, onLogout, user, isOpen, themeColor }) 
             </div>
 
             {/* Nav */}
-            <nav className="flex-1 overflow-y-auto no-scrollbar px-2 pb-4">
+            <nav className="flex-1 overflow-y-auto custom-scrollbar px-2 pb-4">
 
                 <div className="mt-3">
                     <NavItem id="dashboard" label={isAdmin ? 'Panel General' : 'Mi Panel'} icon={LayoutGrid} />

@@ -68,7 +68,7 @@ const ContactRequests = ({ themeColor }) => {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 shrink-0">
                 <div className="flex items-center gap-4">
-                    <div className="p-3.5 rounded-2xl text-white shadow-lg relative overflow-hidden group" style={{ background: `linear-gradient(135deg, ${accent}, ${accent}dd)`, boxShadow: `0 8px 24px ${accent}40` }}>
+                    <div className="p-3.5 rounded-2xl text-white relative overflow-hidden group" style={{ background: `linear-gradient(135deg, ${accent}, ${accent}dd)` }}>
                         <div className="absolute inset-0 bg-white/20 scale-0 group-hover:scale-150 transition-transform duration-500 rounded-full" />
                         <Inbox size={24} strokeWidth={2} className="relative z-10" />
                     </div>
@@ -236,7 +236,7 @@ const ContactRequests = ({ themeColor }) => {
                                     {/* Cabecera del Mensaje */}
                                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 pb-8 border-b border-gray-100 dark:border-white/5">
                                         <div className="flex gap-5 items-center">
-                                            <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-lg font-black shadow-lg shadow-emerald-500/20 shrink-0" style={{ background: `linear-gradient(135deg, ${accent}, ${accent}dd)` }}>
+                                            <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-lg font-black shrink-0" style={{ background: `linear-gradient(135deg, ${accent}, ${accent}dd)` }}>
                                                 {activeMessage.fullName.charAt(0).toUpperCase()}
                                             </div>
                                             <div>
@@ -286,8 +286,8 @@ const ContactRequests = ({ themeColor }) => {
                                         </div>
                                         <button
                                             onClick={(e) => handleReply(activeMessage.email, activeMessage.fullName, e)}
-                                            className="px-8 py-4 rounded-2xl text-white text-[11px] font-black uppercase tracking-[0.2em] shadow-xl hover:-translate-y-1 transition-all flex items-center gap-3"
-                                            style={{ background: `linear-gradient(135deg, ${accent}, ${accent}dd)`, boxShadow: `0 10px 20px ${accent}30` }}
+                                            className="px-8 py-4 rounded-2xl text-white text-[11px] font-black uppercase tracking-[0.2em] hover:-translate-y-1 transition-all flex items-center gap-3"
+                                            style={{ background: `linear-gradient(135deg, ${accent}, ${accent}dd)` }}
                                         >
                                             <Reply size={16} />
                                             Responder en Gmail Web

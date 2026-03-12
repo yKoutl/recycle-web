@@ -96,8 +96,11 @@ const GestorFormModal = ({ isOpen, onClose, activeUser = null, isDetailOnly = fa
     const isEditing = !!activeUser;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-            <div className="bg-white dark:bg-gray-900 w-full max-w-xl rounded-[2.5rem] shadow-2xl border border-gray-100 dark:border-white/5 overflow-hidden animate-in zoom-in-95 duration-300">
+        <div className="fixed inset-0 z-[100] flex justify-end bg-black/60 backdrop-blur-sm animate-in fade-in duration-300" onClick={onClose}>
+            <div
+                className="bg-white dark:bg-gray-900 w-full max-w-md h-full shadow-2xl border-l border-gray-100 dark:border-white/5 overflow-y-auto animate-in slide-in-from-right duration-300 flex flex-col"
+                onClick={(e) => e.stopPropagation()}
+            >
                 <div className="p-8 border-b border-gray-50 dark:border-white/5 flex justify-between items-center bg-gray-50/50 dark:bg-white/5">
                     <div className="flex items-center gap-3">
                         <div className="p-2.5 text-white rounded-2xl shadow-lg" style={{ backgroundColor: accent, boxShadow: `0 8px 20px ${accent}30` }}>
@@ -112,9 +115,9 @@ const GestorFormModal = ({ isOpen, onClose, activeUser = null, isDetailOnly = fa
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-8 space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="md:col-span-2 space-y-2">
+                <form onSubmit={handleSubmit} className="p-8 space-y-6 flex-1 flex flex-col">
+                    <div className="grid grid-cols-1 gap-6 flex-1">
+                        <div className="space-y-2">
                             <label className="text-[10px] font-black uppercase tracking-widest ml-1 flex items-center gap-2" style={{ color: accent }}>
                                 <UserIcon size={12} /> Nombre Completo
                             </label>
@@ -231,7 +234,7 @@ const GestorFormModal = ({ isOpen, onClose, activeUser = null, isDetailOnly = fa
                             />
                         </div>
 
-                        <div className="space-y-3 md:col-span-2">
+                        <div className="space-y-3">
                             <label className="text-[10px] font-black uppercase tracking-widest ml-1 flex items-center gap-2" style={{ color: accent }}>
                                 <Shield size={12} /> Rol Asignado
                             </label>

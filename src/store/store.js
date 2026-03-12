@@ -44,8 +44,6 @@ export const store = configureStore({
                 .concat(usersApi.middleware)
                 .concat(ecoHistoriesApi.middleware)
                 .concat(donationsApi.middleware)
-                .concat(contactApi.middleware),
-
-        .concat(donationsApi.middleware)
+                .concat(contactApi.middleware)
                 .concat(forumApi.middleware),
 });

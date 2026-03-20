@@ -8,50 +8,48 @@ import { usersSlice, usersApi } from "./user";
 import { ecoHistoriesApi } from "./eco-histories/ecoHistoriesApi";
 import { donationsApi } from "./donations/donationsApi";
 import { contactApi } from "./contact/contactApi";
+import { inductionApi, inductionSlice } from "./induction";
 
 import { forumSlice, forumApi } from "./forum";
 
 export const store = configureStore({
+        // 1. El objeto reducer contiene todos tus slices y APIs
         reducer: {
-                reducer: {
+                // Slices (Estado local)
+                rewards: rewardsSlice.reducer,
+                programs: programSlice.reducer,
+                partners: partnersSlice.reducer,
+                auth: authSlice.reducer,
+                users: usersSlice.reducer,
+                forum: forumSlice.reducer,
+                induction: inductionSlice.reducer,
 
-                        // auth: authReducer,
-                        rewards: rewardsSlice.reducer,
-                        programs: programSlice.reducer,
-                        partners: partnersSlice.reducer,
-                        auth: authSlice.reducer,
-                        users: usersSlice.reducer,
-                        forum: forumSlice.reducer,
-                        // auth: authReducer,
-                        rewards: rewardsSlice.reducer,
-                        programs: programSlice.reducer,
-                        partners: partnersSlice.reducer,
-                        auth: authSlice.reducer,
-                        users: usersSlice.reducer,
-                        forum: forumSlice.reducer,
-
-
-                        [rewardsApi.reducerPath]: rewardsApi.reducer,
-                        [programsApi.reducerPath]: programsApi.reducer,
-                        [partnersApi.reducerPath]: partnersApi.reducer,
-                        [partnerRequestsApi.reducerPath]: partnerRequestsApi.reducer,
-                        [authApi.reducerPath]: authApi.reducer,
-                        [usersApi.reducerPath]: usersApi.reducer,
-                        [ecoHistoriesApi.reducerPath]: ecoHistoriesApi.reducer,
-                        [donationsApi.reducerPath]: donationsApi.reducer,
-                        [contactApi.reducerPath]: contactApi.reducer,
-
-                        [forumApi.reducerPath]: forumApi.reducer,
-                },
-                middleware: (getDefaultMiddleware) => getDefaultMiddleware()
-                        .concat(rewardsApi.middleware)
-                        .concat(programsApi.middleware)
-                        .concat(partnersApi.middleware)
-                        .concat(partnerRequestsApi.middleware)
-                        .concat(authApi.middleware)
-                        .concat(usersApi.middleware)
-                        .concat(ecoHistoriesApi.middleware)
-                        .concat(donationsApi.middleware)
-                        .concat(contactApi.middleware)
-                        .concat(forumApi.middleware),
-        });
+                // APIs (RTK Query)
+                [rewardsApi.reducerPath]: rewardsApi.reducer,
+                [programsApi.reducerPath]: programsApi.reducer,
+                [partnersApi.reducerPath]: partnersApi.reducer,
+                [partnerRequestsApi.reducerPath]: partnerRequestsApi.reducer,
+                [authApi.reducerPath]: authApi.reducer,
+                [usersApi.reducerPath]: usersApi.reducer,
+                [ecoHistoriesApi.reducerPath]: ecoHistoriesApi.reducer,
+                [donationsApi.reducerPath]: donationsApi.reducer,
+                [contactApi.reducerPath]: contactApi.reducer,
+                [forumApi.reducerPath]: forumApi.reducer,
+                [inductionApi.reducerPath]: inductionApi.reducer,
+        },
+        // 2. El middleware va FUERA del objeto reducer, pero DENTRO de configureStore
+        middleware: (getDefaultMiddleware) =>
+                getDefaultMiddleware().concat(
+                        rewardsApi.middleware,
+                        programsApi.middleware,
+                        partnersApi.middleware,
+                        partnerRequestsApi.middleware,
+                        authApi.middleware,
+                        usersApi.middleware,
+                        ecoHistoriesApi.middleware,
+                        donationsApi.middleware,
+                        contactApi.middleware,
+                        forumApi.middleware,
+                        inductionApi.middleware
+                ),
+});

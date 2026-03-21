@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { X, FileText, Download, Shield, Cookie, Scale, Bot, CheckCircle, Loader } from 'lucide-react';
-import logo from '../../assets/Logo Nos Planet.png';
+import logo from '../../assets/brand/Logo Nos Planet.webp';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 
 const TermsModal = ({ onClose, type = 'web' }) => {
     const [isGenerating, setIsGenerating] = useState(false);
+    const [localError, setLocalError] = useState('');
     const contentRef = useRef(null);
     const isBot = type === 'bot';
 
@@ -82,8 +83,7 @@ const TermsModal = ({ onClose, type = 'web' }) => {
             pdf.save(config.fileName);
 
         } catch (error) {
-            console.error("Error generando PDF:", error);
-            alert(`Hubo un error al generar el documento: ${error.message || error}`);
+            setLocalError(`Error al generar el PDF: ${error.message || 'Error desconocido'}`);
         } finally {
             setIsGenerating(false);
         }
@@ -131,6 +131,13 @@ const TermsModal = ({ onClose, type = 'web' }) => {
                         </button>
                     </div>
                 </div>
+
+                {/* Error Banner */}
+                {localError && (
+                    <div className="bg-red-500 text-white p-3 text-center text-[11px] font-bold animate-pulse">
+                        {localError}
+                    </div>
+                )}
 
                 {/* --- CONTENIDO VISUAL (REF para Capture) --- */}
                 <div className="flex-1 overflow-y-auto bg-gray-100 dark:bg-black/50 p-6 sm:p-10 flex justify-center custom-scrollbar">

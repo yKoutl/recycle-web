@@ -5,10 +5,10 @@ import {
     MapPin
 } from 'lucide-react';
 
-import logoYape from '../assets/logo_yape_c.webp';
-import logoBCP from '../assets/logo_bpc_c.webp';
-import logoNosPlanet from '../assets/logo_nos_planet.webp';
-import logoAgroMarket from '../assets/Logo_agromarket.png';
+import logoYape from '../assets/brand/logo_yape_c.webp';
+import logoBCP from '../assets/brand/logo_bpc_c.webp';
+import logoNosPlanet from '../assets/brand/logo_nos_planet.webp';
+import logoAgroMarket from '../assets/brand/Logo_agromarket.webp';
 
 export const MOCK_STATS = (t) => [
     { label: t.admin.stats.activeUsers, value: '1,234', icon: Users, color: 'text-blue-500', bg: 'bg-blue-100 dark:bg-blue-900/30' },

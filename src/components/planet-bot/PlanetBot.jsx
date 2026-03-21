@@ -184,7 +184,7 @@ const PlanetBot = ({ currentView }) => {
         <>
             {showTerms && <TermsModal type="bot" onClose={() => setShowTerms(false)} />}
 
-            <div className={`fixed z-50 flex flex-col pointer-events-none transition-all duration-500 
+            <div className={`fixed planet-bot-wrapper z-50 flex flex-col pointer-events-none transition-all duration-500 
                 ${currentView === 'admin'
                     ? 'right-6 top-1/2 -translate-y-1/2 items-end'
                     : 'bottom-4 right-4 sm:bottom-6 sm:right-6 items-end'}`}>

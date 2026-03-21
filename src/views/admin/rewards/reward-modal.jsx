@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Save, Gift, Tag, Info, Layers, Box } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useCreateRewardMutation, useUpdateRewardMutation } from '../../../store/rewards';
@@ -57,9 +58,9 @@ const RewardFormModal = ({ isOpen, onClose, themeColor }) => {
 
     if (!isOpen) return null;
 
-    return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-            <div className="bg-white dark:bg-gray-900 w-full max-w-xl rounded-[2.5rem] shadow-2xl border border-gray-100 dark:border-white/5 overflow-hidden animate-in zoom-in-95 duration-300">
+    return createPortal(
+        <div className="fixed inset-0 z-[999999] flex justify-end bg-black/60 backdrop-blur-sm animate-in fade-in transition-all" onClick={onClose}>
+            <div className="bg-white dark:bg-gray-900 w-full max-w-xl h-full shadow-2xl border-l border-gray-100 dark:border-white/10 flex flex-col animate-in slide-in-from-right duration-300 overflow-y-auto" onClick={e => e.stopPropagation()}>
                 <div className="p-8 border-b border-gray-50 dark:border-white/5 flex justify-between items-center bg-gray-50/50 dark:bg-white/5">
                     <div className="flex items-center gap-3">
                         <div
@@ -68,7 +69,7 @@ const RewardFormModal = ({ isOpen, onClose, themeColor }) => {
                         >
                             <Gift size={20} />
                         </div>
-                        <h2 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tighter italic">
+                        <h2 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">
                             {activeReward ? 'Editar Premio' : 'Nuevo Premio'}
                         </h2>
                     </div>
@@ -179,7 +180,7 @@ const RewardFormModal = ({ isOpen, onClose, themeColor }) => {
                 {...modalConfig}
                 onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
             />
-        </div>
+        </div>, document.body
     );
 };
 

@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { XCircle, CheckCircle2, Loader2, X } from 'lucide-react';
 
 const StatusModal = ({ status, message, onClose }) => {
@@ -34,7 +35,7 @@ const StatusModal = ({ status, message, onClose }) => {
 
     const current = config[status];
 
-    return (
+    return createPortal(
         <div className={`fixed inset-0 z-[9999] flex items-center justify-center p-4 ${status === 'loading' ? 'cursor-wait' : ''}`}>
             <div className="absolute inset-0 bg-black/60 backdrop-blur-md animate-in fade-in duration-500" onClick={status === 'error' ? onClose : undefined} />
 
@@ -69,7 +70,8 @@ const StatusModal = ({ status, message, onClose }) => {
                     </button>
                 )}
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

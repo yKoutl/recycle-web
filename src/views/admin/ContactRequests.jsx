@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Mail, User, Calendar, Trash2, CheckCircle, MessageSquare, Inbox, Search, Clock, Reply, Check, ChevronRight, X } from 'lucide-react';
+import { Mail, User, Phone, Trash2, MessageSquare, Inbox, Search, Clock, Reply, Check, ChevronRight } from 'lucide-react';
 import { useGetContactsQuery, useMarkAsReadMutation, useDeleteContactMutation } from '../../store/contact/contactApi';
 import { motion, AnimatePresence } from 'framer-motion';
+import ConfirmModal from '../../components/modals/ConfirmModal';
 
 const ContactRequests = ({ themeColor }) => {
     const accent = themeColor || '#018F64';
@@ -11,6 +12,9 @@ const ContactRequests = ({ themeColor }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [activeMessage, setActiveMessage] = useState(null);
     const [currentTab, setCurrentTab] = useState('ALL'); // ALL, PENDING, READ, TRASH
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [confirmAction, setConfirmAction] = useState(null);
+    const [errorModal, setErrorModal] = useState({ isOpen: false, message: '' });
 
     const filteredContacts = [...contacts]
         .filter(c => {
@@ -30,17 +34,18 @@ const ContactRequests = ({ themeColor }) => {
 
     const pendingCount = contacts.filter(c => c.status === 'PENDING').length;
 
-    const handleDelete = async (id, e) => {
+    const handleDelete = (id, e) => {
         if (e) e.stopPropagation();
         const msg = currentTab === 'TRASH'
             ? '¿Estás seguro de eliminar PERMANENTEMENTE este contacto?'
             : '¿Mover mensaje a la papelera? (Se borrará en 10 días automáticamente)';
 
-        if (window.confirm(msg)) {
+        setConfirmAction(() => async () => {
             await deleteContact(id);
             if (activeMessage?._id === id) setActiveMessage(null);
-            refetch(); // For update after trashed
-        }
+            refetch();
+        });
+        setIsConfirmOpen(true);
     };
 
     const handleRead = async (id, e) => {
@@ -54,6 +59,19 @@ const ContactRequests = ({ themeColor }) => {
         const subject = encodeURIComponent('Respuesta a tu consulta - Nos Planet');
         const body = encodeURIComponent(`Hola ${name},\n\nGracias por comunicarte con nosotros.\n\n`);
         window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}&body=${body}`, '_blank');
+    };
+
+    const handleReplyWhatsApp = (phone, name, e) => {
+        if (e) e.stopPropagation();
+
+        const normalizedPhone = (phone || '').replace(/\D/g, '');
+        if (!normalizedPhone) {
+            setErrorModal({ isOpen: true, message: 'Este contacto no tiene número de teléfono válido.' });
+            return;
+        }
+
+        const text = encodeURIComponent(`Hola ${name}, gracias por comunicarte con Nos Planet. Te respondemos por este medio.`);
+        window.open(`https://wa.me/${normalizedPhone}?text=${text}`, '_blank');
     };
 
     if (isLoading) return (
@@ -171,9 +189,16 @@ const ContactRequests = ({ themeColor }) => {
                                                     <User size={18} className={contact.status === 'PENDING' ? 'text-emerald-500' : 'text-gray-400'} />
                                                 </div>
                                                 <div className="min-w-0 flex flex-col">
-                                                    <h4 className={`text-sm truncate pr-2 ${contact.status === 'PENDING' ? 'font-black text-gray-900 dark:text-white' : 'font-bold text-gray-600 dark:text-gray-300'}`}>
-                                                        {contact.fullName}
-                                                    </h4>
+                                                    <div className="flex items-center gap-2">
+                                                        <h4 className={`text-sm truncate pr-2 ${contact.status === 'PENDING' ? 'font-black text-gray-900 dark:text-white' : 'font-bold text-gray-600 dark:text-gray-300'}`}>
+                                                            {contact.fullName}
+                                                        </h4>
+                                                        {contact.role && (
+                                                            <span className="px-1.5 py-0.5 rounded-md bg-white/5 border border-white/5 text-[8px] font-black uppercase tracking-widest text-emerald-500">
+                                                                {contact.role}
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                     <p className="text-[10px] font-bold text-gray-400 truncate">
                                                         {contact.email}
                                                     </p>
@@ -240,15 +265,30 @@ const ContactRequests = ({ themeColor }) => {
                                                 {activeMessage.fullName.charAt(0).toUpperCase()}
                                             </div>
                                             <div>
-                                                <h3 className="text-xl font-black text-gray-900 dark:text-white leading-tight">
-                                                    {activeMessage.fullName}
-                                                </h3>
+                                                <div className="flex items-center gap-3">
+                                                    <h3 className="text-xl font-black text-gray-900 dark:text-white leading-tight">
+                                                        {activeMessage.fullName}
+                                                    </h3>
+                                                    {activeMessage.role && (
+                                                        <span className="px-2 py-0.5 rounded-lg bg-emerald-500/10 border border-emerald-500/10 text-[9px] font-black uppercase tracking-[0.2em] text-emerald-500">
+                                                            {activeMessage.role}
+                                                        </span>
+                                                    )}
+                                                </div>
                                                 <div className="flex items-center gap-2 mt-1">
                                                     <Mail size={12} className="text-gray-400" />
                                                     <p className="text-xs font-bold text-gray-500 dark:text-gray-400">
                                                         {activeMessage.email}
                                                     </p>
                                                 </div>
+                                                {activeMessage.phone && (
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <Phone size={12} className="text-gray-400" />
+                                                        <p className="text-xs font-bold text-gray-500 dark:text-gray-400">
+                                                            {activeMessage.phone}
+                                                        </p>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                         <div className="sm:text-right shrink-0">
@@ -284,14 +324,23 @@ const ContactRequests = ({ themeColor }) => {
                                                 </button>
                                             )}
                                         </div>
-                                        <button
-                                            onClick={(e) => handleReply(activeMessage.email, activeMessage.fullName, e)}
-                                            className="px-8 py-4 rounded-2xl text-white text-[11px] font-black uppercase tracking-[0.2em] hover:-translate-y-1 transition-all flex items-center gap-3"
-                                            style={{ background: `linear-gradient(135deg, ${accent}, ${accent}dd)` }}
-                                        >
-                                            <Reply size={16} />
-                                            Responder en Gmail Web
-                                        </button>
+                                        <div className="flex flex-col sm:flex-row items-center gap-3">
+                                            <button
+                                                onClick={(e) => handleReply(activeMessage.email, activeMessage.fullName, e)}
+                                                className="px-6 py-4 rounded-2xl text-white text-[11px] font-black uppercase tracking-[0.2em] hover:-translate-y-1 transition-all flex items-center gap-3"
+                                                style={{ background: `linear-gradient(135deg, ${accent}, ${accent}dd)` }}
+                                            >
+                                                <Reply size={16} />
+                                                Responder por Gmail
+                                            </button>
+                                            <button
+                                                onClick={(e) => handleReplyWhatsApp(activeMessage.phone, activeMessage.fullName, e)}
+                                                className="px-6 py-4 rounded-2xl text-white text-[11px] font-black uppercase tracking-[0.2em] hover:-translate-y-1 transition-all flex items-center gap-3 bg-[#25D366] hover:bg-[#20ba59]"
+                                            >
+                                                <Phone size={16} />
+                                                Responder por WSP
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -309,6 +358,27 @@ const ContactRequests = ({ themeColor }) => {
                     )}
                 </div>
             </div>
+
+            <ConfirmModal
+                isOpen={isConfirmOpen}
+                onClose={() => setIsConfirmOpen(false)}
+                onConfirm={confirmAction}
+                title="¿Confirmar acción?"
+                message={currentTab === 'TRASH' ? 'ELIMINACIÓN PERMANENTE' : 'MOVER A PAPELERA'}
+                confirmText="ACEPTAR"
+                type={currentTab === 'TRASH' ? 'danger' : 'warning'}
+            />
+
+            <ConfirmModal
+                isOpen={errorModal.isOpen}
+                onClose={() => setErrorModal({ ...errorModal, isOpen: false })}
+                onConfirm={() => setErrorModal({ ...errorModal, isOpen: false })}
+                title="Información"
+                message={errorModal.message}
+                confirmText="ENTENDIDO"
+                type="warning"
+                cancelText=""
+            />
         </div>
     );
 };

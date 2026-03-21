@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
     CreditCard,
     CheckCircle2,
@@ -34,6 +35,7 @@ import {
     useSendThankYouEmailMutation
 } from '../../store/donations/donationsApi';
 import StatusModal from '../../components/shared/StatusModal';
+import ConfirmModal from '../../components/modals/ConfirmModal';
 
 const DonationsTable = ({ t, themeColor }) => {
     const { data: donations = [], isLoading, refetch } = useGetDonationsQuery();
@@ -52,6 +54,8 @@ const DonationsTable = ({ t, themeColor }) => {
     const [expandedUsers, setExpandedUsers] = useState(new Set());
     const [actionStatus, setActionStatus] = useState(null);
     const [viewingDetail, setViewingDetail] = useState(null); // { type: 'USER' | 'PAYMENT', data: object }
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [confirmAction, setConfirmAction] = useState(null);
     const [historyPages, setHistoryPages] = useState({});
     const itemsPerPage = 5;
 
@@ -77,19 +81,20 @@ const DonationsTable = ({ t, themeColor }) => {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm('¿Estás seguro de que deseas eliminar permanentemente este registro de donación?')) return;
-
-        setActionStatus({ type: 'loading', message: 'Eliminando registro...' });
-        try {
-            await deleteDonation(id).unwrap();
-            setActionStatus({ type: 'success', message: '¡Registro eliminado permanentemente!' });
-            setTimeout(() => setActionStatus(null), 2000);
-            refetch();
-        } catch (error) {
-            setActionStatus({ type: 'error', message: 'Error al eliminar el registro.' });
-            setTimeout(() => setActionStatus(null), 3000);
-        }
+    const handleDelete = (id) => {
+        setConfirmAction(() => async () => {
+            setActionStatus({ type: 'loading', message: 'Eliminando registro...' });
+            try {
+                await deleteDonation(id).unwrap();
+                setActionStatus({ type: 'success', message: '¡Registro eliminado permanentemente!' });
+                setTimeout(() => setActionStatus(null), 2000);
+                refetch();
+            } catch (error) {
+                setActionStatus({ type: 'error', message: 'Error al eliminar el registro.' });
+                setTimeout(() => setActionStatus(null), 3000);
+            }
+        });
+        setIsConfirmOpen(true);
     };
 
     const handleToggleMembership = async (userId) => {
@@ -125,7 +130,7 @@ const DonationsTable = ({ t, themeColor }) => {
             setActionStatus({ type: 'success', message: '¡Correo enviado con éxito!' });
             setTimeout(() => setActionStatus(null), 2000);
         } catch (error) {
-            console.error('Error al enviar correo', error);
+            // Error handled in UI via actionStatus
             setActionStatus({ type: 'error', message: 'Error al enviar el correo.' });
             setTimeout(() => setActionStatus(null), 3000);
         }
@@ -176,10 +181,10 @@ const DonationsTable = ({ t, themeColor }) => {
 
     const getTierTheme = (tier) => {
         if (!tier || tier === 'NONE') return { bg: 'bg-green-500/10', text: 'text-green-500', border: 'border-green-500/20', label: 'Eco-Héroe', icon: Leaf };
-        const t = tier.toUpperCase();
-        if (t === 'STARTER' || t === 'ECO_SOCIO') return { bg: 'bg-emerald-500/10', text: 'text-emerald-500', border: 'border-emerald-500/20', label: 'Eco-Socio', icon: UserRound };
-        if (t === 'GROWTH' || t === 'ECO_EMBAJADOR') return { bg: 'bg-teal-500/10', text: 'text-teal-500', border: 'border-teal-500/20', label: 'Eco-Embajador', icon: AwardIcon };
-        if (t === 'HERO' || t === 'ECO_VISIONARIO') return { bg: 'bg-indigo-500/10', text: 'text-indigo-500', border: 'border-indigo-500/20', label: 'Eco-Visionario', icon: RocketIcon };
+        const upperTier = tier.toUpperCase();
+        if (upperTier === 'STARTER' || upperTier === 'ECO_SOCIO') return { bg: 'bg-emerald-500/10', text: 'text-emerald-500', border: 'border-emerald-500/20', label: 'Eco-Socio', icon: UserRound };
+        if (upperTier === 'GROWTH' || upperTier === 'ECO_EMBAJADOR') return { bg: 'bg-teal-500/10', text: 'text-teal-500', border: 'border-teal-500/20', label: 'Eco-Embajador', icon: AwardIcon };
+        if (upperTier === 'HERO' || upperTier === 'ECO_VISIONARIO') return { bg: 'bg-indigo-500/10', text: 'text-indigo-500', border: 'border-indigo-500/20', label: 'Eco-Visionario', icon: RocketIcon };
         return { bg: 'bg-slate-100 dark:bg-white/5', text: 'text-slate-400', label: tier, icon: Leaf };
     };
 
@@ -641,9 +646,9 @@ const DonationsTable = ({ t, themeColor }) => {
 
 
             {
-                viewingDetail && (
-                    <div className="fixed inset-0 z-[100] flex justify-end bg-slate-900/40 backdrop-blur-sm animate-in fade-in transition-all">
-                        <div className="bg-white dark:bg-gray-900 w-full max-w-sm h-full shadow-2xl border-l border-gray-100 dark:border-white/5 flex flex-col animate-in slide-in-from-right duration-300">
+                viewingDetail && createPortal(
+                    <div className="fixed inset-0 z-[999999] flex justify-end bg-slate-900/40 backdrop-blur-sm animate-in fade-in transition-all" onClick={() => setViewingDetail(null)}>
+                        <div className="bg-white dark:bg-gray-900 w-full max-w-sm h-full shadow-2xl border-l border-gray-100 dark:border-white/5 flex flex-col animate-in slide-in-from-right duration-300" onClick={e => e.stopPropagation()}>
                             <div className="p-6 border-b border-gray-100 dark:border-white/10 flex justify-between items-center bg-slate-50/50 dark:bg-black/20">
                                 <div>
                                     <h4 className="text-[13px] font-black uppercase tracking-widest text-gray-900 dark:text-white">
@@ -800,9 +805,20 @@ const DonationsTable = ({ t, themeColor }) => {
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    </div>,
+                    document.body
                 )
             }
+
+            <ConfirmModal
+                isOpen={isConfirmOpen}
+                onClose={() => setIsConfirmOpen(false)}
+                onConfirm={confirmAction}
+                title="¿Eliminar registro?"
+                message="Esta acción es irreversible y el registro desaparecerá permanentemente."
+                confirmText="ELIMINAR AHORA"
+                type="danger"
+            />
 
             {
                 actionStatus && (

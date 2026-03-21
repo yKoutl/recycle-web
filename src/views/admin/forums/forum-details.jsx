@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Heart, MessageSquare, Send, User, Trash2 } from 'lucide-react';
 import { useGetCommentsByPostQuery, useAddCommentMutation, useDeletePostMutation } from '../../../store/forum';
 
@@ -35,9 +36,9 @@ const PostDetailModal = ({ isOpen, onClose, post }) => {
 
     if (!isOpen || !post) return null;
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-            <div className="bg-white dark:bg-gray-900 w-full max-w-4xl h-[85vh] rounded-2xl shadow-2xl flex overflow-hidden border border-gray-200 dark:border-gray-800">
+    return createPortal(
+        <div className="fixed inset-0 z-[999999] flex justify-end bg-black/60 backdrop-blur-sm animate-in fade-in transition-all" onClick={onClose}>
+            <div className="bg-white dark:bg-gray-900 w-full max-w-4xl h-full shadow-2xl flex border-l border-gray-100 dark:border-gray-800 animate-in slide-in-from-right duration-300" onClick={e => e.stopPropagation()}>
 
                 {/* --- IZQUIERDA: CONTENIDO DEL POST (Scrollable) --- */}
                 <div className="w-full md:w-3/5 p-6 overflow-y-auto custom-scrollbar border-r border-gray-100 dark:border-gray-800 bg-gray-50/30 dark:bg-gray-900">
@@ -142,7 +143,7 @@ const PostDetailModal = ({ isOpen, onClose, post }) => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div>, document.body
     );
 };
 

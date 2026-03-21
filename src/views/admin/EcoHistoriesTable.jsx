@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
     CheckCircle2,
     XCircle,
@@ -130,9 +131,9 @@ const EcoHistoriesTable = ({ themeColor }) => {
             />
 
             {/* Modal de Detalles */}
-            {isDetailsOpen && selectedHistory && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-                    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-gray-100 dark:border-white/10 animate-in zoom-in-95 duration-300">
+            {isDetailsOpen && selectedHistory && createPortal(
+                <div className="fixed inset-0 z-[999999] flex justify-end bg-black/60 backdrop-blur-sm animate-in fade-in transition-all" onClick={() => setIsDetailsOpen(false)}>
+                    <div className="bg-white dark:bg-gray-900 w-full max-w-lg h-full shadow-2xl border-l border-gray-100 dark:border-white/10 flex flex-col animate-in slide-in-from-right duration-300 overflow-hidden" onClick={e => e.stopPropagation()}>
                         <div className="p-6 space-y-5">
                             <div className="flex items-start justify-between">
                                 <div>
@@ -225,7 +226,7 @@ const EcoHistoriesTable = ({ themeColor }) => {
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>, document.body
             )}
 
             {/* ── Header ── */}

@@ -4,22 +4,86 @@ import {
     Smartphone, Mail, Lock, Bot, Settings,
     Palette, Check, Languages, MessageSquare,
     Sparkles, ShieldCheck, Laptop, BellRing,
-    ChevronRight, Fingerprint, Zap, Activity
+    ChevronRight, Fingerprint, Zap, Activity, Loader2, CheckCircle2, XCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useForgotPasswordMutation } from '../../../store/auth/authApi';
 
 const AdminSettings = ({ t, darkMode, setDarkMode, lang, setLang, user, showBot, setShowBot, themeColor, setThemeColor }) => {
+    const [forgotPassword, { isLoading: isSendingReset }] = useForgotPasswordMutation();
+    const [resetModal, setResetModal] = React.useState({
+        open: false,
+        type: 'success',
+        title: '',
+        message: ''
+    });
+
     const themes = [
         { id: 'forest', name: 'Esmeralda', color: '#018F64', glow: 'rgba(1, 143, 100, 0.4)', desc: 'Frecuencia Ecológica' },
         { id: 'earth', name: 'Carmesí', color: '#FF3B3B', glow: 'rgba(255, 59, 59, 0.4)', desc: 'Alerta Global' },
         { id: 'sunset', name: 'Ámbar', color: '#f97316', glow: 'rgba(249, 115, 22, 0.4)', desc: 'Resiliencia' },
-        { id: 'ocean', name: 'Zafiro', color: '#2563eb', glow: 'rgba(37, 99, 235, 0.4)', desc: 'Profundidad' }
+        { id: 'ocean', name: 'Zafiro', color: '#2563eb', glow: 'rgba(37, 99, 235, 0.4)', desc: 'Profundidad' },
+        { id: 'purple', name: 'Púrpura', color: '#6439FF', glow: 'rgba(100, 57, 255, 0.4)', desc: 'Coordinación' }
     ];
 
     const accent = themeColor || '#018F64';
 
+    const handleSendResetAccess = async () => {
+        const email = user?.email;
+
+        if (!email) {
+            setResetModal({
+                open: true,
+                type: 'error',
+                title: 'Correo no disponible',
+                message: 'No encontramos un correo asociado al usuario actual.'
+            });
+            return;
+        }
+
+        try {
+            await forgotPassword(email).unwrap();
+            setResetModal({
+                open: true,
+                type: 'success',
+                title: 'Correo enviado',
+                message: `Se envió el enlace de restablecimiento a ${email}.`
+            });
+        } catch (err) {
+            setResetModal({
+                open: true,
+                type: 'error',
+                title: 'No se pudo enviar',
+                message: err?.data?.message || 'No pudimos enviar el correo de restablecimiento. Intenta nuevamente.'
+            });
+        }
+    };
+
     return (
         <div className="space-y-10 animate-fade-in pb-24">
+            {resetModal.open && (
+                <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setResetModal((prev) => ({ ...prev, open: false }))} />
+                    <div className="relative w-full max-w-md bg-white dark:bg-[#111827] rounded-[2rem] p-7 border border-gray-100 dark:border-white/10 shadow-2xl text-center space-y-4 animate-in zoom-in-95 duration-200">
+                        <div className={`w-14 h-14 rounded-full mx-auto flex items-center justify-center ${resetModal.type === 'success' ? 'bg-emerald-500/10' : 'bg-red-500/10'}`}>
+                            {resetModal.type === 'success' ? (
+                                <CheckCircle2 className="text-emerald-500" size={30} />
+                            ) : (
+                                <XCircle className="text-red-500" size={30} />
+                            )}
+                        </div>
+                        <h4 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight">{resetModal.title}</h4>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{resetModal.message}</p>
+                        <button
+                            onClick={() => setResetModal((prev) => ({ ...prev, open: false }))}
+                            className={`w-full py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all active:scale-95 ${resetModal.type === 'success' ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-red-600 hover:bg-red-500 text-white'}`}
+                        >
+                            Aceptar
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* ── Header de Configuración ── */}
             <div className="flex flex-col md:flex-row justify-between items-center gap-6 pb-6 border-b border-gray-100 dark:border-white/5 relative overflow-hidden">
                 <div className="flex items-center gap-5 relative z-10 w-full md:w-auto text-center md:text-left flex-col md:flex-row">
@@ -149,7 +213,12 @@ const AdminSettings = ({ t, darkMode, setDarkMode, lang, setLang, user, showBot,
                                     <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1">{lang === 'es' ? 'Español' : 'English'}</p>
                                 </div>
                             </div>
-                            <button onClick={() => setLang(lang === 'es' ? 'en' : 'es')} className="px-4 py-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-lg text-[9px] font-black uppercase tracking-wider hover:bg-blue-600 hover:text-white transition-all">
+                            <button onClick={() => {
+                                const newLang = lang === 'es' ? 'en' : 'es';
+                                setLang(newLang);
+                                try { localStorage.setItem('app_lang', newLang); } catch (e) { }
+                                document.documentElement.lang = newLang;
+                            }} className="px-4 py-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-lg text-[9px] font-black uppercase tracking-wider hover:bg-blue-600 hover:text-white transition-all">
                                 Cambiar
                             </button>
                         </div>
@@ -253,7 +322,11 @@ const AdminSettings = ({ t, darkMode, setDarkMode, lang, setLang, user, showBot,
                             </p>
                         </div>
 
-                        <button className="w-full group/btn relative overflow-hidden p-5 rounded-[1.5rem] bg-gray-50/50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/5 transition-all duration-500 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-white/5 hover:-translate-y-1 active:scale-[0.98]">
+                        <button
+                            onClick={handleSendResetAccess}
+                            disabled={isSendingReset}
+                            className="w-full group/btn relative overflow-hidden p-5 rounded-[1.5rem] bg-gray-50/50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/5 transition-all duration-500 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-white/5 hover:-translate-y-1 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                        >
                             {/* Glow Effect on Hover */}
                             <div
                                 className="absolute inset-0 opacity-0 group-hover/btn:opacity-10 transition-opacity duration-500"
@@ -271,7 +344,11 @@ const AdminSettings = ({ t, darkMode, setDarkMode, lang, setLang, user, showBot,
                                     </div>
                                 </div>
                                 <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-400 dark:text-white/20 transition-all group-hover/btn:bg-gray-900 dark:group-hover/btn:bg-white group-hover/btn:text-white dark:group-hover/btn:text-gray-900">
-                                    <ChevronRight size={18} strokeWidth={3} />
+                                    {isSendingReset ? (
+                                        <Loader2 size={18} strokeWidth={3} className="animate-spin" />
+                                    ) : (
+                                        <ChevronRight size={18} strokeWidth={3} />
+                                    )}
                                 </div>
                             </div>
                         </button>

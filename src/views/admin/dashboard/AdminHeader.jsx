@@ -10,13 +10,27 @@ import { useGetDonationsQuery } from '../../../store/donations/donationsApi';
 const AdminHeader = ({ t, darkMode, setDarkMode, setIsSidebarOpen, isSidebarOpen, themeColor }) => {
     const navigate = useNavigate();
     const { user } = useSelector(state => state.auth);
-    const accent = themeColor || '#018F64';
+    const isAdmin = user?.role?.toUpperCase() === 'ADMIN';
+    const isManager = user?.role?.toUpperCase() === 'MANAGER';
+    const isCoordinator = user?.role?.toUpperCase() === 'COORDINATOR';
+
+    // Final accent logic: priority to theme selector (passed from App.jsx)
+    const accent = themeColor || (isCoordinator ? '#6439FF' : (isManager ? '#f97316' : '#018F64'));
     const [showNotifications, setShowNotifications] = useState(false);
 
-    // Fetching pending data for notifications (con auto-refresh cada 15 segundos)
-    const { data: histories = [] } = useGetAllHistoriesQuery(undefined, { pollingInterval: 15000 });
-    const { data: partnerReqs = [] } = useGetPartnerRequestsQuery(undefined, { pollingInterval: 15000 });
-    const { data: donations = [] } = useGetDonationsQuery(undefined, { pollingInterval: 15000 });
+    // Fetching pending data for notifications (solo para administradores)
+    const { data: histories = [] } = useGetAllHistoriesQuery(undefined, {
+        pollingInterval: 15000,
+        skip: !isAdmin
+    });
+    const { data: partnerReqs = [] } = useGetPartnerRequestsQuery(undefined, {
+        pollingInterval: 15000,
+        skip: !isAdmin
+    });
+    const { data: donations = [] } = useGetDonationsQuery(undefined, {
+        pollingInterval: 15000,
+        skip: !isAdmin
+    });
 
     const notifications = useMemo(() => {
         const list = [];

@@ -1,35 +1,72 @@
-import React, { useState } from 'react';
-import { Globe, ArrowRight, CheckCircle, Recycle, Bell, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowRight } from 'lucide-react';
 import Button from '../../components/shared/Button';
 import HeroMockup from './HeroMockup';
 
 const Hero = ({ onScrollToPrograms, t }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
 
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     // Slide Configuration
     const slides = [
         {
             id: 0,
-            image: '/src/assets/hero_nature_v2.png',
+            image: `/src/assets/${isMobile ? 'mobile' : 'desktop'}/hero_nature_v2.webp`,
             titlePart1: t.hero.titlePart1,
             titlePart2: t.hero.titlePart2,
             subtitle: t.hero.subtitle
         },
         {
             id: 1,
-            image: '/src/assets/hero_environment.jpg',
+            image: `/src/assets/${isMobile ? 'mobile' : 'desktop'}/hero_environment.webp`,
             titlePart1: 'Transforma tus',
             titlePart2: 'residuos en valor',
             subtitle: 'La economía circular comienza contigo. Descubre cómo cada acción cuenta para transformar nuestro planeta.'
         }
     ];
 
-    // Auto-play
-    React.useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentSlide((prev) => (prev === 0 ? 1 : 0));
-        }, 10000);
-        return () => clearInterval(interval);
+    // Auto-play optimizado: pausa cuando la pestaña no esta visible.
+    useEffect(() => {
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReducedMotion) return;
+
+        let intervalId;
+
+        const startAutoplay = () => {
+            if (intervalId) return;
+            intervalId = setInterval(() => {
+                setCurrentSlide((prev) => (prev === 0 ? 1 : 0));
+            }, 10000);
+        };
+
+        const stopAutoplay = () => {
+            if (!intervalId) return;
+            clearInterval(intervalId);
+            intervalId = undefined;
+        };
+
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                stopAutoplay();
+            } else {
+                startAutoplay();
+            }
+        };
+
+        startAutoplay();
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            stopAutoplay();
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
     }, []);
 
     const activeSlide = slides[currentSlide];
@@ -45,6 +82,9 @@ const Hero = ({ onScrollToPrograms, t }) => {
                     <img
                         src={slide.image}
                         alt="Hero Background"
+                        loading={index === 0 ? 'eager' : 'lazy'}
+                        decoding="async"
+                        fetchPriority={index === 0 ? 'high' : 'auto'}
                         className="w-full h-full object-cover opacity-100 transition-opacity duration-500"
                     />
                     {/* Adaptive Overlay: Warm Dark (Day) vs Cool Dark (Night) */}

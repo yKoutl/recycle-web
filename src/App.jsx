@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import AppRouter from './routes/AppRouter';
-import PlanetBot from './components/planet-bot/PlanetBot';
+import i18n from './i18n';
 import { onLogin, onLogout, useCheckStatusQuery } from './store/auth';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
+
+const PlanetBot = React.lazy(() => import('./components/planet-bot/PlanetBot'));
 
 const App = () => {
   const [lang, setLang] = useState(localStorage.getItem('app_lang') || 'es');
@@ -14,10 +16,16 @@ const App = () => {
   // Persistir preferencias
   useEffect(() => {
     localStorage.setItem('app_lang', lang);
+    try { i18n.changeLanguage(lang); } catch (e) { }
   }, [lang]);
 
   useEffect(() => {
     localStorage.setItem('app_darkMode', darkMode);
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   }, [darkMode]);
 
   useEffect(() => {
@@ -28,11 +36,10 @@ const App = () => {
 
   const dispatch = useDispatch();
   const location = useLocation();
-  const { status } = useSelector((state) => state.auth);
   const token = localStorage.getItem('token');
 
   // Recuperar datos reales del usuario si hay token al recargar
-  const { data: userData, isSuccess, isError, refetch } = useCheckStatusQuery(undefined, {
+  const { data: userData, isSuccess, isError } = useCheckStatusQuery(undefined, {
     skip: !token,
     refetchOnMountOrArgChange: true // Forzar comprobación al cambiar de usuario
   });
@@ -40,12 +47,18 @@ const App = () => {
   // Sincronizar estado de Redux con el backend
   useEffect(() => {
     if (isSuccess && userData && token) {
-      // Solo actualizamos si el usuario actual es diferente para evitar bucles
-      // O si no hay usuario en el estado
-      // Verificamos si realmente necesitamos actualizar
+      const user = userData.user || userData;
+
+      // Establecer color por defecto según rol si no hay uno guardado
+      if (!localStorage.getItem('app_themeColor')) {
+        const roleDefault = user.role?.toUpperCase() === 'COORDINATOR' ? '#6439FF' :
+          (user.role?.toUpperCase() === 'MANAGER' ? '#f97316' : '#018F64');
+        setThemeColor(roleDefault);
+      }
+
       dispatch(onLogin({
         token,
-        user: userData.user || userData
+        user
       }));
     }
   }, [isSuccess, userData, token, dispatch]);
@@ -62,9 +75,9 @@ const App = () => {
   };
 
   // Contexto para el Bot
-  const isLoginPage = location.pathname.includes('/auth/login');
+  const isAuthPage = location.pathname.includes('/auth');
   const isAdminPage = location.pathname.includes('/admin');
-  const botContext = isAdminPage ? 'admin' : (isLoginPage ? 'login' : 'landing');
+  const botContext = isAdminPage ? 'admin' : (isAuthPage ? 'login' : 'landing');
 
   return (
     <div className={darkMode ? 'dark' : ''}>
@@ -82,7 +95,11 @@ const App = () => {
         />
       </div>
 
-      {!isLoginPage && showBot && <PlanetBot currentView={botContext} />}
+      {!isAuthPage && showBot && (
+        <React.Suspense fallback={null}>
+          <PlanetBot currentView={botContext} />
+        </React.Suspense>
+      )}
     </div>
   );
 };

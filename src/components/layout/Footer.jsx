@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Instagram, Twitter, Linkedin, Facebook, Send, ArrowUpRight } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import logoNosPlanet from '../../assets/logo_nos_planet.webp';
+import logoNosPlanet from '../../assets/brand/logo_nos_planet.webp';
 import TermsModal from '../planet-bot/TermsModal';
 
 const Footer = ({ t }) => {
@@ -38,8 +38,8 @@ const Footer = ({ t }) => {
                             className="flex items-center gap-3 cursor-pointer group w-fit"
                             onClick={scrollToTop}
                         >
-                            <div className="w-12 h-12 bg-white dark:bg-gray-800 rounded-2xl flex items-center justify-center p-2 shadow-xl group-hover:rotate-12 transition-transform duration-500 border border-gray-100 dark:border-gray-700">
-                                <img src={logoNosPlanet} alt="Logo" className="w-full h-full object-contain" />
+                            <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-white shadow-xl transition-all duration-500 group-hover:rotate-12 group-hover:scale-110 shrink-0">
+                                <img src={logoNosPlanet} alt="Logo" className="w-9 h-9 object-contain" />
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">

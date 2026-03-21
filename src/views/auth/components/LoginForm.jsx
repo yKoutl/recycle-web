@@ -56,8 +56,12 @@ const LoginForm = ({
                 </h1>
                 <p className="text-gray-500 text-[10px] font-bold uppercase tracking-[0.4em]">
                     Perfil: <span style={{ color: getRoleColor() }}>{selectedRole === 'gestor' ? 'Gestor' : 'Eco-Héroe'}</span>
-
                 </p>
+                {selectedRole === 'gestor' && (
+                    <p className="text-[#f97316] text-[8px] font-black uppercase tracking-widest mt-1 opacity-70">
+                        * Los coordinadores también deben ingresar por aquí
+                    </p>
+                )}
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">

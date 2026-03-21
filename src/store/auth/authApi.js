@@ -41,6 +41,33 @@ export const authApi = createApi({
                 body: { email }, // Tu controller espera { email: string }
             }),
         }),
+
+        // 5. RESET PASSWORD (@Post('reset-password'))
+        resetPassword: builder.mutation({
+            query: (data) => ({
+                url: '/reset-password',
+                method: 'POST',
+                body: data, // { email, code, newPassword }
+            }),
+        }),
+
+        // 6. INVITE MANAGER (@Post('invite-manager'))
+        inviteManager: builder.mutation({
+            query: (email) => ({
+                url: '/invite-manager',
+                method: 'POST',
+                body: { email },
+            }),
+        }),
+
+        // 7. INVITE COORDINATOR (@Post('invite-coordinator'))
+        inviteCoordinator: builder.mutation({
+            query: (data) => ({
+                url: '/invite-coordinator',
+                method: 'POST',
+                body: data, // { email, managerId }
+            }),
+        }),
     }),
 });
 
@@ -48,5 +75,8 @@ export const {
     useLoginMutation,
     useRegisterMutation,
     useCheckStatusQuery,
-    useForgotPasswordMutation
+    useForgotPasswordMutation,
+    useResetPasswordMutation,
+    useInviteManagerMutation,
+    useInviteCoordinatorMutation
 } = authApi;

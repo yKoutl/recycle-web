@@ -114,7 +114,6 @@ const DonationSection = ({ t }) => {
             }, 6000);
 
         } catch (error) {
-            console.error('Error al procesar el aporte:', error);
             setIsPaymentConfirmed(false);
             dispatch(setProcessingAction(false));
         }
@@ -129,7 +128,7 @@ const DonationSection = ({ t }) => {
     return (
         <section className="py-24 relative bg-[#FEFDFB] dark:bg-[#020617] transition-colors duration-500">
             {/* Spotlight Effect */}
-            <div className={`fixed inset-0 w-full h-full bg-black/70 backdrop-blur-xl transition-all duration-700 pointer-events-none z-[80] ${hoveredTier && !isModalOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`} />
+            <div className={`hidden lg:block fixed inset-0 w-full h-full bg-black/55 backdrop-blur-[2px] transition-opacity duration-300 pointer-events-none z-[80] ${hoveredTier && !isModalOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`} />
 
             <DonationModal
                 isModalOpen={isModalOpen}

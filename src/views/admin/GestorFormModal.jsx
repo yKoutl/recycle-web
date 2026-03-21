@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, User as UserIcon, Mail, Lock, Shield, UserPlus, Fingerprint, Eye, EyeOff, RefreshCw } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { X, Save, User as UserIcon, Mail, Lock, Shield, UserPlus, Fingerprint, Eye, EyeOff, RefreshCw, Phone } from 'lucide-react';
 import { useRegisterMutation } from '../../store/auth';
 import { useUpdateUserMutation } from '../../store/user/usersApi';
 import ConfirmModal from '../../components/shared/ConfirmModal';
@@ -9,6 +10,7 @@ const GestorFormModal = ({ isOpen, onClose, activeUser = null, isDetailOnly = fa
     const [updateUser] = useUpdateUserMutation();
     const accent = themeColor || '#018F64';
     const [showPassword, setShowPassword] = useState(false);
+    const [mounted, setMounted] = useState(false);
 
     const [formData, setFormData] = useState({
         fullName: '',
@@ -24,6 +26,7 @@ const GestorFormModal = ({ isOpen, onClose, activeUser = null, isDetailOnly = fa
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
+        setMounted(true);
         if (isOpen) {
             if (activeUser) {
                 setFormData({
@@ -91,12 +94,12 @@ const GestorFormModal = ({ isOpen, onClose, activeUser = null, isDetailOnly = fa
         }
     };
 
-    if (!isOpen) return null;
+    if (!isOpen || !mounted) return null;
 
     const isEditing = !!activeUser;
 
-    return (
-        <div className="fixed inset-0 z-[100] flex justify-end bg-black/60 backdrop-blur-sm animate-in fade-in duration-300" onClick={onClose}>
+    return createPortal(
+        <div className="fixed inset-0 z-[999999] flex justify-end bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300" onClick={onClose}>
             <div
                 className="bg-white dark:bg-gray-900 w-full max-w-md h-full shadow-2xl border-l border-gray-100 dark:border-white/5 overflow-y-auto animate-in slide-in-from-right duration-300 flex flex-col"
                 onClick={(e) => e.stopPropagation()}
@@ -106,7 +109,7 @@ const GestorFormModal = ({ isOpen, onClose, activeUser = null, isDetailOnly = fa
                         <div className="p-2.5 text-white rounded-2xl shadow-lg" style={{ backgroundColor: accent, boxShadow: `0 8px 20px ${accent}30` }}>
                             {isDetailOnly ? <UserIcon size={20} /> : (isEditing ? <Save size={20} /> : <UserPlus size={20} />)}
                         </div>
-                        <h2 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tighter italic">
+                        <h2 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">
                             {isDetailOnly ? 'Detalles del Gestor' : (isEditing ? 'Editar Gestor' : 'Añadir Nuevo Gestor')}
                         </h2>
                     </div>
@@ -157,7 +160,7 @@ const GestorFormModal = ({ isOpen, onClose, activeUser = null, isDetailOnly = fa
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center px-1">
                                     <label className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2" style={{ color: accent }}>
-                                        <Lock size={12} /> {isEditing ? 'Nueva Contraseña (Opcional)' : 'Contraseña Temporal'}
+                                        <Lock size={12} /> {isEditing ? 'Seguridad y Acceso' : 'Contraseña Temporal'}
                                     </label>
                                     {!isEditing && (
                                         <button
@@ -174,27 +177,66 @@ const GestorFormModal = ({ isOpen, onClose, activeUser = null, isDetailOnly = fa
                                         </button>
                                     )}
                                 </div>
-                                <div className="relative">
-                                    <input
-                                        type={showPassword ? 'text' : 'password'}
-                                        value={formData.password}
-                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                        className="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:ring-4 transition-all font-medium pr-12 dark:text-white placeholder:text-gray-500"
-                                        style={{ '--tw-ring-color': `${accent}15` }}
-                                        onFocus={(e) => e.target.style.borderColor = accent}
-                                        onBlur={(e) => e.target.style.borderColor = ''}
-                                        placeholder={isEditing ? 'Dejar vacío para no cambiar' : '••••••••'}
-                                        required={!isEditing}
-                                        minLength={6}
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors"
-                                    >
-                                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                    </button>
-                                </div>
+
+                                {isEditing ? (
+                                    <div className="relative">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                if (window.confirm('¿Enviar enlace seguro de restablecimiento de contraseña a este gestor?')) {
+                                                    setModalConfig({
+                                                        isOpen: true,
+                                                        title: 'Correo Enviado',
+                                                        message: 'Se ha enviado un enlace de restablecimiento de contraseña al gestor.',
+                                                        variant: 'success'
+                                                    });
+                                                }
+                                            }}
+                                            className="w-full py-4.5 px-6 text-sm font-black uppercase tracking-widest transition-all rounded-[1.2rem] flex items-center justify-center gap-3 active:scale-95 group"
+                                            style={{
+                                                border: `2px dashed ${accent}80`,
+                                                color: accent,
+                                                backgroundColor: 'transparent'
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.backgroundColor = `${accent}10`;
+                                                e.currentTarget.style.borderColor = accent;
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.backgroundColor = 'transparent';
+                                                e.currentTarget.style.borderColor = `${accent}80`;
+                                            }}
+                                        >
+                                            <Mail size={18} className="group-hover:scale-110 transition-transform" />
+                                            Enviar Restablecimiento
+                                        </button>
+                                        <p className="text-[10px] uppercase font-bold tracking-widest text-gray-400 mt-3 text-center px-4">
+                                            Por seguridad, la contraseña no se digita manualmente. Se delegará al usuario.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="relative">
+                                        <input
+                                            type={showPassword ? 'text' : 'password'}
+                                            value={formData.password}
+                                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                            className="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:ring-4 transition-all font-medium pr-12 dark:text-white placeholder:text-gray-500"
+                                            style={{ '--tw-ring-color': `${accent}15` }}
+                                            onFocus={(e) => e.target.style.borderColor = accent}
+                                            onBlur={(e) => e.target.style.borderColor = ''}
+                                            placeholder="••••••••"
+                                            required
+                                            minLength={6}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors"
+                                        >
+                                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -212,6 +254,24 @@ const GestorFormModal = ({ isOpen, onClose, activeUser = null, isDetailOnly = fa
                                 onFocus={(e) => e.target.style.borderColor = accent}
                                 onBlur={(e) => e.target.style.borderColor = ''}
                                 placeholder="12345678"
+                                required
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest ml-1 flex items-center gap-2" style={{ color: accent }}>
+                                <Phone size={12} /> Celular / Teléfono
+                            </label>
+                            <input
+                                type="tel"
+                                readOnly={isDetailOnly}
+                                value={formData.phone}
+                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                className="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:ring-4 transition-all font-bold disabled:opacity-50 dark:text-white placeholder:text-gray-500"
+                                style={{ '--tw-ring-color': `${accent}15` }}
+                                onFocus={(e) => e.target.style.borderColor = accent}
+                                onBlur={(e) => e.target.style.borderColor = ''}
+                                placeholder="987 654 321"
                                 required
                             />
                         </div>
@@ -298,7 +358,8 @@ const GestorFormModal = ({ isOpen, onClose, activeUser = null, isDetailOnly = fa
                     if (modalConfig.variant === 'success') onClose();
                 }}
             />
-        </div>
+        </div>,
+        document.body
     );
 };
 

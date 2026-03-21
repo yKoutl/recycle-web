@@ -9,6 +9,7 @@ import { ecoHistoriesApi } from "./eco-histories/ecoHistoriesApi";
 import { donationsApi } from "./donations/donationsApi";
 import { contactApi } from "./contact/contactApi";
 import { forumSlice, forumApi } from "./forum";
+import { coordinatorsApi } from "./coordinators/coordinatorsApi";
 
 export const store = configureStore({
         reducer: {
@@ -32,6 +33,7 @@ export const store = configureStore({
                 [donationsApi.reducerPath]: donationsApi.reducer,
                 [contactApi.reducerPath]: contactApi.reducer,
                 [forumApi.reducerPath]: forumApi.reducer,
+                [coordinatorsApi.reducerPath]: coordinatorsApi.reducer,
         },
         middleware: (getDefaultMiddleware) => getDefaultMiddleware()
                 .concat(rewardsApi.middleware)
@@ -43,5 +45,6 @@ export const store = configureStore({
                 .concat(ecoHistoriesApi.middleware)
                 .concat(donationsApi.middleware)
                 .concat(contactApi.middleware)
-                .concat(forumApi.middleware),
+                .concat(forumApi.middleware)
+                .concat(coordinatorsApi.middleware),
 });

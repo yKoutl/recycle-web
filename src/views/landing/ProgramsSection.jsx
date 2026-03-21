@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { TrendingUp, ArrowRight, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 import ProgramCard from '../../components/cards/ProgramCard';
 import ProgramModal from '../../components/modals/ProgramModal';
-import { MOCK_PROGRAMS } from '../../data/mockData';
+import { useGetPublicProgramsQuery } from '../../store/programs';
 
-const ProgramsSection = ({ t, isAuthenticated }) => {
+const ProgramsSection = ({ t, isAuthenticated, user }) => {
+    const navigate = useNavigate();
     const [selectedProgram, setSelectedProgram] = useState(null);
     const [hoveredCardId, setHoveredCardId] = useState(null);
+    const { data: programs = [], isLoading } = useGetPublicProgramsQuery();
 
     return (
         <section className="pt-16 pb-32 relative overflow-hidden bg-[#FEFDFB] dark:bg-[#020617] transition-colors duration-500">
@@ -43,42 +46,61 @@ const ProgramsSection = ({ t, isAuthenticated }) => {
                     </div>
 
                     <div className="hidden lg:block pb-10">
-                        <button className="flex items-center gap-6 group relative">
+                        <button onClick={() => navigate('/programas')} className="flex items-center gap-6 group relative">
                             <div className="absolute -inset-4 bg-emerald-500/5 rounded-full scale-0 group-hover:scale-100 transition-transform duration-500" />
-                            <span className="text-xs font-black uppercase tracking-[0.2em] text-[#018F64] dark:text-[#10B981]">Explorar Todos</span>
-                            <div className="w-16 h-16 rounded-full border border-gray-100 dark:border-white/10 flex items-center justify-center group-hover:bg-[#018F64] group-hover:text-white group-hover:border-[#018F64] transition-all duration-700">
+                            <span className="text-xs font-black uppercase tracking-[0.2em] text-[#018F64] dark:text-[#10B981]">Ver todos los programas</span>
+                            <div className="w-16 h-16 rounded-full border border-gray-100 dark:border-white/10 flex items-center justify-center group-hover:bg-[#018F64] group-hover:text-white group-hover:border-[#018F64] transition-[transform,background-color,color,border-color] duration-700">
                                 <ArrowRight size={24} className="group-hover:translate-x-1 transition-transform" />
                             </div>
                         </button>
                     </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-16">
-                    {MOCK_PROGRAMS(t).map((program, idx) => {
-                        const isHovered = hoveredCardId === program.id;
-                        const isSomethingHovered = hoveredCardId !== null && hoveredCardId !== program.id;
+                {isLoading ? (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-16">
+                        {[1, 2, 3].map((item) => (
+                            <div key={item} className="h-[540px] rounded-[3rem] bg-gray-100 dark:bg-white/5 animate-pulse" />
+                        ))}
+                    </div>
+                ) : programs.length > 0 ? (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-16">
+                        {programs.slice(0, 3).map((program, idx) => {
+                            const programId = program._id || program.id;
+                            const isHovered = hoveredCardId === programId;
+                            const isSomethingHovered = hoveredCardId !== null && hoveredCardId !== programId;
 
-                        return (
-                            <div
-                                key={program.id}
-                                onClick={() => setSelectedProgram(program)}
-                                onMouseEnter={() => setHoveredCardId(program.id)}
-                                onMouseLeave={() => setHoveredCardId(null)}
-                                className={`cursor-pointer h-full transition-all duration-700 
-                                    ${isSomethingHovered ? 'opacity-30 blur-[2px] scale-95 grayscale-[0.3]' : 'opacity-100 blur-0 scale-100'} 
+                            return (
+                                <div
+                                    key={programId}
+                                    onClick={() => setSelectedProgram(program)}
+                                    onMouseEnter={() => setHoveredCardId(programId)}
+                                    onMouseLeave={() => setHoveredCardId(null)}
+                                    className={`cursor-pointer h-full transition-opacity duration-200 
+                                    ${isSomethingHovered ? 'opacity-70' : 'opacity-100'} 
                                     ${isHovered ? 'z-20' : 'z-10'}
                                     animate-in fade-in slide-in-from-bottom-20`}
-                                style={{ animationDelay: `${idx * 150}ms`, animationFillMode: 'both' }}
-                            >
-                                <ProgramCard program={program} t={t} isFocused={isHovered} />
-                            </div>
-                        );
-                    })}
-                </div>
+                                    style={{ animationDelay: `${idx * 150}ms`, animationFillMode: 'both' }}
+                                >
+                                    <ProgramCard
+                                        program={program}
+                                        t={t}
+                                        isFocused={isHovered}
+                                        isJoined={isAuthenticated && program?.participantList?.includes(user?._id || user?.uid || user?.sub)}
+                                    />
+                                </div>
+                            );
+                        })}
+                    </div>
+                ) : (
+                    <div className="py-16 text-center border border-dashed border-gray-200 dark:border-white/10 rounded-3xl bg-white/70 dark:bg-white/5">
+                        <p className="text-xl font-black text-gray-900 dark:text-white tracking-tight">Aun no hay programas publicados</p>
+                        <p className="text-gray-500 dark:text-gray-400 mt-2">Pronto veras nuevas iniciativas ambientales aqui.</p>
+                    </div>
+                )}
 
                 {/* Mobile Call to Action */}
                 <div className="mt-20 text-center lg:hidden">
-                    <button className="inline-flex items-center gap-4 px-10 py-5 bg-[#018F64] text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-2xl shadow-emerald-900/30 active:scale-95 transition-all">
+                    <button onClick={() => navigate('/programas')} className="inline-flex items-center gap-4 px-10 py-5 bg-[#018F64] text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-2xl shadow-emerald-900/30 active:scale-95 transition-[transform,background-color,box-shadow]">
                         <span>Ver todos los programas</span>
                         <ArrowRight size={16} />
                     </button>
@@ -91,6 +113,7 @@ const ProgramsSection = ({ t, isAuthenticated }) => {
                 isOpen={!!selectedProgram}
                 onClose={() => setSelectedProgram(null)}
                 isAuthenticated={isAuthenticated}
+                user={user}
                 t={t}
             />
         </section>

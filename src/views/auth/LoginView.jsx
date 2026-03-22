@@ -2,6 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useLoginMutation, onLogin as setAuthCredentials } from '../../store/auth';
+import heroNature from '../../assets/hero_nature_v2.png';
+import heroEnvironment from '../../assets/hero_environment.jpg';
 
 // Sub-components
 import LoginStatusModal from './components/LoginStatusModal';
@@ -24,8 +26,8 @@ const LoginView = ({ t }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
 
     const slides = [
-        { id: 0, image: '/src/assets/hero_nature_v2.png' },
-        { id: 1, image: '/src/assets/hero_environment.jpg' }
+        { id: 0, image: heroNature },
+        { id: 1, image: heroEnvironment }
     ];
 
     useEffect(() => {

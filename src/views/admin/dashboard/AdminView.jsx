@@ -15,8 +15,11 @@ import InductionTable from '../induction/inductionActions';
 import AdminSettings from './AdminSettings';
 import GestoresManagementView from '../GestoresManagementView';
 import ProgramManagementView from '../programs/ProgramManagementView';
+import ManagerDashboard from './ManagerDashboard';
 import DonationsTable from '../DonationsTable';
 import ContactRequests from '../ContactRequests';
+import ManagerTeamView from '../ManagerTeamView';
+import CoordinatorContactView from '../CoordinatorContactView';
 import { MOCK_REQUESTS, MOCK_STATS } from '../../../data/mockData';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -223,12 +226,13 @@ const AdminView = ({ t, darkMode, setDarkMode, lang, setLang, showBot, setShowBo
                 <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto">
                     <Routes>
                         <Route path="/" element={<Navigate to="dashboard" replace />} />
-                        <Route path="dashboard" element={<DashboardHome />} />
+                        <Route path="dashboard" element={user?.role?.toUpperCase() === 'ADMIN' ? <DashboardHome /> : <ManagerDashboard t={t} themeColor={themeColor} user={user} />} />
 
                         {user?.role?.toUpperCase() === 'ADMIN' && (
                             <>
                                 <Route path="users" element={<div className="animate-fade-in"><UsersTable t={t} themeColor={themeColor} /></div>} />
                                 <Route path="gestores" element={<div className="animate-fade-in"><GestoresManagementView t={t} themeColor={themeColor} /></div>} />
+                                <Route path="manager-team" element={<div className="animate-fade-in"><ManagerTeamView t={t} themeColor={themeColor} /></div>} />
                                 <Route path="requests" element={<div className="animate-fade-in"><RequestsList requests={requests} t={t} onStatusChange={handleStatusChange} themeColor={themeColor} /></div>} />
                                 <Route path="contact-requests" element={<div className="animate-fade-in"><ContactRequests themeColor={themeColor} /></div>} />
                                 <Route path="donations" element={<div className="animate-fade-in"><DonationsTable t={t} themeColor={themeColor} /></div>} />
@@ -249,6 +253,16 @@ const AdminView = ({ t, darkMode, setDarkMode, lang, setLang, showBot, setShowBo
                                 <Route path="induction" element={<div className="animate-fade-in"><InductionTable t={t} themeColor={themeColor} /></div>} />
                             </>
                         )}
+
+                        {user?.role?.toUpperCase() === 'MANAGER' && (
+                            <>
+                                <Route path="my-team" element={<div className="animate-fade-in"><ManagerTeamView t={t} themeColor={themeColor} isGestorView={true} user={user} /></div>} />
+                            </>
+                        )}
+
+                        {/* Common Routes */}
+                        <Route path="programs" element={<div className="animate-fade-in"><ProgramsList t={t} isAdmin={user?.role?.toUpperCase() === 'ADMIN'} user={user} themeColor={themeColor} /></div>} />
+                        <Route path="programs/:id" element={<div className="animate-fade-in"><ProgramManagementView t={t} themeColor={themeColor} /></div>} />
                         <Route path="settings" element={
                             <AdminSettings
                                 t={t}
@@ -264,9 +278,10 @@ const AdminView = ({ t, darkMode, setDarkMode, lang, setLang, showBot, setShowBo
                             />
                         } />
 
-                        <Route path="programs/:id" element={<div className="animate-fade-in"><ProgramManagementView t={t} themeColor={themeColor} /></div>} />
-                        <Route path="programs" element={<div className="animate-fade-in"><ProgramsList t={t} themeColor={themeColor} /></div>} />
-                        <Route path="*" element={<Navigate to="dashboard" replace />} />
+                        <Route path="support" element={<div className="animate-fade-in"><CoordinatorContactView t={t} themeColor={themeColor} user={user} /></div>} />
+
+                        {/* Fallback */}
+                        <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
                     </Routes>
                 </div>
 

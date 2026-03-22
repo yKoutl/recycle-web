@@ -69,7 +69,7 @@ const DonationModal = ({
             <motion.div
                 initial={{ x: '100%' }}
                 animate={{ x: 0 }}
-                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                transition={{ type: 'spring', damping: 30, stiffness: 170 }}
                 className={`relative z-10 w-full max-w-xl h-full shadow-[-40px_0_80px_rgba(0,0,0,0.3)] flex flex-col overflow-hidden border-l border-white/5
                     bg-gradient-to-br ${selectedTier?.color} ${selectedTier?.darkColor}
                 `}
@@ -132,7 +132,7 @@ const DonationModal = ({
 
                 {/* Processing/Success Overlay - Diseño Premium Oscuro Responsive */}
                 {(isProcessing || isSuccess) && (
-                    <div className="absolute inset-0 z-[100] bg-[#020617]/95 backdrop-blur-[40px] flex flex-col items-center justify-center p-6 space-y-8 md:space-y-10 animate-in fade-in duration-700">
+                    <div className="absolute inset-0 z-[100] bg-[#020617]/92 backdrop-blur-2xl flex flex-col items-center justify-center p-6 space-y-8 md:space-y-10 animate-in fade-in duration-500">
                         {/* Efecto de luz radial de fondo - Responsive */}
                         <div className={`absolute w-[250px] md:w-[400px] h-[250px] md:h-[400px] rounded-full blur-[80px] md:blur-[100px] opacity-20 pointer-events-none ${isSuccess ? 'bg-emerald-500' : 'bg-white'}`} />
 
@@ -202,77 +202,127 @@ const DonationModal = ({
 };
 
 const UnauthenticatedStep = ({ t, selectedTier, navigate }) => (
-    <div className="space-y-10 py-4 animate-in fade-in slide-in-from-right-4 duration-700">
-        <div className="space-y-3">
-            <div className="inline-flex items-center gap-3 px-4 py-2 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-2xl">
-                <Sparkles size={14} className="text-emerald-500" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">Eco-Comunidad</span>
+    <div className="space-y-10 py-4 animate-in fade-in slide-in-from-right-8 duration-700 text-white">
+        <div className="space-y-6">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-white/60">
+                    Verificación Segura
+                </span>
             </div>
-            <h3 className="text-5xl lg:text-7xl font-black leading-tight tracking-tighter text-gray-900 dark:text-white">
-                {t.donation.tiers[selectedTier?.key]?.title}
-            </h3>
+
+            {/* Header */}
+            <div className="space-y-2">
+                <h3 className="text-4xl lg:text-5xl font-black tracking-tight leading-tight text-white italic">
+                    Hola, Eco-Héroe
+                </h3>
+                <p className="text-sm font-medium text-emerald-100/40">
+                    Inicia sesión para vincular tu nivel {t.donation.tiers[selectedTier?.key]?.title}
+                </p>
+            </div>
         </div>
 
-        <div className="space-y-6">
-            <div className="p-8 bg-white dark:bg-slate-900 rounded-[2.5rem] border border-gray-100 dark:border-white/10 shadow-xl">
-                <div className="flex items-center gap-5 mb-10">
-                    <div className={`w-16 h-16 rounded-[1.5rem] flex items-center justify-center shadow-lg ${selectedTier?.key === 'hero' ? 'bg-indigo-600' : 'bg-emerald-500'}`}>
-                        {selectedTier && <selectedTier.icon size={32} className="text-white" />}
-                    </div>
-                    <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">Monto Sugerido</p>
-                        <p className="text-4xl font-black tracking-tighter text-gray-900 dark:text-white">{t.donation.tiers[selectedTier?.key]?.amount}</p>
-                    </div>
-                </div>
+        {/* Card */}
+        <div className="relative group/card">
+            <div className={`absolute -inset-1 bg-gradient-to-br opacity-20 blur-2xl transition duration-1000 group-hover/card:opacity-40
+                ${selectedTier?.key === 'hero'
+                    ? 'from-emerald-600 to-green-900'
+                    : selectedTier?.key === 'growth'
+                        ? 'from-teal-400 to-emerald-600'
+                        : 'from-lime-400 to-emerald-500'
+                }`}
+            />
 
-                <div className="space-y-5">
-                    <p className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2 text-gray-500 dark:text-gray-400">
-                        <Sparkles size={14} className="text-amber-400" />
-                        Beneficios Exclusivos
-                    </p>
-                    <div className="grid gap-3">
-                        {selectedTier?.benefits.map((b, i) => (
-                            <div key={i} className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 transition-colors">
-                                <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
-                                    <CheckCircle size={12} className="text-white" />
-                                </div>
-                                <span className="text-[14px] font-bold text-gray-700 dark:text-gray-200">{b}</span>
+            <div className="relative bg-white/[0.03] backdrop-blur-3xl rounded-[2.5rem] border border-white/10 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden">
+                <div className="p-8 space-y-10">
+
+                    {/* Top Info */}
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-5">
+                            <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center shadow-2xl">
+                                {selectedTier && (
+                                    <selectedTier.icon
+                                        size={28}
+                                        className={selectedTier?.key === 'hero'
+                                            ? 'text-indigo-300'
+                                            : 'text-emerald-400'}
+                                    />
+                                )}
                             </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
 
-            <div className="p-8 bg-white dark:bg-slate-900 rounded-[2.5rem] border border-gray-100 dark:border-white/10 shadow-xl space-y-6">
-                <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-white/5 flex items-center justify-center">
-                        <ShieldCheck size={24} className="text-emerald-500" />
-                    </div>
-                    <p className="font-black uppercase text-xs tracking-widest text-gray-800 dark:text-white">Vincular o Regalar</p>
-                </div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 leading-relaxed">
-                    Inicia sesión para que estos beneficios se activen en tu cuenta o elige regalar este aporte a otro usuario de la comunidad.
-                </p>
-                <div className="space-y-4">
-                    <Button
-                        className={`w-full h-16 rounded-[2rem] text-sm font-black text-white shadow-2xl border-none transition-all hover:scale-[1.02] active:scale-95 ${selectedTier?.key === 'hero' ? 'bg-indigo-600' : 'bg-emerald-500'}`}
-                        onClick={() => navigate('/auth/login')}
-                        icon={LogIn}
-                    >
-                        Iniciar Sesión para Aportar
-                    </Button>
+                            <div>
+                                <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-white/30 mb-1">
+                                    MEMBRESÍA
+                                </p>
+                                <p className="text-xl font-black tracking-tight text-white">
+                                    {t.donation.tiers[selectedTier?.key]?.title}
+                                </p>
+                            </div>
+                        </div>
 
-                    <button className={`w-full py-5 bg-white rounded-[2rem] font-black text-[15px] transition-all flex items-center justify-center gap-3 shadow-2xl hover:scale-[1.02] active:scale-95
-                        ${selectedTier?.key === 'hero' ? 'text-indigo-600' : 'text-emerald-700'}
-                    `}>
-                        <Gift size={20} /> Regalar este Eco-Aporte
-                    </button>
+                        <div className="text-right">
+                            <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-white/30 mb-1">
+                                TOTAL
+                            </p>
+                            <p className={`text-2xl font-black ${selectedTier?.key === 'hero'
+                                ? 'text-indigo-300'
+                                : 'text-emerald-400'
+                                }`}>
+                                {t.donation.tiers[selectedTier?.key]?.amount}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Divider */}
+                    <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+                    {/* Benefits */}
+                    <div className="space-y-6">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/50">
+                            SERVICIOS INCLUIDOS
+                        </p>
+
+                        <div className="grid gap-4">
+                            {selectedTier?.benefits.slice(0, 3).map((b, i) => (
+                                <div
+                                    key={i}
+                                    className="flex items-center gap-4 transition-all duration-300 hover:translate-x-1"
+                                >
+                                    <div className="w-5 h-5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                                        <CheckCircle size={11} className="text-emerald-300" />
+                                    </div>
+
+                                    <span className="text-[13px] font-semibold text-white/80 tracking-tight leading-snug">
+                                        {b}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    {/* Button */}
+                    <div className="pt-4">
+                        <button
+                            onClick={() => navigate('/auth/login')}
+                            className={`w-full h-16 rounded-[2rem] text-[15px] font-black border-none transition-all duration-300 shadow-2xl flex items-center justify-center gap-3 active:scale-95 group
+                                ${selectedTier?.key === 'hero'
+                                    ? 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-500/30'
+                                    : 'bg-emerald-500 hover:bg-emerald-400 shadow-emerald-500/30'}
+                                text-white hover:scale-[1.05] hover:-translate-y-1 hover:brightness-110`}
+                        >
+                            Iniciar Sesión para Vincular
+                            <ArrowRight
+                                size={22}
+                                className="transition-transform duration-300 group-hover:translate-x-2"
+                                strokeWidth={3}
+                            />
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 );
-
 const TierSelectionStep = ({ t, user, selectedTier, isProcessing, onConfirm }) => (
     <div className="space-y-10 py-4 animate-in fade-in slide-in-from-right-8 duration-1000">
         <div className="space-y-6">
@@ -324,21 +374,31 @@ const TierSelectionStep = ({ t, user, selectedTier, isProcessing, onConfirm }) =
 
                     <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
+                    {/* Benefits */}
                     <div className="space-y-6">
-                        <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-white/40">SERVICIOS INCLUIDOS:</p>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/50">
+                            SERVICIOS INCLUIDOS
+                        </p>
+
                         <div className="grid gap-4">
                             {selectedTier?.benefits.slice(0, 3).map((b, i) => (
-                                <div key={i} className="flex items-center gap-4 transition-transform hover:translate-x-1 duration-300">
-                                    <div className="w-5 h-5 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0">
-                                        <CheckCircle size={10} className="text-emerald-400" />
+                                <div
+                                    key={i}
+                                    className="flex items-center gap-4 transition-all duration-300 hover:translate-x-1"
+                                >
+                                    <div className="w-5 h-5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                                        <CheckCircle size={11} className="text-emerald-300" />
                                     </div>
-                                    <span className="text-[11px] font-medium text-emerald-50/70 tracking-tight leading-none">{b}</span>
+
+                                    <span className="text-[13px] font-semibold text-white/80 tracking-tight leading-snug">
+                                        {b}
+                                    </span>
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    <div className="pt-4 space-y-6">
+                    <div className="pt-4">
                         <button
                             onClick={onConfirm}
                             disabled={isProcessing}

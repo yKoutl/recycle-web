@@ -1,25 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, CheckCircle, Recycle, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { Bell, CheckCircle, Recycle, Mail, Lock, EyeOff } from 'lucide-react';
 import LazyLottie from '../../components/common/LazyLottie';
 import recycleAnimation from '../../assets/Recycle.json';
 import logoNosPlanet from '../../assets/reciclaje.webp'; // Assuming this exists or using a substitute
 
 const HeroMockup = ({ t }) => {
     const [screen, setScreen] = useState('loading'); // loading, login, dashboard
+    const [isTabVisible, setIsTabVisible] = useState(() => !document.hidden);
 
-    // Better effect logic for sequencing
     useEffect(() => {
-        if (screen === 'loading') {
-            // 4 seconds loading screen
-            const timer = setTimeout(() => setScreen('login'), 3000);
-            return () => clearTimeout(timer);
+        const handleVisibilityChange = () => setIsTabVisible(!document.hidden);
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, []);
+
+    // Secuencia de pantallas optimizada: evita trabajo cuando la pestana esta oculta
+    useEffect(() => {
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReducedMotion) {
+            setScreen('dashboard');
+            return;
         }
-        if (screen === 'login') {
-            // 5 seconds login screen
-            const timer = setTimeout(() => setScreen('dashboard'), 3000);
-            return () => clearTimeout(timer);
-        }
-    }, [screen]);
+
+        if (!isTabVisible) return;
+
+        const timer = setTimeout(() => {
+            setScreen((prev) => {
+                if (prev === 'loading') return 'login';
+                if (prev === 'login') return 'dashboard';
+                return prev;
+            });
+        }, 3000);
+
+        return () => clearTimeout(timer);
+    }, [screen, isTabVisible]);
 
     const LoadingScreen = () => (
         <div className="absolute inset-0 bg-[#018f64] flex flex-col items-center justify-center z-30 transition-opacity duration-1000 animate-in fade-in">

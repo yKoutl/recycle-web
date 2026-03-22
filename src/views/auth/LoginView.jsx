@@ -23,12 +23,19 @@ const LoginView = ({ t }) => {
     const [step, setStep] = useState('select-role');
     const [selectedRole, setSelectedRole] = useState(null);
     const [isChangingState, setIsChangingState] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [currentSlide, setCurrentSlide] = useState(0);
 
     const slides = [
         { id: 0, image: heroNature },
         { id: 1, image: heroEnvironment }
     ];
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -59,8 +66,7 @@ const LoginView = ({ t }) => {
 
             // Mapeo de UI Roles a DB Roles
             const roleMapping = {
-
-                'gestor': ['MANAGER', 'ADMIN'],
+                'gestor': ['MANAGER', 'ADMIN', 'COORDINATOR'],
                 'ecoheroe': ['CITIZEN', 'RECYCLER', 'BUSINESS', 'MANAGER', 'ADMIN']
             };
 

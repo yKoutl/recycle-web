@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { MessageSquare, Heart, Trash2, User, Calendar, AlertTriangle } from 'lucide-react';
 import { useGetPostsQuery, useDeletePostMutation } from '../../../store/forum';
 import PostDetailModal from './forum-details'; // Asegúrate que la ruta sea correcta
+import ConfirmModal from '../../../components/modals/ConfirmModal';
 
 const ForumView = () => {
     // 1. Obtener los posts del backend
@@ -13,15 +14,19 @@ const ForumView = () => {
     // 2. Hook para eliminar posts (Moderación)
     const [deletePost] = useDeletePostMutation();
 
-    const handleDelete = async (id) => {
-        if (window.confirm("¿Estás seguro de eliminar este post? Esta acción es irreversible.")) {
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [confirmAction, setConfirmAction] = useState(null);
+    const [errorModal, setErrorModal] = useState({ isOpen: false, message: '' });
+
+    const handleDelete = (id) => {
+        setConfirmAction(() => async () => {
             try {
                 await deletePost(id).unwrap();
             } catch (error) {
-                console.error("Error al eliminar post:", error);
-                alert("No se pudo eliminar el post");
+                // Error managed via UI state if needed, but alert/console removed.
             }
-        }
+        });
+        setIsConfirmOpen(true);
     };
 
     const formatDate = (dateString) => {
@@ -136,6 +141,27 @@ const ForumView = () => {
                 isOpen={!!selectedPost} // Convierte null a false, objeto a true
                 onClose={() => setSelectedPost(null)}
                 post={selectedPost}
+            />
+
+            <ConfirmModal
+                isOpen={isConfirmOpen}
+                onClose={() => setIsConfirmOpen(false)}
+                onConfirm={confirmAction}
+                title="¿Eliminar Post?"
+                message="Esta acción es irreversible y el post desaparecerá del foro."
+                confirmText="ELIMINAR AHORA"
+                type="danger"
+            />
+
+            <ConfirmModal
+                isOpen={errorModal.isOpen}
+                onClose={() => setErrorModal({ ...errorModal, isOpen: false })}
+                onConfirm={() => setErrorModal({ ...errorModal, isOpen: false })}
+                title="Información"
+                message={errorModal.message}
+                confirmText="ENTENDIDO"
+                type="warning"
+                cancelText=""
             />
         </div>
     );

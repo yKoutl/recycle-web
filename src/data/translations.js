@@ -224,6 +224,61 @@ export const TRANSLATIONS = {
         },
         common: {
             maybeLater: 'Quizás más tarde'
+        },
+        onboarding: {
+            title: 'Registro',
+            steps: {
+                id: 'Identificación',
+                profile: 'Perfil',
+                security: 'Seguridad'
+            },
+            roles: {
+                manager: 'Gestor Oficial',
+                coordinator: 'Coordinador Operativo'
+            },
+            fields: {
+                fullName: 'Nombre completo',
+                phone: 'Teléfono móvil',
+                document: 'Documento (DNI/ID)',
+                institution: 'Institución / Organización',
+                email: 'Correo de registro',
+                password: 'Crear contraseña',
+                confirmPassword: 'Confirmar contraseña'
+            },
+            placeholders: {
+                fullName: 'Nombre completo',
+                phone: '+51 987 654 321',
+                document: 'Número de documento',
+                institution: 'Nombre de la institución...',
+                password: '••••••••',
+                confirmPassword: '••••••••'
+            },
+            buttons: {
+                next: 'Siguiente',
+                back: 'Atrás',
+                finish: 'Finalizar registro'
+            },
+            success: {
+                title: '¡Bienvenido!',
+                subtitle: 'Tu cuenta ha sido creada con éxito. Redirigiendo al panel de control...'
+            }
+        },
+        resetPassword: {
+            title: 'Restablecer',
+            subtitle: 'Nueva clave de acceso oficial',
+            fields: {
+                code: 'Código de seguridad',
+                newPassword: 'Nueva contraseña',
+                confirmPassword: 'Confirmar contraseña'
+            },
+            buttons: {
+                update: 'Actualizar contraseña',
+                back: 'Volver al login'
+            },
+            success: {
+                title: '¡Éxito!',
+                subtitle: 'Tu contraseña ha sido actualizada. Redirigiendo...'
+            }
         }
     },
     en: {
@@ -449,6 +504,61 @@ export const TRANSLATIONS = {
         },
         common: {
             maybeLater: 'Maybe later'
+        },
+        onboarding: {
+            title: 'Registration',
+            steps: {
+                id: 'Identification',
+                profile: 'Profile',
+                security: 'Security'
+            },
+            roles: {
+                manager: 'Official Manager',
+                coordinator: 'Operational Coordinator'
+            },
+            fields: {
+                fullName: 'Full name',
+                phone: 'Mobile phone',
+                document: 'Document (ID)',
+                institution: 'Institution / Organization',
+                email: 'Registration email',
+                password: 'Create password',
+                confirmPassword: 'Confirm password'
+            },
+            placeholders: {
+                fullName: 'Full name',
+                phone: '+1 234 567 890',
+                document: 'Document number',
+                institution: 'Institution name...',
+                password: '••••••••',
+                confirmPassword: '••••••••'
+            },
+            buttons: {
+                next: 'Next',
+                back: 'Back',
+                finish: 'Finish registration'
+            },
+            success: {
+                title: 'Welcome!',
+                subtitle: 'Your account has been successfully created. Redirecting to dashboard...'
+            }
+        },
+        resetPassword: {
+            title: 'Reset',
+            subtitle: 'New official access key',
+            fields: {
+                code: 'Security code',
+                newPassword: 'New password',
+                confirmPassword: 'Confirm password'
+            },
+            buttons: {
+                update: 'Update password',
+                back: 'Back to login'
+            },
+            success: {
+                title: 'Success!',
+                subtitle: 'Your password has been updated. Redirecting...'
+            }
         }
     }
 };

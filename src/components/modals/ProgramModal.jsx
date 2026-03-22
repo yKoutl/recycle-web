@@ -1,16 +1,55 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { Building2, Star, Phone, Mail, Globe, Heart, ArrowLeft, Sparkles, Quote, Calendar, Copy, Check, Target, LogIn, Lock } from 'lucide-react';
+import { Building2, Star, Phone, Mail, Globe, Heart, ArrowLeft, Sparkles, Quote, Calendar, Copy, Check, Target, LogIn, Lock, Users2, Loader2 } from 'lucide-react';
+import { useJoinProgramMutation } from '../../store/programs/programsApi';
 
-const ProgramModal = ({ program, isOpen, onClose, isAuthenticated, t }) => {
+const mapOrganizationTypeToUiType = (organizationType) => {
+    switch (organizationType) {
+        case 'ESTADO':
+            return 'government';
+        case 'NOS_PLANET':
+            return 'company';
+        case 'ONG':
+            return 'ong';
+        default:
+            return 'company';
+    }
+};
+
+const ProgramModal = ({ program, isOpen, onClose, isAuthenticated, user, t }) => {
     const navigate = useNavigate();
-    const [hoveredContact, setHoveredContact] = React.useState('email');
-    const [copySuccess, setCopySuccess] = React.useState(false);
+    const [hoveredContact, setHoveredContact] = useState('email');
+    const [copySuccess, setCopySuccess] = useState(false);
+    const [joinProgram, { isLoading: isJoining }] = useJoinProgramMutation();
+    const [joinStatus, setJoinStatus] = useState(null); // 'success', 'error'
+
+    const userId = user?._id || user?.uid || user?.sub;
+    const isAlreadyJoined = isAuthenticated && program?.participantList?.includes(userId);
 
     const handleCopy = (text) => {
         navigator.clipboard.writeText(text);
         setCopySuccess(true);
         setTimeout(() => setCopySuccess(false), 2000);
+    };
+
+    const handleJoin = async () => {
+        if (!isAuthenticated) {
+            navigate('/auth/login');
+            return;
+        }
+
+        if (isAlreadyJoined) return;
+
+        try {
+            await joinProgram(program._id || program.id).unwrap();
+            setJoinStatus('success');
+            setTimeout(() => setJoinStatus(null), 3000);
+        } catch (err) {
+            setJoinStatus('error');
+            console.error("Error joining program:", err);
+            setTimeout(() => setJoinStatus(null), 3000);
+        }
     };
 
     useEffect(() => {
@@ -22,6 +61,27 @@ const ProgramModal = ({ program, isOpen, onClose, isAuthenticated, t }) => {
 
     if (!isOpen || !program) return null;
 
+    const programType = program.type || mapOrganizationTypeToUiType(program.organizationType);
+    const image = program.imageUrl || program.image;
+    const points = Number(program.points ?? program.ecopoints ?? 0);
+    const description = program.description || program.details?.about || 'Programa ambiental activo.';
+    const objectives = program.objectives || program.details?.objectives || [];
+    const activities = program.activities || program.details?.activities || [];
+    const contact = program.contact || program.details?.contact || {};
+    const website = contact.website || contact.web || '';
+    const indications = program.indications || 'Pronto el gestor añadirá indicaciones específicas para este programa.';
+
+    const contactEntries = [
+        { id: 'email', icon: Mail, value: contact.email || '', href: contact.email ? `mailto:${contact.email}` : undefined },
+        { id: 'phone', icon: Phone, value: contact.phone || '', href: contact.phone ? `tel:${contact.phone}` : undefined },
+        { id: 'web', icon: Globe, value: website, href: website ? (website.startsWith('http') ? website : `https://${website}`) : undefined }
+    ].filter((item) => item.value);
+
+    const displayedContactValue =
+        hoveredContact === 'email' ? (contact.email || '') :
+            hoveredContact === 'phone' ? (contact.phone || '') :
+                website;
+
     const getTypeStyles = (type) => {
         switch (type) {
             case 'government': return { label: 'ESTADO PERUANO', accent: '#3B82F6', text: 'text-blue-500', bg: 'bg-blue-500/10' };
@@ -31,15 +91,21 @@ const ProgramModal = ({ program, isOpen, onClose, isAuthenticated, t }) => {
         }
     };
 
-    const config = getTypeStyles(program.type);
+    const config = getTypeStyles(programType);
 
-    return (
-        <div className="fixed inset-0 z-[100] flex justify-end overflow-hidden outline-none">
+    return createPortal(
+        <div className="fixed inset-0 z-[9999] flex justify-end overflow-hidden outline-none">
+            {/* Global backdrop: covers entire app and applies blur */}
+            <div
+                className="fixed inset-0 z-0 bg-black/40 backdrop-blur-sm"
+                onClick={onClose}
+            />
+
             {/* 1. BACKDROP & VISUAL AREA (Left Side) */}
-            <div className="absolute inset-0 z-0 overflow-hidden flex items-center justify-start pointer-events-none">
+            <div className="absolute inset-0 z-10 overflow-hidden flex items-center justify-start pointer-events-none">
                 <div className="absolute inset-0 bg-gray-900 transition-opacity duration-700 animate-in fade-in">
                     <img
-                        src={program.image}
+                        src={image}
                         alt={program.title}
                         className="w-full h-full object-cover opacity-40 scale-105 transition-transform duration-[3s] animate-pulse-slow"
                     />
@@ -61,29 +127,23 @@ const ProgramModal = ({ program, isOpen, onClose, isAuthenticated, t }) => {
                         </h2>
 
                         <div className="flex items-center gap-4">
-                            <div className="flex -space-x-4">
-                                {[1, 2, 3, 4].map(i => (
-                                    <div key={i} className="w-12 h-12 rounded-full border-2 border-gray-900 bg-gray-800 flex items-center justify-center overflow-hidden">
-                                        <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="avatar" />
-                                    </div>
-                                ))}
-                                <div className="w-12 h-12 rounded-full border-2 border-gray-900 bg-emerald-500 flex items-center justify-center text-xs font-black text-white" style={{ backgroundColor: config.accent }}>
-                                    +{program.participants}
+                            <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md px-5 py-3 rounded-[2rem] border border-white/10">
+                                <Users2 size={24} className={config.text} />
+                                <div className="flex flex-col">
+                                    <span className="text-xl font-black text-white leading-none">+{program.participants}</span>
+                                    <span className="text-[8px] font-black text-white/40 uppercase tracking-[0.2em] mt-1">Participantes reales</span>
                                 </div>
                             </div>
-                            <p className="text-sm font-black text-white/60 uppercase tracking-widest">ECO-HÉROES PARTICIPANDO</p>
+                            <p className="text-[10px] font-black text-white/40 uppercase tracking-widest max-w-[120px] leading-tight">ECO-HÉROES SUMANDO IMPACTO</p>
                         </div>
                     </div>
                 </div>
 
-                <div
-                    className="absolute inset-0 bg-gray-900/20 backdrop-blur-sm pointer-events-auto cursor-pointer"
-                    onClick={onClose}
-                />
+                {/* previously had an inner backdrop here; replaced by the global fixed backdrop above */}
             </div>
 
             {/* 2. LATERAL SIDE PANEL (Right Side) */}
-            <div className="relative z-10 w-full max-w-2xl bg-[#FCFDFD] dark:bg-[#0f172a] h-screen shadow-[-40px_0_100px_rgba(0,0,0,0.3)] animate-slide-in-right flex flex-col">
+            <div className="relative z-[100] w-full max-w-2xl bg-[#FCFDFD] dark:bg-[#0f172a] h-screen shadow-[-40px_0_100px_rgba(0,0,0,0.3)] animate-slide-in-right flex flex-col">
                 <div className="absolute top-0 bottom-0 -left-[63px] w-[64px] pointer-events-none hidden lg:block overflow-hidden">
                     <svg width="64" height="100%" viewBox="0 0 64 1024" preserveAspectRatio="none" className="block translate-x-[1px]">
                         <path
@@ -110,7 +170,7 @@ const ProgramModal = ({ program, isOpen, onClose, isAuthenticated, t }) => {
                     </button>
                     <div className="bg-white dark:bg-white/5 backdrop-blur-xl border border-gray-100 dark:border-white/10 px-4 py-2 rounded-2xl flex items-center gap-3 shadow-sm lg:mr-8">
                         <Star size={18} className="fill-[#F59E0B] text-[#F59E0B]" />
-                        <span className="text-sm font-black text-gray-900 dark:text-white">+{program.ecopoints} PUNTOS</span>
+                        <span className="text-sm font-black text-gray-900 dark:text-white">+{points} PUNTOS</span>
                     </div>
                 </div>
 
@@ -133,7 +193,7 @@ const ProgramModal = ({ program, isOpen, onClose, isAuthenticated, t }) => {
                     <div className="relative">
                         <Quote size={40} className="absolute -top-4 -left-4 text-emerald-500/10" />
                         <p className="text-xl lg:text-2xl font-serif font-medium text-gray-600 dark:text-gray-300 leading-relaxed italic pl-6 border-l-4" style={{ borderColor: `${config.accent}40` }}>
-                            {program.details.about}
+                            {description}
                         </p>
                     </div>
 
@@ -144,7 +204,7 @@ const ProgramModal = ({ program, isOpen, onClose, isAuthenticated, t }) => {
                                 <div className="w-12 h-[2px]" style={{ backgroundColor: config.accent }} />
                             </div>
                             <ul className="space-y-6">
-                                {program.details.objectives.map((obj, i) => (
+                                {objectives.map((obj, i) => (
                                     <li key={i} className="flex gap-4 group">
                                         <div className="mt-2 w-1.5 h-1.5 rounded-full shrink-0 transition-transform group-hover:scale-150" style={{ backgroundColor: config.accent }} />
                                         <span className="text-base font-medium text-gray-500 dark:text-gray-400 leading-relaxed">
@@ -161,7 +221,7 @@ const ProgramModal = ({ program, isOpen, onClose, isAuthenticated, t }) => {
                                 <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-900 dark:text-white">ACTIVIDADES</h4>
                             </div>
                             <div className="space-y-4">
-                                {program.details.activities.map((act, i) => (
+                                {activities.map((act, i) => (
                                     <div key={i} className="p-4 rounded-[1.5rem] bg-gray-50/50 dark:bg-white/[0.02] border border-gray-100/50 dark:border-white/5 flex items-center gap-5 group hover:bg-white dark:hover:bg-white/[0.05] hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-none transition-all duration-500">
                                         <div className="w-12 h-12 rounded-2xl bg-white dark:bg-white/5 flex items-center justify-center shadow-sm border border-gray-100 dark:border-white/5 transition-transform group-hover:scale-110">
                                             <Calendar size={20} style={{ color: config.accent }} />
@@ -175,6 +235,31 @@ const ProgramModal = ({ program, isOpen, onClose, isAuthenticated, t }) => {
                         </div>
                     </div>
 
+                    {/* INDICACIONES PARA USUARIOS UNIDOS */}
+                    {isAlreadyJoined && (
+                        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
+                            <div className="flex items-center gap-4">
+                                <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-600 dark:text-emerald-400">INDICACIONES DEL PROGRAMA</h4>
+                                <div className="flex-1 h-[2px] bg-emerald-500/10" />
+                                <Sparkles size={16} className="text-emerald-500" />
+                            </div>
+                            <div className="p-8 rounded-[2.5rem] bg-emerald-50/50 dark:bg-emerald-500/5 border border-emerald-100 dark:border-emerald-500/20 relative overflow-hidden group">
+                                <div className="absolute -top-12 -right-12 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl" />
+                                <div className="relative z-10 flex gap-6">
+                                    <div className="w-12 h-12 rounded-2xl bg-white dark:bg-gray-900 border border-emerald-100 dark:border-emerald-500/30 flex items-center justify-center shrink-0 shadow-sm">
+                                        <Target size={22} className="text-emerald-500" />
+                                    </div>
+                                    <div className="space-y-3">
+                                        <p className="text-sm font-black text-gray-400 uppercase tracking-widest">Pasos a seguir:</p>
+                                        <p className="text-lg lg:text-xl font-medium text-gray-700 dark:text-gray-200 leading-relaxed font-serif italic">
+                                            "{indications}"
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="bg-[#018F64] p-10 rounded-[3rem] text-white shadow-2xl relative overflow-hidden group" style={{ backgroundColor: config.accent }}>
                         <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000" />
                         <div className="relative z-10 space-y-8">
@@ -184,15 +269,12 @@ const ProgramModal = ({ program, isOpen, onClose, isAuthenticated, t }) => {
                             </div>
                             <div className="space-y-6">
                                 <div className="flex gap-4">
-                                    {[
-                                        { id: 'email', icon: Mail, value: program.details.contact.email, href: `mailto:${program.details.contact.email}` },
-                                        { id: 'phone', icon: Phone, value: program.details.contact.phone, href: `tel:${program.details.contact.phone}` },
-                                        { id: 'web', icon: Globe, value: program.details.contact.web, href: `https://${program.details.contact.web}` }
-                                    ].map((item) => (
+                                    {contactEntries.map((item) => (
                                         <a
                                             key={item.id}
                                             href={item.href}
                                             target={item.id === 'web' ? "_blank" : undefined}
+                                            rel={item.id === 'web' ? 'noreferrer' : undefined}
                                             onMouseEnter={() => setHoveredContact(item.id)}
                                             className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 ${hoveredContact === item.id
                                                 ? 'bg-white text-[#018F64] scale-110 shadow-lg'
@@ -213,11 +295,11 @@ const ProgramModal = ({ program, isOpen, onClose, isAuthenticated, t }) => {
                                                     {hoveredContact === 'email' ? 'Correo Electrónico' : hoveredContact === 'phone' ? 'Teléfono Celular' : 'Sitio Web'}
                                                 </p>
                                                 <p className="text-sm font-bold text-white break-all">
-                                                    {program.details.contact[hoveredContact]}
+                                                    {displayedContactValue}
                                                 </p>
                                             </div>
                                             <button
-                                                onClick={() => handleCopy(program.details.contact[hoveredContact])}
+                                                onClick={() => handleCopy(displayedContactValue)}
                                                 className={`w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center transition-all duration-500 scale-90 group-hover/display:scale-100 ${copySuccess
                                                     ? 'bg-emerald-400 text-[#018F64]'
                                                     : 'bg-white/10 text-white hover:bg-white hover:text-[#018F64]'
@@ -233,23 +315,35 @@ const ProgramModal = ({ program, isOpen, onClose, isAuthenticated, t }) => {
 
                             <div className="pt-4">
                                 <button
-                                    onClick={() => {
-                                        if (isAuthenticated) {
-                                            console.log("Joined program:", program.title);
-                                        } else {
-                                            navigate('/auth/login');
-                                        }
-                                    }}
-                                    className="w-full py-5 bg-white font-black text-sm uppercase tracking-[0.2em] rounded-2xl shadow-xl hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-4"
+                                    onClick={handleJoin}
+                                    disabled={isJoining || joinStatus === 'success' || (isAuthenticated && isAlreadyJoined)}
+                                    className="w-full py-5 bg-white font-black text-sm uppercase tracking-[0.2em] rounded-2xl shadow-xl hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-4 disabled:opacity-70 disabled:translate-y-0"
                                     style={{ color: config.accent }}
                                 >
-                                    <span>UNIRME AHORA</span>
-                                    {isAuthenticated ? (
-                                        <Heart size={18} className="fill-current" />
+                                    {isJoining ? (
+                                        <Loader2 size={20} className="animate-spin" />
+                                    ) : (isAuthenticated && isAlreadyJoined) || joinStatus === 'success' ? (
+                                        <>
+                                            <span>¡YA ESTÁS UNIDO!</span>
+                                            <Check size={20} />
+                                        </>
+                                    ) : !isAuthenticated ? (
+                                        <>
+                                            <span>INICIAR SESIÓN</span>
+                                            <Lock size={18} />
+                                        </>
                                     ) : (
-                                        <Lock size={18} />
+                                        <>
+                                            <span>UNIRME AHORA</span>
+                                            <Heart size={18} className="fill-current" />
+                                        </>
                                     )}
                                 </button>
+                                {joinStatus === 'error' && (
+                                    <p className="text-[10px] font-bold text-red-500 uppercase tracking-widest text-center mt-3 animate-bounce">
+                                        Error al unirse. Inténtalo de nuevo.
+                                    </p>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -294,7 +388,8 @@ const ProgramModal = ({ program, isOpen, onClose, isAuthenticated, t }) => {
                 }
             `}} />
 
-        </div>
+        </div >,
+        document.body
     );
 };
 

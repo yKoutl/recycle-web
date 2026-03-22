@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { Plus, Edit2, Trash2, MapPin, Users, Search, Target, Globe, Activity, Layout, Filter, RotateCw, Calendar } from 'lucide-react';
-
-import { useGetProgramsQuery, useDeleteProgramMutation } from '../../../store/programs';
-import { onSetActiveProgram } from '../../../store/programs';
+import { useGetProgramsQuery, useDeleteProgramMutation, onSetActiveProgram } from '../../../store/programs';
 import ProgramFormModal from './program-modal';
 import ConfirmModal from '../../../components/shared/ConfirmModal';
 
 const ProgramsList = ({ themeColor }) => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState('Todos');
     const [searchQuery, setSearchQuery] = useState('');
@@ -167,21 +167,55 @@ const ProgramsList = ({ themeColor }) => {
                                         <Activity size={40} />
                                     </div>
                                 )}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                                    <div className="flex gap-2 w-full justify-end">
-                                        <button onClick={() => handleEdit(program)} className="p-2 bg-white/20 backdrop-blur-md text-white rounded-lg hover:bg-white/40 transition-all">
-                                            <Edit2 size={14} />
+
+                                {/* Status Badge explicitly visible */}
+                                <div className="absolute top-3 right-3 z-10">
+                                    {program.status === 'APPROVED' ? (
+                                        <span className="px-2.5 py-1 bg-emerald-500 text-white text-[8px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-emerald-500/30 flex items-center gap-1">
+                                            <div className="w-1 h-1 rounded-full bg-white animate-pulse" /> ACTIVO
+                                        </span>
+                                    ) : program.status === 'REJECTED' ? (
+                                        <span className="px-2.5 py-1 bg-red-500 text-white text-[8px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-red-500/30 flex items-center gap-1">
+                                            <div className="w-1 h-1 rounded-full bg-white" /> RECHAZADO
+                                        </span>
+                                    ) : (
+                                        <span className="px-2.5 py-1 bg-amber-500 text-white text-[8px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-amber-500/30 flex items-center gap-1">
+                                            <div className="w-1 h-1 rounded-full bg-white animate-bounce" /> PENDIENTE
+                                        </span>
+                                    )}
+                                </div>
+
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                                    <div className="flex gap-2 w-full justify-between items-center">
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); navigate(`/admin/programs/${program._id}`); }}
+                                            className="px-3 py-1.5 bg-white text-gray-900 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-gray-100 transition-all shadow-xl"
+                                        >
+                                            Gestionar
                                         </button>
-                                        <button onClick={() => handleDelete(program._id)} className="p-2 bg-red-500/20 backdrop-blur-md text-red-200 rounded-lg hover:bg-red-500/40 transition-all">
-                                            <Trash2 size={14} />
-                                        </button>
+                                        <div className="flex gap-2">
+                                            <button onClick={(e) => { e.stopPropagation(); handleEdit(program); }} className="p-2 bg-white/20 backdrop-blur-md text-white rounded-lg hover:bg-white/40 transition-all">
+                                                <Edit2 size={14} />
+                                            </button>
+                                            <button onClick={(e) => { e.stopPropagation(); handleDelete(program._id); }} className="p-2 bg-red-500/20 backdrop-blur-md text-red-200 rounded-lg hover:bg-red-500/40 transition-all">
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="p-5 flex-1 flex flex-col">
+                            <div
+                                onClick={() => navigate(`/admin/programs/${program._id}`)}
+                                className="p-5 flex-1 flex flex-col cursor-pointer"
+                            >
+                                <div className="flex items-center gap-2 mb-2">
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">
+                                        {program.category || 'PROYECTO'}
+                                    </span>
+                                </div>
                                 <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2 line-clamp-1">{program.title}</h3>
-                                <p className="text-gray-400 dark:text-gray-500 text-xs line-clamp-2 mb-4 font-medium italic">
+                                <p className="text-gray-400 dark:text-gray-500 text-xs line-clamp-2 mb-4 font-medium leading-relaxed">
                                     {program.description}
                                 </p>
                                 <div className="mt-auto flex flex-col gap-2 border-t border-gray-50 dark:border-white/5 pt-4">
@@ -195,12 +229,6 @@ const ProgramsList = ({ themeColor }) => {
                                             {program.participants || 0}
                                         </span>
                                     </div>
-                                    {program.date && (
-                                        <span className="flex items-center gap-1.5 text-orange-500 dark:text-orange-400 text-[9px] font-black uppercase tracking-widest">
-                                            <Calendar size={11} />
-                                            {new Date(program.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}
-                                        </span>
-                                    )}
                                 </div>
                             </div>
                         </div>

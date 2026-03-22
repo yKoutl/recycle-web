@@ -17,10 +17,29 @@ const PartnersSection = ({ t }) => {
 
     // Reactive check for mobile
     useEffect(() => {
-        const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+        let frameId = null;
+
+        const checkMobile = () => {
+            const next = window.innerWidth < 1024;
+            setIsMobile((prev) => (prev === next ? prev : next));
+        };
+
+        const handleResize = () => {
+            if (frameId) return;
+            frameId = window.requestAnimationFrame(() => {
+                frameId = null;
+                checkMobile();
+            });
+        };
+
         checkMobile();
-        window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
+        window.addEventListener('resize', handleResize, { passive: true });
+        return () => {
+            if (frameId) {
+                window.cancelAnimationFrame(frameId);
+            }
+            window.removeEventListener('resize', handleResize);
+        };
     }, []);
 
     // Combinar Mock (Nos Planet) con data Real (DB)

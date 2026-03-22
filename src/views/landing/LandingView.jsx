@@ -21,24 +21,38 @@ const LandingView = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t, is
         if (hash) {
             setForceAllVisible(true);
             const id = hash.replace('#', '');
+            let shouldCancelAutoScroll = false;
+            const timers = [];
 
             const performScroll = () => {
+                if (shouldCancelAutoScroll) return;
                 const element = document.getElementById(id);
                 if (element) {
                     element.scrollIntoView({ behavior: 'smooth' });
                 }
             };
 
+            const cancelAutoScroll = () => {
+                shouldCancelAutoScroll = true;
+            };
+
             // Intentos sucesivos para asegurar que el scroll llegue al punto exacto
             performScroll();
-            const timer1 = setTimeout(performScroll, 100);
-            const timer2 = setTimeout(performScroll, 500);
-            const timer3 = setTimeout(performScroll, 1500);
+            timers.push(setTimeout(performScroll, 100));
+            timers.push(setTimeout(performScroll, 500));
+            timers.push(setTimeout(performScroll, 1500));
+
+            window.addEventListener('wheel', cancelAutoScroll, { passive: true });
+            window.addEventListener('touchstart', cancelAutoScroll, { passive: true });
+            window.addEventListener('keydown', cancelAutoScroll);
+            window.addEventListener('mousedown', cancelAutoScroll);
 
             return () => {
-                clearTimeout(timer1);
-                clearTimeout(timer2);
-                clearTimeout(timer3);
+                timers.forEach(clearTimeout);
+                window.removeEventListener('wheel', cancelAutoScroll);
+                window.removeEventListener('touchstart', cancelAutoScroll);
+                window.removeEventListener('keydown', cancelAutoScroll);
+                window.removeEventListener('mousedown', cancelAutoScroll);
             };
         } else {
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -68,7 +82,7 @@ const LandingView = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t, is
             </div>
 
             <div id="programs">
-                <ProgramsSection t={t} isAuthenticated={isAuthenticated} />
+                <ProgramsSection t={t} isAuthenticated={isAuthenticated} user={user} />
             </div>
             <LazySection id="community" forceVisible={forceAllVisible}>
                 <CommunitySection t={t} isAuthenticated={isAuthenticated} />
@@ -79,6 +93,7 @@ const LandingView = ({ onLoginClick, lang, setLang, darkMode, setDarkMode, t, is
             <LazySection id="impact" forceVisible={forceAllVisible}>
                 <ImpactSection t={t} />
             </LazySection>
+
             <LazySection id="donate" forceVisible={forceAllVisible}>
                 <DonationSection t={t} />
             </LazySection>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Handshake, CheckCircle, Mail, User, ArrowLeft, Send, Sparkles, Leaf, Briefcase, Globe, MessageSquare, Phone } from 'lucide-react';
 import { useCreatePartnerRequestMutation } from '../../store/partners/partnerRequestsApi';
 import { Loader2 } from 'lucide-react';
@@ -39,15 +40,14 @@ const JoinPartnerModal = ({ isOpen, onClose }) => {
             }).unwrap();
             setSuccess(true);
         } catch (err) {
-            console.error('Error al enviar solicitud:', err);
-            // Aquí podrías poner un estado de error visual
+            // Error managed via UI state if needed, but alert/console removed.
         }
     };
 
     if (!isOpen) return null;
 
-    return (
-        <div className="fixed inset-0 z-[100] flex justify-end overflow-hidden outline-none">
+    return createPortal(
+        <div className="fixed inset-0 z-[999] flex justify-end overflow-hidden outline-none">
             {/* Backdrop with Eco Image and Blur (Consistent with AddCommentModal) */}
             <div className="absolute inset-0 z-0 overflow-hidden flex items-center justify-start pointer-events-none">
                 <img
@@ -232,7 +232,8 @@ const JoinPartnerModal = ({ isOpen, onClose }) => {
                     <p className="text-[10px] font-black text-gray-200 dark:text-gray-800 uppercase tracking-[1em] lg:mr-8">RECYCLEAPP PARTNERS</p>
                 </div>
             </div>
-        </div >
+        </div>,
+        document.body
     );
 };
 

@@ -1,16 +1,24 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Apple, Play, Heart, Sparkles, Leaf, TrendingUp } from 'lucide-react';
-import qrImage from '../../assets/QR_NOS_PLANET.webp';
-import logoNosPlanet from '../../assets/logo_nos_planet.webp';
+import qrImage from '../../assets/brand/QR_NOS_PLANET.webp';
+import logoNosPlanet from '../../assets/brand/logo_nos_planet.webp';
 
 const AboutSection = ({ t }) => {
     const [isPhoneHovered, setIsPhoneHovered] = useState(false);
     const [isFlipped, setIsFlipped] = useState(false);
-    const [rotation, setRotation] = useState({ x: 0, y: 0 });
     const containerRef = useRef(null);
+    const phoneRef = useRef(null);
     const scrollContainerRef = useRef(null);
     const [isVisible, setIsVisible] = useState(false);
     const [showDownloadOverlay, setShowDownloadOverlay] = useState(false);
+    const frameRef = useRef(null);
+    const flipRef = useRef(false);
+    const rotationRef = useRef({ x: 0, y: 0 });
+
+    const applyPhoneTransform = (x, y) => {
+        if (!phoneRef.current) return;
+        phoneRef.current.style.transform = `rotateX(${x}deg) rotateY(${y + (flipRef.current ? 180 : 0)}deg)`;
+    };
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -51,13 +59,33 @@ const AboutSection = ({ t }) => {
         const xRot = ((y / rect.height) - 0.5) * -30;
         const yRot = ((x / rect.width) - 0.5) * 30;
 
-        setRotation({ x: xRot, y: yRot });
+        rotationRef.current = { x: xRot, y: yRot };
+        if (frameRef.current) return;
+
+        frameRef.current = window.requestAnimationFrame(() => {
+            frameRef.current = null;
+            applyPhoneTransform(rotationRef.current.x, rotationRef.current.y);
+        });
     };
 
     const handleMouseLeave = () => {
         setIsPhoneHovered(false);
-        setRotation({ x: 0, y: 0 });
+        rotationRef.current = { x: 0, y: 0 };
+        applyPhoneTransform(0, 0);
     };
+
+    useEffect(() => {
+        flipRef.current = isFlipped;
+        applyPhoneTransform(rotationRef.current.x, rotationRef.current.y);
+    }, [isFlipped]);
+
+    useEffect(() => {
+        return () => {
+            if (frameRef.current) {
+                window.cancelAnimationFrame(frameRef.current);
+            }
+        };
+    }, []);
 
     return (
         <section className="pt-24 pb-12 relative overflow-hidden bg-[#FEFDFB] dark:bg-[#020617] transition-colors duration-500">
@@ -88,9 +116,10 @@ const AboutSection = ({ t }) => {
                             <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-64 h-8 bg-gray-900/40 dark:bg-black/95 blur-2xl rounded-full transition-all duration-700 ${isPhoneHovered ? 'scale-150 opacity-90 blur-[50px] translate-y-8' : 'scale-100 opacity-40'}`} />
 
                             <div
+                                ref={phoneRef}
                                 onClick={() => setIsFlipped(!isFlipped)}
                                 className="relative shrink-0 w-[260px] h-[520px] lg:w-[310px] lg:h-[620px] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] preserve-3d cursor-pointer z-[60]"
-                                style={{ transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y + (isFlipped ? 180 : 0)}deg)` }}
+                                style={{ willChange: 'transform' }}
                             >
                                 {/* FRONT FACE */}
                                 <div className="absolute inset-0 bg-gray-950 rounded-[3.5rem] border-[7px] border-white/10 p-3.5 backface-hidden overflow-hidden shadow-[0_80px_180px_-40px_rgba(0,0,0,1)]">

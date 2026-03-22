@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Globe, ArrowRight, CheckCircle, Recycle, Bell, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowRight } from 'lucide-react';
 import Button from '../../components/shared/Button';
 import HeroMockup from './HeroMockup';
 import heroNature from '../../assets/hero_nature_v2.png';
@@ -7,6 +7,14 @@ import heroEnvironment from '../../assets/hero_environment.jpg';
 
 const Hero = ({ onScrollToPrograms, t }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
+
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // Slide Configuration
     const slides = [
@@ -47,6 +55,9 @@ const Hero = ({ onScrollToPrograms, t }) => {
                     <img
                         src={slide.image}
                         alt="Hero Background"
+                        loading={index === 0 ? 'eager' : 'lazy'}
+                        decoding="async"
+                        fetchPriority={index === 0 ? 'high' : 'auto'}
                         className="w-full h-full object-cover opacity-100 transition-opacity duration-500"
                     />
                     {/* Adaptive Overlay: Warm Dark (Day) vs Cool Dark (Night) */}

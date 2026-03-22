@@ -17,6 +17,18 @@ export const programsApi = createApi({
 
     endpoints: (builder) => ({
 
+        // 0. GET PUBLIC (Landing)
+        getPublicPrograms: builder.query({
+            query: () => '/programs/public',
+            transformResponse: (response) => {
+                if (Array.isArray(response)) return response;
+                if (Array.isArray(response?.data)) return response.data;
+                if (Array.isArray(response?.items)) return response.items;
+                return [];
+            },
+            keepUnusedDataFor: 120,
+        }),
+
         // 1. GET (Obtener lista)
         getPrograms: builder.query({
             query: () => '/programs',
@@ -58,14 +70,25 @@ export const programsApi = createApi({
             }),
             invalidatesTags: ['Programs'],
         }),
+
+        // 6. JOIN
+        joinProgram: builder.mutation({
+            query: (id) => ({
+                url: `/programs/join/${id}`,
+                method: 'POST'
+            }),
+            invalidatesTags: ['Programs'],
+        }),
     })
 });
 
 // Exportamos los hooks generados automáticamente
 export const {
+    useGetPublicProgramsQuery,
     useGetProgramsQuery,
     useGetProgramByIdQuery,
     useCreateProgramMutation,
     useUpdateProgramMutation,
-    useDeleteProgramMutation
+    useDeleteProgramMutation,
+    useJoinProgramMutation
 } = programsApi;

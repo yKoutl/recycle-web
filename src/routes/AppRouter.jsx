@@ -10,6 +10,13 @@ const LandingView = lazy(() => import('../views/landing/LandingView'));
 const EcoHistoriesView = lazy(() => import('../views/ecohistories/EcoHistoriesView'));
 const LoginView = lazy(() => import('../views/auth/LoginView'));
 const AdminView = lazy(() => import('../views/admin/dashboard/AdminView'));
+const AllProgramsView = lazy(() => import('../views/programs/AllProgramsView'));
+const ForgotPasswordView = lazy(() => import('../views/auth/ForgotPasswordView'));
+const ResetPasswordView = lazy(() => import('../views/auth/ResetPasswordView'));
+const OnboardingView = lazy(() => import('../views/auth/OnboardingView'));
+
+// Forced re-fetch to resolve Vite 504 dependency issues.
+
 
 
 // Componente de Carga
@@ -62,13 +69,29 @@ const AppRouter = ({ lang, setLang, darkMode, setDarkMode, themeColor, setThemeC
                     />
                 } />
 
+                <Route path="/programas" element={
+                    <AllProgramsView
+                        lang={lang}
+                        setLang={setLang}
+                        darkMode={darkMode}
+                        setDarkMode={setDarkMode}
+                        t={t}
+                        isAuthenticated={status === 'authenticated'}
+                        user={user}
+                        onLogout={onLogout}
+                    />
+                } />
+
                 {/* Rutas de Autenticación (Solo si no estás logueado) */}
                 <Route element={<PublicRoute />}>
                     <Route path="/auth/login" element={<LoginView t={t} />} />
+                    <Route path="/auth/forgot-password" element={<ForgotPasswordView t={t} />} />
+                    <Route path="/auth/reset-password" element={<ResetPasswordView t={t} />} />
+                    <Route path="/auth/onboarding/:token" element={<OnboardingView t={t} />} />
                 </Route>
 
-                {/* Rutas Privadas (Admin y Gestor) */}
-                <Route element={<PrivateRoute allowedRoles={['ADMIN', 'MANAGER']} />}>
+                {/* Rutas Privadas (Admin, Gestor y Coordinador) */}
+                <Route element={<PrivateRoute allowedRoles={['ADMIN', 'MANAGER', 'COORDINATOR']} />}>
                     <Route path="/admin/*" element={
                         <AdminView
                             t={t}

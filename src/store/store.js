@@ -11,6 +11,7 @@ import { contactApi } from "./contact/contactApi";
 import { inductionApi, inductionSlice } from "./induction";
 
 import { forumSlice, forumApi } from "./forum";
+import { coordinatorsApi } from "./coordinators/coordinatorsApi";
 
 export const store = configureStore({
         // 1. El objeto reducer contiene todos tus slices y APIs
@@ -35,6 +36,7 @@ export const store = configureStore({
                 [donationsApi.reducerPath]: donationsApi.reducer,
                 [contactApi.reducerPath]: contactApi.reducer,
                 [forumApi.reducerPath]: forumApi.reducer,
+                [coordinatorsApi.reducerPath]: coordinatorsApi.reducer,
                 [inductionApi.reducerPath]: inductionApi.reducer,
         },
         // 2. El middleware va FUERA del objeto reducer, pero DENTRO de configureStore
@@ -50,6 +52,7 @@ export const store = configureStore({
                         donationsApi.middleware,
                         contactApi.middleware,
                         forumApi.middleware,
-                        inductionApi.middleware
+                        inductionApi.middleware,
+                        coordinatorsApi.middleware
                 ),
 });

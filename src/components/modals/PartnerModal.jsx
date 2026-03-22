@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Gift, Users2, Trophy, ExternalLink, Quote, Target, Heart, ArrowRight, Sparkles, MessageSquare } from 'lucide-react';
 import Button from '../shared/Button';
 
@@ -16,8 +17,8 @@ const PartnerModal = ({ isOpen, onClose, partner }) => {
     const brandColor = partner.hex || '#018F64';
     const textColor = partner.textColor || 'text-emerald-600';
 
-    return (
-        <div className="fixed inset-0 z-[100] flex justify-start overflow-hidden outline-none">
+    return createPortal(
+        <div className="fixed inset-0 z-[999] flex justify-start overflow-hidden outline-none">
 
             {/* Dynamic Scrollbar Style */}
             <style dangerouslySetInnerHTML={{
@@ -216,7 +217,8 @@ const PartnerModal = ({ isOpen, onClose, partner }) => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

@@ -30,7 +30,7 @@ export const PublicRoute = () => {
     const { status, user } = useSelector(state => state.auth);
 
     if (status === 'authenticated') {
-        const dashboardRoles = ['ADMIN', 'MANAGER'];
+        const dashboardRoles = ['ADMIN', 'MANAGER', 'COORDINATOR'];
         if (dashboardRoles.includes(user?.role?.toUpperCase())) {
             return <Navigate to="/admin/dashboard" />;
         }

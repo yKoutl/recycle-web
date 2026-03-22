@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { X, Building2, User, Mail, Phone, Globe, MessageSquare, Clock, Calendar, CheckCircle, XCircle } from 'lucide-react';
 import Button from '../../../components/shared/Button';
 
@@ -21,8 +22,8 @@ const RequestDetailModal = ({ isOpen, onClose, request, onAction }) => {
 
     const statusParams = getStatusParams(request.status);
 
-    return (
-        <div className="fixed inset-0 z-[100] flex justify-end">
+    return createPortal(
+        <div className="fixed inset-0 z-[999999] flex justify-end">
             {/* Backdrop */}
             <div
                 className="absolute inset-0 bg-gray-900/20 backdrop-blur-sm transition-opacity"
@@ -184,7 +185,7 @@ const RequestDetailModal = ({ isOpen, onClose, request, onAction }) => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div>, document.body
     );
 };
 

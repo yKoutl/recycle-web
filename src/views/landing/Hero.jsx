@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import Button from '../../components/shared/Button';
 import HeroMockup from './HeroMockup';
+import heroNature from '../../assets/hero_nature_v2.png';
+import heroEnvironment from '../../assets/hero_environment.jpg';
 
 const Hero = ({ onScrollToPrograms, t }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -28,7 +30,7 @@ const Hero = ({ onScrollToPrograms, t }) => {
             image: `/src/assets/${isMobile ? 'mobile' : 'desktop'}/hero_environment.webp`,
             titlePart1: 'Transforma tus',
             titlePart2: 'residuos en valor',
-            subtitle: 'La economía circular comienza contigo. Descubre cómo cada acción cuenta para transformar nuestro planeta.'
+            subtitle: 'La economía circular comienza contigo...'
         }
     ];
 

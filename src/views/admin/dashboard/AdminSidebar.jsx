@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
     LayoutGrid, Leaf, MapPin, Mail,
     LogOut, Bell, UserPlus, Shield,
-    Settings, Gift, FileText, ChevronDown, Users2, Users, Activity, CreditCard
+    Settings, Gift, FileText, ChevronDown, Users2, Users, Activity, CreditCard, PlayCircle,
 } from 'lucide-react';
 
 import { useGetProgramsQuery } from '../../../store/programs';
@@ -264,11 +264,7 @@ const AdminSidebar = ({ t, requestsCount, onLogout, user, isOpen, themeColor }) 
                             </div>
                         </div>
 
-                        <NavItem
-                            id="support"
-                            label="Soporte"
-                            icon={Mail}
-                        />
+                        <NavItem id="support" label="Soporte" icon={Mail} />
                     </>
                 )}
 
@@ -276,6 +272,7 @@ const AdminSidebar = ({ t, requestsCount, onLogout, user, isOpen, themeColor }) 
                 {isAdmin && (
                     <>
                         <NavItem id="users" label="Usuarios" icon={Users} />
+
                         <div>
                             <button
                                 onClick={() => setGestoresOpen(!gestoresOpen)}
@@ -434,7 +431,7 @@ const AdminSidebar = ({ t, requestsCount, onLogout, user, isOpen, themeColor }) 
                     {t?.nav?.logout || 'Cerrar sesión'}
                 </button>
             </div>
-        </aside>
+        </aside >
     );
 };
 

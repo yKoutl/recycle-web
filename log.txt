@@ -1,0 +1,15 @@
+e75469c Actualización del asistente PlanetBot y ventanas modales
+9f15028 Vistas de tablas administrativas para historiales y donaciones
+26f5923 Gestión de roles de equipo, gestores y coordinadores
+50a8851 Módulo completo de gestión de programas y recompensas
+4cec24f Refactorización del panel de control de administración
+9b76258 Nuevo sistema de donaciones y tarjetas interactivas
+ef8a8ce Flujo completo de autenticación y onboarding de usuarios
+f3fb0a3 Actualización de las secciones de impacto y socios en landing
+c26d238 Mejoras en la página de inicio y sección Hero
+378d531 Rediseño completo de la navegación móvil y layout principal
+baccf98 Implementación de sistema de internacionalización (i18n)
+d05ef0b Reorganización de imágenes y recursos estáticos
+1cd4b08 Actualización de dependencias y configuración de Vite
+d770089 Merge origin/juan: Integrando Foro, Contacto y Exportación de Usuarios con Filtros
+2c75727 cambios que no se

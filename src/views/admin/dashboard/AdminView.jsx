@@ -11,6 +11,7 @@ import ProgramsList from '../programs/program-actions';
 import PartnersList from '../partners/partners-actions';
 import PartnerRequestsTable from '../partners/requests-list';
 import EcoHistoriesTable from '../EcoHistoriesTable';
+import InductionTable from '../induction/inductionActions';
 import AdminSettings from './AdminSettings';
 import GestoresManagementView from '../GestoresManagementView';
 import ProgramManagementView from '../programs/ProgramManagementView';
@@ -249,6 +250,7 @@ const AdminView = ({ t, darkMode, setDarkMode, lang, setLang, showBot, setShowBo
                                 <Route path="partners/list" element={<div className="animate-fade-in"><PartnersList t={t} themeColor={themeColor} /></div>} />
                                 <Route path="partners/requests" element={<div className="animate-fade-in"><PartnerRequestsTable t={t} themeColor={themeColor} /></div>} />
                                 <Route path="histories" element={<div className="animate-fade-in"><EcoHistoriesTable t={t} themeColor={themeColor} /></div>} />
+                                <Route path="induction" element={<div className="animate-fade-in"><InductionTable t={t} themeColor={themeColor} /></div>} />
                             </>
                         )}
 

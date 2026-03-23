@@ -20,6 +20,7 @@ import DonationsTable from '../DonationsTable';
 import ContactRequests from '../ContactRequests';
 import ManagerTeamView from '../ManagerTeamView';
 import CoordinatorContactView from '../CoordinatorContactView';
+import RedemptionValidator from '../redemption/redemptionActions';
 import { MOCK_REQUESTS, MOCK_STATS } from '../../../data/mockData';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -251,6 +252,7 @@ const AdminView = ({ t, darkMode, setDarkMode, lang, setLang, showBot, setShowBo
                                 <Route path="partners/requests" element={<div className="animate-fade-in"><PartnerRequestsTable t={t} themeColor={themeColor} /></div>} />
                                 <Route path="histories" element={<div className="animate-fade-in"><EcoHistoriesTable t={t} themeColor={themeColor} /></div>} />
                                 <Route path="induction" element={<div className="animate-fade-in"><InductionTable t={t} themeColor={themeColor} /></div>} />
+                                <Route path="redemptions" element={<div className="animate-fade-in"><RedemptionValidator t={t} themeColor={themeColor} /></div>} />
                             </>
                         )}
 

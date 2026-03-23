@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
     LayoutGrid, Leaf, MapPin, Mail,
     LogOut, Bell, UserPlus,
-    Settings, Gift, FileText, ChevronDown, Users2, Users, Activity, CreditCard, PlayCircle
+    Settings, Gift, FileText, ChevronDown, Users2, Users, Activity, CreditCard, PlayCircle, Shield, ShieldCheck
 } from 'lucide-react';
 
 import { useGetProgramsQuery } from '../../../store/programs';
@@ -386,6 +386,14 @@ const AdminSidebar = ({ t, requestsCount, onLogout, user, isOpen, themeColor }) 
 
                         {isAdmin && (
                             <NavItem id="induction" label="Inducciones" icon={PlayCircle} />
+                        )}
+
+                        {isAdmin && (
+                            <NavItem
+                                id="redemptions"
+                                label="Validar Canjes"
+                                icon={ShieldCheck} // O TicketCheck si lo tienes
+                            />
                         )}
 
                         <NavItem id="histories" label="Eco Historias" icon={Leaf} />

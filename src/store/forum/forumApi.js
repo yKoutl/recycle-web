@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const forumApi = createApi({
     reducerPath: 'forumApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:3000/api', // Ajusta el puerto si es necesario
+        baseUrl: 'https://nosplanet-back-prueba-production.up.railway.app/api', // Ajusta el puerto si es necesario
         // --- IMPORTANTE: Inyectar el Token para los Endpoints Protegidos ---
         prepareHeaders: (headers, { getState }) => {
             const token = getState().auth.token || localStorage.getItem('token');

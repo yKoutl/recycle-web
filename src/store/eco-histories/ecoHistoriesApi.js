@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const ecoHistoriesApi = createApi({
     reducerPath: 'ecoHistoriesApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:3000/api',
+        baseUrl: 'https://nosplanet-back-prueba-production.up.railway.app/api',
         prepareHeaders: (headers) => {
             const token = localStorage.getItem('token');
             if (token) {

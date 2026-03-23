@@ -3,7 +3,7 @@ import { baseQueryWithAuth } from '../baseQuery';
 
 export const contactApi = createApi({
     reducerPath: 'contactApi',
-    baseQuery: baseQueryWithAuth('http://localhost:3000/api'),
+    baseQuery: baseQueryWithAuth('https://nosplanet-back-prueba-production.up.railway.app/api'),
     tagTypes: ['Contact'],
     endpoints: (builder) => ({
         submitContact: builder.mutation({

@@ -52,20 +52,30 @@ const ProgramManagementView = ({ themeColor }) => {
     const realParticipants = useMemo(() => {
         if (!program?.participantList || !usersData.length) return [];
         return usersData.filter(u =>
-            Array.isArray(program.participantList) && program.participantList.includes(u._id)
-        ).map(u => ({
-            id: u._id,
-            _id: u._id,
-            name: u.fullName,
-            email: u.email,
-            username: u.username || u.email.split('@')[0],
-            status: 'INSCRIBED',
-            attended: Array.isArray(program.attendedList) && program.attendedList.includes(u._id),
-            points: program?.points || 0,
-            phone: u.phone || 'N/A',
-            registerDate: u.createdAt ? new Date(u.createdAt).toLocaleString('es-ES', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Reciente',
-            avatar: u.fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)
-        }));
+            Array.isArray(program.participantList) && program.participantList.some(p => (p.userId === u._id) || (p === u._id))
+        ).map(u => {
+            const entry = program.participantList.find(p => (p.userId === u._id) || (p === u._id));
+            const attendEntry = Array.isArray(program.attendedList) ? program.attendedList.find(p => (p.userId === u._id) || (p === u._id)) : null;
+
+            return {
+                id: u._id,
+                _id: u._id,
+                name: u.fullName,
+                email: u.email,
+                username: u.username || u.email.split('@')[0],
+                status: 'INSCRIBED',
+                attended: !!attendEntry,
+                attendedAt: attendEntry?.at ? new Date(attendEntry.at).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : null,
+                points: program?.points || 0,
+                phone: u.phone || 'N/A',
+                registerDate: entry?.at
+                    ? new Date(entry.at).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                    : (u.created_at || u.createdAt
+                        ? new Date(u.created_at || u.createdAt).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })
+                        : '---'),
+                avatar: u.fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)
+            };
+        });
     }, [program, usersData]);
 
     const realCoordinators = useMemo(() => {
@@ -133,10 +143,12 @@ const ProgramManagementView = ({ themeColor }) => {
         const currentAttended = Array.isArray(program?.attendedList) ? [...program.attendedList] : [];
         let newList;
 
-        if (currentAttended.includes(participantId)) {
-            newList = currentAttended.filter(id => id !== participantId);
+        const isMarked = currentAttended.some(p => (p.userId === participantId) || (p === participantId));
+
+        if (isMarked) {
+            newList = currentAttended.filter(p => (p.userId !== participantId) && (p !== participantId));
         } else {
-            newList = [...currentAttended, participantId];
+            newList = [...currentAttended, { userId: participantId, at: new Date() }];
         }
 
         try {
@@ -271,19 +283,19 @@ const ProgramManagementView = ({ themeColor }) => {
     ];
 
     return (
-        <div className="space-y-8 animate-fade-in pb-20">
+        <div className="space-y-4 md:space-y-8 animate-fade-in pb-20 w-full min-w-0">
             {/* Header / Hero Section */}
-            <div className="relative overflow-hidden rounded-[2.5rem] bg-white dark:bg-gray-900 border border-gray-100 dark:border-white/5 shadow-xl">
+            <div className="relative overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] bg-white dark:bg-gray-900 border border-gray-100 dark:border-white/5 shadow-xl">
                 <div className="absolute top-0 right-0 w-1/3 h-full opacity-10 pointer-events-none">
                     {program?.imageUrl && <img src={program.imageUrl} alt="" className="w-full h-full object-cover blur-2xl scale-150" />}
                 </div>
 
-                <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row gap-8 items-center">
-                    <button onClick={() => navigate(-1)} className="absolute top-6 left-6 p-2.5 rounded-xl bg-white/20 hover:bg-white/40 text-white backdrop-blur-md transition-all shadow-lg md:hidden">
+                <div className="relative z-10 p-4 sm:p-6 md:p-10 flex flex-col md:flex-row gap-6 md:gap-8 items-center lg:items-start">
+                    <button onClick={() => navigate(-1)} className="absolute top-4 left-4 p-2.5 rounded-xl bg-black/20 hover:bg-black/40 text-white backdrop-blur-md transition-all shadow-lg md:hidden z-20 border border-white/20">
                         <ArrowLeft size={18} strokeWidth={2.5} />
                     </button>
 
-                    <div className="w-full md:w-56 h-56 rounded-[2.5rem] overflow-hidden shadow-2xl shrink-0 group relative border-4 border-white dark:border-gray-800">
+                    <div className="w-full max-w-[280px] md:w-56 h-48 md:h-56 rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl shrink-0 group relative border-4 border-white dark:border-gray-800">
                         {program?.imageUrl ? (
                             <img src={program.imageUrl} alt={program.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                         ) : (
@@ -311,18 +323,18 @@ const ProgramManagementView = ({ themeColor }) => {
                             </span>
                         </div>
 
-                        <h2 className="text-3xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-tight mb-5">
+                        <h1 className="text-xl sm:text-2xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-tight mb-4 px-1 md:px-0 break-words">
                             {program?.title || 'Cargando título...'}
-                        </h2>
+                        </h1>
 
-                        <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-sm text-gray-500 dark:text-gray-400 font-medium pb-2">
-                            <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
-                                <MapPin size={16} style={{ color: accent }} />
-                                {program?.location || 'Ubicación no especificada'}
+                        <div className="w-full flex flex-col sm:flex-row flex-wrap items-center justify-center md:justify-start gap-2.5 text-sm text-gray-500 dark:text-gray-400 font-medium pb-2">
+                            <div className="w-full sm:w-auto flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 shadow-sm min-w-0">
+                                <MapPin size={14} style={{ color: accent }} className="shrink-0" />
+                                <span className="text-[10px] sm:text-xs truncate">{program?.location || 'Ubicación no especificada'}</span>
                             </div>
-                            <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
-                                <Clock size={16} style={{ color: accent }} />
-                                {program?.duration || 'Duración no definida'}
+                            <div className="w-full sm:w-auto flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 shadow-sm min-w-0">
+                                <Clock size={14} style={{ color: accent }} className="shrink-0" />
+                                <span className="text-[10px] sm:text-xs truncate">{program?.duration || 'Duración no definida'}</span>
                             </div>
                         </div>
                     </div>
@@ -332,7 +344,7 @@ const ProgramManagementView = ({ themeColor }) => {
                             <button
                                 onClick={() => { setIsStarting(true); setTimeout(() => setIsStarting(false), 1500); }}
                                 disabled={isStarting}
-                                className="flex items-center justify-center gap-3 px-10 py-5 text-white rounded-[2rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl relative overflow-hidden group disabled:opacity-80"
+                                className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 md:px-10 md:py-5 text-white rounded-[1.5rem] md:rounded-[2rem] text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl relative overflow-hidden group disabled:opacity-80"
                                 style={{ background: `linear-gradient(135deg, ${accent}, ${accent}dd)`, boxShadow: `0 12px 24px ${accent}40` }}
                             >
                                 {isStarting ? <><Clock size={16} className="animate-spin" /> INICIANDO...</> : <><Play size={18} fill="white" className="group-hover:translate-x-1 transition-transform" /> Iniciar Programa</>}
@@ -343,16 +355,16 @@ const ProgramManagementView = ({ themeColor }) => {
             </div>
 
             {/* Stats Center */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
                 {stats.map((stat, i) => (
-                    <div key={i} className="bg-white dark:bg-gray-900 p-5 rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
-                        <div className="relative z-10 flex items-center justify-between">
+                    <div key={i} className="bg-white dark:bg-gray-900 p-4 md:p-5 rounded-2xl md:rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+                        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-3">
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-[0.15em] text-gray-400 dark:text-gray-500 mb-1">{stat.label}</p>
-                                <p className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter tabular-nums">{stat.value}</p>
+                                <p className="text-[9px] font-black uppercase tracking-[0.15em] text-gray-400 dark:text-gray-500 mb-1">{stat.label}</p>
+                                <p className="text-xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tighter tabular-nums">{stat.value}</p>
                             </div>
-                            <div className={`p-4 rounded-2xl`} style={{ backgroundColor: stat.bg.includes('#') ? stat.bg : (stat.bg.startsWith('bg') ? '' : stat.bg), color: stat.color }}>
-                                <stat.icon size={22} strokeWidth={2.5} />
+                            <div className={`p-3 md:p-4 rounded-xl md:rounded-2xl shrink-0 w-fit`} style={{ backgroundColor: stat.bg.includes('#') ? stat.bg : (stat.bg.startsWith('bg') ? '' : stat.bg), color: stat.color }}>
+                                <stat.icon size={18} md:size={22} strokeWidth={2.5} />
                             </div>
                         </div>
                     </div>
@@ -374,35 +386,26 @@ const ProgramManagementView = ({ themeColor }) => {
                             <span className="text-[10px] font-bold text-gray-400 italic">Máx. 6 integrantes por proyecto</span>
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                            {[...Array(6)].map((_, i) => {
-                                const staff = realCoordinators[i];
-                                if (staff) {
-                                    return (
-                                        <div key={`lead-${i}`} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-white/5 p-4 py-6 rounded-[2.5rem] shadow-sm flex flex-col items-center text-center group relative hover:-translate-y-1 transition-all">
-                                            <div className="w-16 h-16 rounded-[1.8rem] flex items-center justify-center mb-4 text-xl font-black text-white shadow-2xl group-hover:rotate-6 transition-transform" style={{ background: `linear-gradient(135deg, ${accent}, ${accent}dd)` }}>{staff.avatar}</div>
-                                            <p className="text-[11px] font-black uppercase tracking-tight truncate w-full px-2 text-gray-900 dark:text-white">{staff.name}</p>
-                                            <p className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] mt-1 shrink-0">{staff.role}</p>
-                                            {!isCoordinator && (
-                                                <button onClick={() => openEditModal(i)} className="absolute top-3 right-3 p-2 bg-emerald-500/10 text-emerald-500 rounded-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-emerald-500 hover:text-white">
-                                                    <Settings size={14} />
-                                                </button>
-                                            )}
-                                        </div>
-                                    );
-                                }
-                                if (!isCoordinator) {
-                                    return (
-                                        <button key={`empty-${i}`} onClick={() => { setEditingIndex(null); setShowAddLeadModal(true); }} className="h-full min-h-[160px] rounded-[2.5rem] border-2 border-dashed border-gray-100 dark:border-white/5 flex flex-col items-center justify-center p-4 hover:border-emerald-500/50 hover:bg-emerald-500/[0.02] transition-all group active:scale-95">
-                                            <div className="p-4 bg-gray-50 dark:bg-white/5 text-gray-400 dark:text-gray-600 rounded-2xl group-hover:scale-110 group-hover:bg-emerald-500/10 transition-all shadow-sm"><Plus size={24} strokeWidth={3} /></div>
+                            {realCoordinators.map((staff, i) => (
+                                <div key={`lead-${i}`} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-white/5 p-4 py-6 rounded-[2rem] md:rounded-[2.5rem] shadow-sm flex flex-col items-center text-center group relative hover:-translate-y-1 transition-all">
+                                    <div className="w-14 h-14 md:w-16 md:h-16 rounded-[1.5rem] md:rounded-[1.8rem] flex items-center justify-center mb-4 text-lg md:text-xl font-black text-white shadow-2xl group-hover:rotate-6 transition-transform" style={{ background: `linear-gradient(135deg, ${accent}, ${accent}dd)` }}>{staff.avatar}</div>
+                                    <p className="text-[10px] md:text-[11px] font-black uppercase tracking-tight truncate w-full px-2 text-gray-900 dark:text-white">{staff.name}</p>
+                                    <p className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] mt-1 shrink-0">{staff.role}</p>
+                                    {!isCoordinator && (
+                                        <button onClick={() => openEditModal(i)} className="absolute top-3 right-3 p-2 bg-emerald-500/10 text-emerald-500 rounded-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-emerald-500 hover:text-white">
+                                            <Settings size={14} />
                                         </button>
-                                    );
-                                }
-                                return (
-                                    <div key={`empty-hidden-${i}`} className="h-full min-h-[160px] rounded-[2.5rem] border-2 border-dotted border-gray-100 dark:border-white/5 flex flex-col items-center justify-center p-4 opacity-30 select-none">
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-300">Vacante</p>
+                                    )}
+                                </div>
+                            ))}
+                            {!isCoordinator && realCoordinators.length < 6 && (
+                                <button onClick={() => { setEditingIndex(null); setShowAddLeadModal(true); }} className="h-full min-h-[140px] md:min-h-[160px] rounded-[2rem] md:rounded-[2.5rem] border-2 border-dashed border-gray-100 dark:border-white/5 flex flex-col items-center justify-center p-4 hover:border-emerald-500/50 hover:bg-emerald-500/[0.02] transition-all group active:scale-95 shadow-sm">
+                                    <div className="p-3 md:p-4 bg-gray-50 dark:bg-white/5 text-gray-400 dark:text-gray-600 rounded-2xl group-hover:scale-110 group-hover:bg-emerald-500/10 transition-all shadow-sm">
+                                        <Plus size={20} md:size={24} strokeWidth={3} />
                                     </div>
-                                );
-                            })}
+                                    <p className="mt-3 text-[9px] font-black uppercase tracking-widest text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">Agregar</p>
+                                </button>
+                            )}
                         </div>
                     </div>
 
@@ -421,48 +424,44 @@ const ProgramManagementView = ({ themeColor }) => {
                             </div>
                         </div>
 
-                        <div className="overflow-x-auto">
-                            <table className="w-full border-collapse">
-                                <thead>
-                                    <tr className="bg-slate-50/50 dark:bg-black/20 text-left">
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">Participante</th>
-                                        <th className="px-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500 text-center">Estado</th>
-                                        <th className="px-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500 text-center">Asistencia</th>
-                                        <th className="px-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500 text-right">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-50 dark:divide-white/[0.03]">
-                                    {filteredParticipants.map((p) => (
-                                        <tr key={p.id} className="group hover:bg-slate-50/30 dark:hover:bg-white/[0.01] transition-all duration-300">
-                                            <td className="px-8 py-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-xs font-black shadow-md shrink-0" style={{ background: `linear-gradient(135deg, ${accent}, ${accent}cc)` }}>{p.avatar}</div>
-                                                    <div>
-                                                        <p className="text-[13px] font-bold text-gray-900 dark:text-white uppercase transition-colors group-hover:text-emerald-500">{p.name}</p>
-                                                        <p className="text-[11px] text-gray-400 font-medium">{p.email}</p>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 text-center">
-                                                <span className={`px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-[0.15em] border ${p.status === 'INSCRIBED' ? 'bg-blue-50/50 dark:bg-blue-500/10 text-blue-500 border-blue-500/20' : 'bg-red-50/50 dark:bg-red-500/10 text-red-500 border-red-500/20'}`}>{p.status === 'INSCRIBED' ? 'Confirmado' : 'Cancelado'}</span>
-                                            </td>
-                                            <td className="px-6 py-4 text-center">
-                                                <button onClick={() => handleToggleAttendance(p.id)} className={`px-4 py-2 rounded-xl border transition-all text-[10px] font-black uppercase tracking-widest ${p.attended ? 'bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-500/20' : 'bg-gray-100 dark:bg-white/5 text-gray-400 font-bold border-transparent'}`}>
-                                                    {p.attended ? 'Presente' : 'Falta'}
-                                                </button>
-                                            </td>
-                                            <td className="px-6 py-4 text-right">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    <button onClick={() => setViewingUser(p)} className="p-2.5 rounded-xl bg-gray-50 dark:bg-white/5 text-gray-400 hover:text-emerald-500 hover:bg-emerald-50 transition-all" title="Ver detalles"><Eye size={16} /></button>
-                                                    {!isCoordinator && (
-                                                        <button onClick={() => handleRemoveParticipant(p.id)} className="p-2.5 rounded-xl bg-gray-50 dark:bg-white/5 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all" title="Quitar del programa"><UserMinus size={16} /></button>
-                                                    )}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            {filteredParticipants.map((p) => (
+                                <div key={p.id} className="bg-white dark:bg-gray-900 rounded-[2rem] border border-gray-100 dark:border-white/5 p-5 shadow-sm hover:shadow-md transition-all group relative animate-in fade-in zoom-in duration-300">
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-12 h-12 rounded-[1.2rem] flex items-center justify-center text-white text-sm font-black shadow-lg shrink-0" style={{ background: `linear-gradient(135deg, ${accent}, ${accent}cc)` }}>{p.avatar}</div>
+                                            <div className="min-w-0">
+                                                <h4 className="text-[13px] font-black text-gray-900 dark:text-white uppercase truncate pr-2">{p.name}</h4>
+                                                <p className="text-[10px] text-gray-400 font-medium truncate">{p.email}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-1">
+                                            <button onClick={() => setViewingUser(p)} className="p-2 rounded-xl bg-gray-50 dark:bg-white/5 text-gray-400 hover:text-emerald-500 transition-all"><Eye size={14} /></button>
+                                            {!isCoordinator && (
+                                                <button onClick={() => handleRemoveParticipant(p.id)} className="p-2 rounded-xl bg-gray-50 dark:bg-white/5 text-gray-400 hover:text-red-500 transition-all"><UserMinus size={14} /></button>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-3 mb-5">
+                                        <div className="bg-gray-50/50 dark:bg-white/[0.02] p-3 rounded-2xl border border-black/5 dark:border-white/5">
+                                            <p className="text-[8px] font-black uppercase tracking-widest text-gray-400 mb-1">Registro</p>
+                                            <p className="text-[10px] font-bold text-gray-700 dark:text-gray-300">{p.registerDate.split(',')[0]}</p>
+                                        </div>
+                                        <div className="bg-gray-50/50 dark:bg-white/[0.02] p-3 rounded-2xl border border-black/5 dark:border-white/5">
+                                            <p className="text-[8px] font-black uppercase tracking-widest text-gray-400 mb-1">Marcado</p>
+                                            <p className="text-[10px] font-bold text-gray-700 dark:text-gray-300">{p.attendedAt || '--'}</p>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        onClick={() => handleToggleAttendance(p.id)}
+                                        className={`w-full py-3.5 rounded-2xl border transition-all text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 ${p.attended ? 'bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-500/20' : 'bg-gray-100 dark:bg-white/5 text-gray-400 border-transparent hover:border-emerald-500/30'}`}
+                                    >
+                                        {p.attended ? <><CheckCircle2 size={14} /> Presente</> : 'Marcar Asistencia'}
+                                    </button>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
@@ -559,15 +558,21 @@ const ProgramManagementView = ({ themeColor }) => {
                                     <div className="relative">
                                         <div onClick={() => setIsCoordSelectOpen(!isCoordSelectOpen)} className="w-full flex items-center justify-between px-8 py-5 rounded-[1.5rem] bg-gray-50 dark:bg-white/5 border-2 border-transparent hover:border-emerald-500 cursor-pointer transition-all shadow-sm">
                                             <span className="text-sm font-bold text-gray-700 dark:text-gray-200">
-                                                {selectedCoordinatorId ? allCoordinators.find(c => c._id === selectedCoordinatorId)?.fullName : 'Escoge un coordinador...'}
+                                                {selectedCoordinatorId ? allCoordinators.find(c => c._id === selectedCoordinatorId)?.fullName : (allCoordinators.length === 0 ? 'No hay coordinadores disponibles' : 'Escoge un coordinador...')}
                                             </span>
                                             <ChevronDown size={16} className={`transition-transform duration-300 ${isCoordSelectOpen ? 'rotate-180' : ''}`} />
                                         </div>
                                         {isCoordSelectOpen && (
                                             <div className="absolute z-[100] left-0 right-0 mt-3 bg-white dark:bg-gray-800 border border-black/5 rounded-[1.5rem] shadow-2xl overflow-y-auto max-h-48 custom-scrollbar">
-                                                {allCoordinators.map(c => (
-                                                    <div key={c._id} onClick={() => { setSelectedCoordinatorId(c._id); setIsCoordSelectOpen(false); }} className="px-8 py-4 text-sm font-black uppercase text-gray-700 dark:text-gray-300 hover:bg-emerald-600 hover:text-white cursor-pointer transition-colors border-b border-black/5 last:border-0">{c.fullName}</div>
-                                                ))}
+                                                {allCoordinators.length > 0 ? (
+                                                    allCoordinators.map(c => (
+                                                        <div key={c._id} onClick={() => { setSelectedCoordinatorId(c._id); setIsCoordSelectOpen(false); }} className="px-8 py-4 text-sm font-black uppercase text-gray-700 dark:text-gray-300 hover:bg-emerald-600 hover:text-white cursor-pointer transition-colors border-b border-black/5 last:border-0">{c.fullName}</div>
+                                                    ))
+                                                ) : (
+                                                    <div className="px-8 py-6 text-center text-xs font-black uppercase text-red-500 bg-red-50/10 tracking-widest">
+                                                        No hay coordinadores disponibles
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
                                     </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -10,12 +10,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 // IMPORTANTE: Asegúrate de importar desde TU api de programs
 import { useCreateProgramMutation, useUpdateProgramMutation } from '../../../store/programs';
 import ConfirmModal from '../../../components/shared/ConfirmModal';
+import FirebaseImageUpload from '../../../components/shared/FirebaseImageUpload';
 
 const ProgramFormModal = ({ isOpen, onClose, themeColor }) => {
     const { activeProgram } = useSelector((state) => state.programs);
     const [createProgram, { isLoading: isCreating }] = useCreateProgramMutation();
     const [updateProgram, { isLoading: isUpdating }] = useUpdateProgramMutation();
     const accent = themeColor || '#018F64';
+    const imageRef = useRef(null);
 
     const initialState = {
         title: '',
@@ -134,6 +136,10 @@ const ProgramFormModal = ({ isOpen, onClose, themeColor }) => {
                     }
                 }
             });
+
+            if (imageRef.current && imageRef.current.hasFile()) {
+                payload.imageUrl = await imageRef.current.uploadFile();
+            }
 
             if (activeProgram) {
                 await updateProgram({ id: activeProgram._id, ...payload }).unwrap();
@@ -354,17 +360,19 @@ const ProgramFormModal = ({ isOpen, onClose, themeColor }) => {
                         </div>
 
                         <div className="flex flex-col">
-                            <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-3 ml-1">URL de Imagen del Proyecto</label>
-                            <div className="relative group">
-                                <UploadCloud className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                                <input
-                                    type="text" name="imageUrl" value={formData.imageUrl} onChange={handleChange}
-                                    placeholder="https://link-a-imagen.jpg"
-                                    className="w-full pl-12 pr-6 py-4 rounded-[1.5rem] bg-gray-50 dark:bg-white/5 border-2 border-transparent transition-all font-bold text-sm text-gray-900 dark:text-white outline-none dark:placeholder:text-gray-500"
-                                    onFocus={(e) => { e.target.style.borderColor = accent; }}
-                                    onBlur={(e) => { e.target.style.borderColor = 'transparent'; }}
-                                />
-                            </div>
+                            <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-4 ml-1">Imagen del Programa / Proyecto</label>
+                            <FirebaseImageUpload
+                                ref={imageRef}
+                                themeColor={accent}
+                                folder="programs"
+                                currentImageUrl={formData.imageUrl}
+                                onUploadSuccess={(url) => setFormData(prev => ({ ...prev, imageUrl: url }))}
+                            />
+                            {showErrors && !formData.imageUrl?.trim() && (
+                                <span className="text-[9px] font-black text-red-500 uppercase mt-3 ml-4 tracking-widest flex items-center gap-2">
+                                    <XCircle size={10} /> Debes subir una imagen para el programa
+                                </span>
+                            )}
                         </div>
 
                         <div className="flex flex-col">

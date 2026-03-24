@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -9,12 +9,14 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import ConfirmModal from '../../../components/shared/ConfirmModal';
 import { useCreatePartnerMutation, useUpdatePartnerMutation } from '../../../store/partners';
+import FirebaseImageUpload from '../../../components/shared/FirebaseImageUpload';
 
 const PartnerFormModal = ({ isOpen, onClose, themeColor }) => {
     const { activePartner } = useSelector((state) => state.partners);
     const [createPartner, { isLoading: isCreating }] = useCreatePartnerMutation();
     const [updatePartner, { isLoading: isUpdating }] = useUpdatePartnerMutation();
     const accent = themeColor || '#018F64';
+    const imageRef = useRef(null);
 
     const initialState = {
         name: '',
@@ -47,13 +49,20 @@ const PartnerFormModal = ({ isOpen, onClose, themeColor }) => {
         }));
     };
 
+
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
+
+        let finalImageUrl = formData.logo;
+        if (imageRef.current && imageRef.current.hasFile()) {
+            finalImageUrl = await imageRef.current.uploadFile();
+        }
+
         const payload = {
             ...formData,
-            logo: formData.logo.trim() === ''
+            logo: finalImageUrl.trim() === ''
                 ? 'https://via.placeholder.com/150'
-                : formData.logo,
+                : finalImageUrl,
             isLocked: false
         };
 
@@ -80,17 +89,16 @@ const PartnerFormModal = ({ isOpen, onClose, themeColor }) => {
     const isLoading = isCreating || isUpdating;
 
     return createPortal(
-        <div className="fixed inset-0 z-[99999] flex justify-end bg-black/70 backdrop-blur-md animate-in fade-in transition-all" onDoubleClick={onClose}>
+        <div className="fixed inset-0 z-[99999] flex justify-end bg-black/70 backdrop-blur-md animate-in fade-in transition-all" onClick={onClose}>
             <div
                 className="bg-white dark:bg-gray-900 w-full max-w-xl h-full shadow-2xl border-l border-gray-100 dark:border-white/10 flex flex-col animate-in slide-in-from-right duration-300 overflow-hidden"
                 onClick={e => e.stopPropagation()}
-                onDoubleClick={e => e.stopPropagation()}
             >
 
                 {/* HEADER */}
                 <div className="p-8 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-white/5">
                     <div className="flex items-center gap-4">
-                        <div className="p-3 text-white rounded-[1.5rem] shadow-xl" style={{ backgroundColor: accent, boxShadow: `0 8px 25px ${accent}40` }}>
+                        <div className="p-3 text-white rounded-[1.5rem] shadow-xl" style={{ backgroundColor: accent, boxShadow: `0 8px 25px ${accent} 40` }}>
                             {activePartner ? <ShieldCheck size={24} /> : <Building2 size={24} />}
                         </div>
                         <div>
@@ -156,7 +164,7 @@ const PartnerFormModal = ({ isOpen, onClose, themeColor }) => {
                         </div>
                     </div>
 
-                    {/* SECCIÓN 2: Marca y Colores */}
+                    {/* SECCIÓN 2: Identidad Visual */}
                     <div className="space-y-6 pt-4 border-t border-gray-100 dark:border-white/5">
                         <div className="flex items-center gap-2 border-l-4 pl-4" style={{ borderColor: accent }}>
                             <Palette size={18} style={{ color: accent }} />
@@ -174,26 +182,17 @@ const PartnerFormModal = ({ isOpen, onClose, themeColor }) => {
                                     <span className="text-xs font-black text-gray-500 uppercase tracking-widest">{formData.mainColor}</span>
                                 </div>
                             </div>
-                            <div className="flex flex-col">
-                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-3 ml-1">Logo URL</label>
-                                <div className="relative">
-                                    <UploadCloud className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                                    <input
-                                        type="text" name="logo" required value={formData.logo} onChange={handleChange}
-                                        placeholder="https://..."
-                                        className="w-full pl-12 pr-6 py-4 rounded-[1.5rem] bg-gray-50 dark:bg-white/5 border-2 border-transparent transition-all font-bold text-sm text-gray-900 dark:text-white outline-none dark:placeholder:text-gray-500"
-                                        onFocus={(e) => { e.target.style.borderColor = accent; }}
-                                        onBlur={(e) => { e.target.style.borderColor = 'transparent'; }}
-                                    />
-                                </div>
+                            <div className="flex flex-col md:col-span-2">
+                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-4 ml-1">Logo Institucional (Socio)</label>
+                                <FirebaseImageUpload
+                                    ref={imageRef}
+                                    themeColor={accent}
+                                    folder="partners"
+                                    currentImageUrl={formData.logo}
+                                    onUploadSuccess={(url) => setFormData(prev => ({ ...prev, logo: url }))}
+                                />
                             </div>
                         </div>
-
-                        {formData.logo && (
-                            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex justify-center p-6 bg-white dark:bg-white/5 rounded-[2rem] border-2 border-dashed border-gray-200 dark:border-white/10">
-                                <img src={formData.logo} alt="Preview" className="h-20 object-contain drop-shadow-2xl" onError={(e) => e.target.style.display = 'none'} />
-                            </motion.div>
-                        )}
                     </div>
 
                     {/* SECCIÓN 3: Propuesta de Valor */}
@@ -253,7 +252,7 @@ const PartnerFormModal = ({ isOpen, onClose, themeColor }) => {
                 <div className="p-8 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 flex gap-4">
                     <button onClick={onClose} className="flex-1 px-6 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest text-gray-500 hover:bg-gray-200 dark:hover:bg-white/10 transition-all">Cancelar</button>
                     <button
-                        type="submit" form="partnerForm" onClick={handleSubmit} disabled={isLoading}
+                        type="button" onClick={handleSubmit} disabled={isLoading}
                         className="flex-[2] px-10 py-4 text-white rounded-[1.5rem] text-[12px] font-black uppercase tracking-[0.2em] transition-all shadow-2xl flex items-center justify-center gap-3 active:scale-95"
                         style={{ backgroundColor: accent, boxShadow: `0 15px 35px ${accent}40` }}
                     >
@@ -287,12 +286,15 @@ const CustomSelect = ({ value, onChange, options, accent }) => {
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
-                        initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
                         className="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-gray-800 border border-gray-100 dark:border-white/10 rounded-[1.5rem] shadow-2xl overflow-hidden z-[1001]"
                     >
                         {options.map(opt => (
                             <div
-                                key={opt.id} onClick={() => { onChange(opt.id); setIsOpen(false); }}
+                                key={opt.id}
+                                onClick={() => { onChange(opt.id); setIsOpen(false); }}
                                 className={`px-6 py-3.5 text-xs font-bold cursor-pointer transition-all hover:bg-gray-50 dark:hover:bg-white/5 ${value === opt.id ? 'text-white' : 'text-gray-700 dark:text-gray-200'}`}
                                 style={value === opt.id ? { backgroundColor: accent } : {}}
                             >

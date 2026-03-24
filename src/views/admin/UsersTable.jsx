@@ -252,14 +252,14 @@ const UsersTable = ({ t, themeColor }) => {
                         <div className="flex-1 space-y-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Rol</label>
                             <div className="flex flex-wrap gap-2">
-                                {['ALL', 'ADMIN', 'MANAGER', 'USER'].map(role => (
+                                {['ALL', 'ADMIN', 'MANAGER', 'COORDINATOR', 'USER'].map(role => (
                                     <button
                                         key={role}
                                         onClick={() => setFilterRole(role)}
                                         className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${filterRole === role ? 'text-white border-transparent' : 'bg-transparent border-gray-200 dark:border-white/10 text-gray-500 hover:bg-gray-50 dark:hover:bg-white/5'}`}
                                         style={filterRole === role ? { backgroundColor: accent, boxShadow: `0 4px 12px ${accent}30` } : {}}
                                     >
-                                        {role === 'ALL' ? 'Todos' : role === 'ADMIN' ? 'Admin' : role === 'MANAGER' ? 'Gestores' : 'Usuarios'}
+                                        {role === 'ALL' ? 'Todos' : role === 'ADMIN' ? 'Admin' : role === 'MANAGER' ? 'Gestores' : role === 'COORDINATOR' ? 'Coordinador' : 'Usuarios'}
                                     </button>
                                 ))}
                             </div>
@@ -350,9 +350,10 @@ const UsersTable = ({ t, themeColor }) => {
                                     <td className="px-6 py-4 text-center">
                                         <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border ${u.role === 'ADMIN' ? 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 border-orange-200 dark:border-orange-500/20' :
                                             u.role === 'MANAGER' ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 border-blue-200 dark:border-blue-500/20' :
-                                                'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/10'
+                                                u.role === 'COORDINATOR' ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 border-emerald-200 dark:border-emerald-500/20' :
+                                                    'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/10'
                                             }`}>
-                                            {u.role === 'ADMIN' ? 'ADMINISTRADOR' : u.role === 'MANAGER' ? 'GESTOR' : 'ECO-HÉROE'}
+                                            {u.role === 'ADMIN' ? 'ADMINISTRADOR' : u.role === 'MANAGER' ? 'GESTOR' : u.role === 'COORDINATOR' ? 'COORDINADOR' : 'ECO-HÉROE'}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4">
@@ -398,11 +399,12 @@ const UsersTable = ({ t, themeColor }) => {
                                     </div>
                                 </div>
                                 <div className="flex flex-col items-end gap-1.5">
-                                    <span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest border ${u.role === 'ADMIN' ? 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 border-orange-200 dark:border-orange-500/20' :
-                                        u.role === 'OFFICIAL' ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 border-blue-200 dark:border-blue-500/20' :
-                                            'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/10'
+                                    <span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest border ${u.role === 'ADMIN' ? 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 border-orange-200 dark:orange-500/20' :
+                                        u.role === 'MANAGER' ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 border-blue-200 dark:border-blue-500/20' :
+                                            u.role === 'COORDINATOR' ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 border-emerald-200 dark:border-emerald-500/20' :
+                                                'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/10'
                                         }`}>
-                                        {u.role === 'ADMIN' ? 'ADMINISTRADOR' : u.role === 'OFFICIAL' ? 'GESTOR' : 'ECO-HÉROE'}
+                                        {u.role === 'ADMIN' ? 'ADMINISTRADOR' : u.role === 'MANAGER' ? 'GESTOR' : u.role === 'COORDINATOR' ? 'COORDINADOR' : 'ECO-HÉROE'}
                                     </span>
                                     {u.isActive ? (
                                         <span

@@ -1,4 +1,4 @@
-const BASE_URL = 'https://nosplanet-back-prueba-production.up.railway.app/api';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
 
 export const API_URLS = {
     BASE: BASE_URL,

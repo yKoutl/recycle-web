@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import Button from '../../components/shared/Button';
 import HeroMockup from './HeroMockup';
-
+import heroNature from '../../assets/desktop/hero_nature_v2.webp';
+import heroEnvironment from '../../assets/desktop/hero_environment.webp';
 
 const Hero = ({ onScrollToPrograms, t }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -19,55 +20,26 @@ const Hero = ({ onScrollToPrograms, t }) => {
     const slides = [
         {
             id: 0,
-            image: `/src/assets/${isMobile ? 'mobile' : 'desktop'}/hero_nature_v2.webp`,
+            image: heroNature, // <--- Variable, no string
             titlePart1: t.hero.titlePart1,
             titlePart2: t.hero.titlePart2,
             subtitle: t.hero.subtitle
         },
         {
             id: 1,
-            image: `/src/assets/${isMobile ? 'mobile' : 'desktop'}/hero_environment.webp`,
+            image: heroEnvironment, // <--- Variable, no string
             titlePart1: 'Transforma tus',
             titlePart2: 'residuos en valor',
             subtitle: 'La economía circular comienza contigo...'
         }
     ];
 
-    // Auto-play optimizado: pausa cuando la pestaña no esta visible.
-    useEffect(() => {
-        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (prefersReducedMotion) return;
-
-        let intervalId;
-
-        const startAutoplay = () => {
-            if (intervalId) return;
-            intervalId = setInterval(() => {
-                setCurrentSlide((prev) => (prev === 0 ? 1 : 0));
-            }, 10000);
-        };
-
-        const stopAutoplay = () => {
-            if (!intervalId) return;
-            clearInterval(intervalId);
-            intervalId = undefined;
-        };
-
-        const handleVisibilityChange = () => {
-            if (document.hidden) {
-                stopAutoplay();
-            } else {
-                startAutoplay();
-            }
-        };
-
-        startAutoplay();
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-
-        return () => {
-            stopAutoplay();
-            document.removeEventListener('visibilitychange', handleVisibilityChange);
-        };
+    // Auto-play
+    React.useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentSlide((prev) => (prev === 0 ? 1 : 0));
+        }, 10000);
+        return () => clearInterval(interval);
     }, []);
 
     const activeSlide = slides[currentSlide];

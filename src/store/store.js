@@ -9,6 +9,7 @@ import { ecoHistoriesApi } from "./eco-histories/ecoHistoriesApi";
 import { donationsApi } from "./donations/donationsApi";
 import { contactApi } from "./contact/contactApi";
 import { inductionApi, inductionSlice } from "./induction";
+import { redemptionApi, redemptionSlice } from "./redemption";
 
 import { forumSlice, forumApi } from "./forum";
 import { coordinatorsApi } from "./coordinators/coordinatorsApi";
@@ -24,6 +25,7 @@ export const store = configureStore({
                 users: usersSlice.reducer,
                 forum: forumSlice.reducer,
                 induction: inductionSlice.reducer,
+                redemption: redemptionSlice.reducer,
 
                 // APIs (RTK Query)
                 [rewardsApi.reducerPath]: rewardsApi.reducer,
@@ -38,6 +40,7 @@ export const store = configureStore({
                 [forumApi.reducerPath]: forumApi.reducer,
                 [coordinatorsApi.reducerPath]: coordinatorsApi.reducer,
                 [inductionApi.reducerPath]: inductionApi.reducer,
+                [redemptionApi.reducerPath]: redemptionApi.reducer,
         },
         // Middleware configuration: Includes all APIs (Yours + Juan's)
         middleware: (getDefaultMiddleware) =>
@@ -52,7 +55,13 @@ export const store = configureStore({
                         donationsApi.middleware,
                         contactApi.middleware,
                         forumApi.middleware,
+<<<<<<< HEAD
                         coordinatorsApi.middleware,
                         inductionApi.middleware
+=======
+                        inductionApi.middleware,
+                        coordinatorsApi.middleware,
+                        redemptionApi.middleware
+>>>>>>> origin/juan
                 ),
 });

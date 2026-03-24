@@ -94,6 +94,11 @@ const ProgramFormModal = ({ isOpen, onClose, themeColor }) => {
         if (e) e.preventDefault();
         setShowErrors(false);
 
+        if (tempObjective.trim() || tempActivity.trim()) {
+            alert("Tienes un objetivo o actividad sin agregar. Haz clic en el botón '+' antes de guardar.");
+            return;
+        }
+
         // 1. Validaciones Locales Detalladas
         const requiredFields = [];
         if (!formData.title?.trim()) requiredFields.push('Título del Programa');

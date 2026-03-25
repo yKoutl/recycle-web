@@ -55,13 +55,8 @@ export const store = configureStore({
                         donationsApi.middleware,
                         contactApi.middleware,
                         forumApi.middleware,
-<<<<<<< HEAD
                         coordinatorsApi.middleware,
-                        inductionApi.middleware
-=======
                         inductionApi.middleware,
-                        coordinatorsApi.middleware,
                         redemptionApi.middleware
->>>>>>> origin/juan
                 ),
 });

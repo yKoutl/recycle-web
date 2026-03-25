@@ -46,11 +46,23 @@ const FirebaseImageUpload = forwardRef(({ onUploadSuccess, currentImageUrl, fold
     const dbRole = user?.role?.toUpperCase();
     const isAuthorized = ['ADMIN', 'MANAGER', 'COORDINATOR'].includes(dbRole);
 
+    // 🕵️ LOG 1: Estado inicial de autenticación
     useEffect(() => {
+        console.log("DEBUG AUTH: Verificando estado inicial...");
+        console.log("DEBUG AUTH: Rol detectado:", dbRole);
+        console.log("DEBUG AUTH: ¿Está autorizado?", isAuthorized);
+        console.log("DEBUG AUTH: ¿Usuario Firebase actual?", auth.currentUser ? auth.currentUser.uid : "NINGUNO");
+
         if (isAuthorized && !auth.currentUser) {
-            signInAnonymously(auth).catch((err) => {
-                console.error("Firebase Auth Error:", err);
-            });
+            console.log("DEBUG AUTH: Intentando login anónimo automático...");
+            signInAnonymously(auth)
+                .then((userCredential) => {
+                    console.log("DEBUG AUTH ✅: Login anónimo exitoso:", userCredential.user.uid);
+                })
+                .catch((err) => {
+                    console.error("DEBUG AUTH ❌: Error en useEffect (L52):", err.code, err.message);
+                    console.dir(err); // Esto mostrará el objeto de error completo
+                });
         }
     }, [isAuthorized]);
 
@@ -105,10 +117,21 @@ const FirebaseImageUpload = forwardRef(({ onUploadSuccess, currentImageUrl, fold
             setProgress(0);
 
             try {
+                // 🕵️ LOG 2: Verificación antes de subir
+                console.log("DEBUG UPLOAD: Iniciando proceso de subida...");
+
                 if (!auth.currentUser) {
-                    await signInAnonymously(auth);
+                    console.log("DEBUG UPLOAD: No hay usuario activo, reintentando login...");
+                    try {
+                        const cred = await signInAnonymously(auth);
+                        console.log("DEBUG UPLOAD ✅: Reintento de login exitoso:", cred.user.uid);
+                    } catch (signInErr) {
+                        console.error("DEBUG UPLOAD ❌: Error fatal en login (L109):", signInErr.code);
+                        throw signInErr; // Lanza para capturarlo en el catch principal
+                    }
                 }
 
+                console.log("DEBUG UPLOAD: Generando referencia en Storage...");
                 const storageRef = ref(storage, `${folder}/${Date.now()}_${fileToUpload.name}`);
                 const uploadTask = uploadBytesResumable(storageRef, fileToUpload);
 
@@ -119,7 +142,7 @@ const FirebaseImageUpload = forwardRef(({ onUploadSuccess, currentImageUrl, fold
                         setProgress(Math.round(progressValue));
                     },
                     (err) => {
-                        console.error("Upload error:", err);
+                        console.error("DEBUG UPLOAD ❌: Error en tarea de subida:", err);
                         setError("Error al subir la imagen a Firebase.");
                         setUploading(false);
                         reject(err);
@@ -127,15 +150,16 @@ const FirebaseImageUpload = forwardRef(({ onUploadSuccess, currentImageUrl, fold
                     async () => {
                         try {
                             const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                            console.log("DEBUG UPLOAD ✅: URL generada:", downloadURL);
 
-                            // 🚀 ELIMINAR IMAGEN ANTIGUA SI EXISTE (SOLO SI ES DE FIREBASE)
+                            // Lógica de borrado antiguo...
                             if (currentImageUrl && currentImageUrl.includes('firebasestorage.googleapis.com')) {
                                 try {
                                     const oldRef = ref(storage, currentImageUrl);
                                     await deleteObject(oldRef);
-                                    console.log("Old image deleted successfully");
+                                    console.log("DEBUG UPLOAD: Imagen antigua borrada.");
                                 } catch (e) {
-                                    console.log("Error deleting old image (might not exist):", e);
+                                    console.log("DEBUG UPLOAD: No se pudo borrar la antigua (ignorable).");
                                 }
                             }
 
@@ -149,8 +173,8 @@ const FirebaseImageUpload = forwardRef(({ onUploadSuccess, currentImageUrl, fold
                     }
                 );
             } catch (err) {
-                console.error("Auth before upload failed:", err);
-                setError("Error de autenticación con Firebase.");
+                console.error("DEBUG UPLOAD ❌: Error en catch principal:", err);
+                setError(`Error de autenticación: ${err.code}`);
                 setUploading(false);
                 reject(err);
             }

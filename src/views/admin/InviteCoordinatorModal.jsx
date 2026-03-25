@@ -32,7 +32,7 @@ const InviteCoordinatorModal = ({ isOpen, onClose, themeColor, managerName, mana
             />
 
             <div
-                className="relative w-full max-w-[380px] bg-white/10 backdrop-blur-3xl rounded-[40px] shadow-2xl overflow-hidden border border-white/20 animate-scale-up"
+                className="relative w-full max-w-[380px] bg-slate-900/70 backdrop-blur-3xl rounded-[40px] shadow-2xl overflow-hidden border border-white/10 animate-scale-up"
             >
                 <div className="px-8 py-10 space-y-6">
                     {/* Visual Header Decoration - Logo with Leaves */}

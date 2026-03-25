@@ -3,13 +3,8 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
     LayoutGrid, Leaf, MapPin, Mail,
-<<<<<<< HEAD
-    LogOut, Bell, UserPlus, Shield,
-    Settings, Gift, FileText, ChevronDown, Users2, Users, Activity, CreditCard, PlayCircle,
-=======
     LogOut, Bell, UserPlus,
     Settings, Gift, FileText, ChevronDown, Users2, Users, Activity, CreditCard, PlayCircle, Shield, ShieldCheck
->>>>>>> origin/juan
 } from 'lucide-react';
 
 import { useGetProgramsQuery } from '../../../store/programs';

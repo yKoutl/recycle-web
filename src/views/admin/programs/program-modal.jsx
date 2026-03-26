@@ -24,7 +24,10 @@ const ProgramFormModal = ({ isOpen, onClose, themeColor }) => {
         organization: '',
         organizationType: 'ESTADO',
         participants: 0,
-        location: '',
+        location: {
+            name: '',
+            mapUrl: ''
+        },
         duration: '',
         points: 0,
         imageUrl: '',
@@ -54,7 +57,25 @@ const ProgramFormModal = ({ isOpen, onClose, themeColor }) => {
 
     useEffect(() => {
         if (isOpen) {
-            setFormData(activeProgram || initialState);
+            if (activeProgram) {
+                setFormData({
+                    ...initialState, // Valores por defecto primero
+                    ...activeProgram,
+                    // Forzamos que location siempre sea un objeto con strings vacíos, nunca null o undefined
+                    location: {
+                        name: activeProgram.location?.name || (typeof activeProgram.location === 'string' ? activeProgram.location : ''),
+                        mapUrl: activeProgram.location?.mapUrl || ''
+                    },
+                    // Asegura también el contacto por si acaso
+                    contact: {
+                        email: activeProgram.contact?.email || '',
+                        phone: activeProgram.contact?.phone || '',
+                        website: activeProgram.contact?.website || ''
+                    }
+                });
+            } else {
+                setFormData(initialState);
+            }
         }
     }, [isOpen, activeProgram]);
 
@@ -103,7 +124,7 @@ const ProgramFormModal = ({ isOpen, onClose, themeColor }) => {
         const requiredFields = [];
         if (!formData.title?.trim()) requiredFields.push('Título del Programa');
         if (!formData.organization?.trim()) requiredFields.push('Nombre de la Organización');
-        if (!formData.location?.trim()) requiredFields.push('Ubicación del Evento');
+        if (!formData.location?.name?.trim()) requiredFields.push('Ubicación del Evento');
         if (!formData.description?.trim()) requiredFields.push('Descripción del Proyecto');
         if (!formData.contact?.email?.trim()) requiredFields.push('Correo Electrónico de Contacto');
         if (!formData.contact?.phone?.trim()) requiredFields.push('Teléfono de Contacto');
@@ -297,66 +318,105 @@ const ProgramFormModal = ({ isOpen, onClose, themeColor }) => {
                             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400">Ejecución y Ubicación</h3>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-6"> {/* Aumenté un poco el gap para mejor respiro */}
+
+                            {/* FILA 1: UBICACIÓN Y LINK */}
                             <div className="flex flex-col">
-                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-3 ml-1">Ubicación</label>
+                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-3 ml-1">Nombre del Lugar / Dirección</label>
                                 <div className="relative group">
                                     <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                                     <input
-                                        type="text" name="location" value={formData.location} onChange={handleChange}
-                                        placeholder="Ubicación técnica..."
-                                        className={`w-full pl-12 pr-6 py-4 rounded-[1.5rem] bg-gray-50 dark:bg-white/5 border-2 transition-all font-bold text-sm text-gray-900 dark:text-white outline-none dark:placeholder:text-gray-500 ${showErrors && !formData.location?.trim() ? 'border-red-500/50 shadow-[0_0_15px_-5px_red]' : 'border-transparent'}`}
+                                        type="text"
+                                        name="location.name"
+                                        value={formData.location.name}
+                                        onChange={handleChange}
+                                        placeholder="Ej: Auditorio Central, Piso 2"
+                                        className={`w-full pl-12 pr-6 py-4 rounded-[1.5rem] bg-gray-50 dark:bg-white/5 border-2 transition-all font-bold text-sm text-gray-900 dark:text-white outline-none ${showErrors && !formData.location.name?.trim() ? 'border-red-500/50' : 'border-transparent'}`}
                                         onFocus={(e) => { e.target.style.borderColor = accent; }}
-                                        onBlur={(e) => { e.target.style.borderColor = showErrors && !formData.location?.trim() ? 'rgba(239, 68, 68, 0.5)' : 'transparent'; }}
+                                        onBlur={(e) => { e.target.style.borderColor = 'transparent'; }}
                                     />
                                 </div>
-                                {showErrors && !formData.location?.trim() && <span className="text-[9px] font-black text-red-500 uppercase mt-2 ml-4 tracking-widest">Falta la ubicación</span>}
+                                {showErrors && !formData.location.name?.trim() && <span className="text-[9px] font-black text-red-500 uppercase mt-2 ml-4 tracking-widest">Requerido</span>}
                             </div>
-                            <div className="flex flex-col">
-                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-3 ml-1">Fecha Evento</label>
-                                <input
-                                    type="date" name="date" value={formData.date} onChange={handleChange}
-                                    className="w-full px-6 py-4 rounded-[1.5rem] bg-gray-50 dark:bg-white/5 border-2 border-transparent transition-all font-bold text-sm text-gray-900 dark:text-white outline-none"
-                                    onFocus={(e) => { e.target.style.borderColor = accent; }}
-                                    onBlur={(e) => { e.target.style.borderColor = 'transparent'; }}
-                                />
-                            </div>
-                        </div>
 
-                        <div className="grid grid-cols-2 gap-4">
                             <div className="flex flex-col">
-                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-3 ml-1">Recompensa (Puntos)</label>
+                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-3 ml-1">Link Maps (Opcional)</label>
                                 <div className="relative group">
-                                    <Trophy className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                                    <Plus className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                                     <input
-                                        type="number" name="points" value={formData.points} onChange={handleChange}
-                                        className="w-full pl-12 pr-6 py-4 rounded-[1.5rem] bg-gray-50 dark:bg-white/5 border-2 border-transparent transition-all font-bold text-sm text-gray-900 dark:text-white outline-none dark:placeholder:text-gray-500"
+                                        type="text"
+                                        name="location.mapUrl"
+                                        value={formData.location.mapUrl}
+                                        onChange={handleChange}
+                                        placeholder="https://maps..."
+                                        className="w-full pl-12 pr-6 py-4 rounded-[1.5rem] bg-gray-50 dark:bg-white/5 border-2 border-transparent transition-all font-bold text-sm text-gray-900 dark:text-white outline-none"
                                         onFocus={(e) => { e.target.style.borderColor = accent; }}
                                         onBlur={(e) => { e.target.style.borderColor = 'transparent'; }}
                                     />
                                 </div>
                             </div>
+
+                            {/* FILA 2: FECHA Y DURACIÓN */}
+                            <div className="flex flex-col">
+                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-3 ml-1">Fecha Evento</label>
+                                <div className="relative">
+                                    <Calendar className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                                    <input
+                                        type="date"
+                                        name="date"
+                                        value={formData.date}
+                                        onChange={handleChange}
+                                        className="w-full pl-12 pr-6 py-4 rounded-[1.5rem] bg-gray-50 dark:bg-white/5 border-2 border-transparent transition-all font-bold text-sm text-gray-900 dark:text-white outline-none appearance-none"
+                                        onFocus={(e) => { e.target.style.borderColor = accent; }}
+                                        onBlur={(e) => { e.target.style.borderColor = 'transparent'; }}
+                                    />
+                                </div>
+                            </div>
+
                             <div className="flex flex-col">
                                 <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-3 ml-1">Duración</label>
                                 <div className="relative group">
                                     <Clock className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                                     <input
-                                        type="text" name="duration" value={formData.duration} onChange={handleChange}
+                                        type="text"
+                                        name="duration"
+                                        value={formData.duration}
+                                        onChange={handleChange}
                                         placeholder="Ej: 3 meses"
-                                        className="w-full pl-12 pr-6 py-4 rounded-[1.5rem] bg-gray-50 dark:bg-white/5 border-2 border-transparent transition-all font-bold text-sm text-gray-900 dark:text-white outline-none dark:placeholder:text-gray-500"
+                                        className="w-full pl-12 pr-6 py-4 rounded-[1.5rem] bg-gray-50 dark:bg-white/5 border-2 border-transparent transition-all font-bold text-sm text-gray-900 dark:text-white outline-none"
                                         onFocus={(e) => { e.target.style.borderColor = accent; }}
                                         onBlur={(e) => { e.target.style.borderColor = 'transparent'; }}
                                     />
                                 </div>
                             </div>
+
+                            {/* FILA 3: RECOMPENSA Y META */}
                             <div className="flex flex-col">
-                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-3 ml-1">Meta de Participantes</label>
+                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-3 ml-1">Recompensa (Puntos)</label>
+                                <div className="relative group">
+                                    <Trophy className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                                    <input
+                                        type="number"
+                                        name="points"
+                                        value={formData.points}
+                                        onChange={handleChange}
+                                        className="w-full pl-12 pr-6 py-4 rounded-[1.5rem] bg-gray-50 dark:bg-white/5 border-2 border-transparent transition-all font-bold text-sm text-gray-900 dark:text-white outline-none"
+                                        onFocus={(e) => { e.target.style.borderColor = accent; }}
+                                        onBlur={(e) => { e.target.style.borderColor = 'transparent'; }}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col">
+                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-3 ml-1">Meta Participantes</label>
                                 <div className="relative group">
                                     <Users className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                                     <input
-                                        type="number" name="participants" value={formData.participants} onChange={handleChange}
-                                        placeholder="Ej: 50"
-                                        className="w-full pl-12 pr-6 py-4 rounded-[1.5rem] bg-gray-50 dark:bg-white/5 border-2 border-transparent transition-all font-bold text-sm text-gray-900 dark:text-white outline-none dark:placeholder:text-gray-500"
+                                        type="number"
+                                        name="participants"
+                                        value={formData.participants}
+                                        onChange={handleChange}
+                                        className="w-full pl-12 pr-6 py-4 rounded-[1.5rem] bg-gray-50 dark:bg-white/5 border-2 border-transparent transition-all font-bold text-sm text-gray-900 dark:text-white outline-none"
                                         onFocus={(e) => { e.target.style.borderColor = accent; }}
                                         onBlur={(e) => { e.target.style.borderColor = 'transparent'; }}
                                     />

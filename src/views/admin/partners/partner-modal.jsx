@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     X, Save, Loader2, UploadCloud, Pin, Eye,
     Building2, ShieldCheck, Palette, Layout,
-    Zap, Award, ChevronDown, CheckCircle2, EyeOff
+    Zap, Award, ChevronDown, CheckCircle2, EyeOff, Globe
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ConfirmModal from '../../../components/shared/ConfirmModal';
@@ -26,6 +26,7 @@ const PartnerFormModal = ({ isOpen, onClose, themeColor }) => {
         mainColor: '#2E8B57',
         description: '',
         environmentalCommitment: '',
+        websiteUrl: '', // <--- AGREGADO
         isPinned: false,
         isVisible: true,
         rewardsCount: 0,
@@ -35,9 +36,22 @@ const PartnerFormModal = ({ isOpen, onClose, themeColor }) => {
     const [formData, setFormData] = useState(initialState);
     const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '', variant: 'danger' });
 
+    // CORRECCIÓN: Lógica de carga de datos para edición
     useEffect(() => {
         if (isOpen) {
-            setFormData(activePartner || initialState);
+            if (activePartner) {
+                // Hacemos un merge para evitar valores undefined en los inputs
+                setFormData({
+                    ...initialState,
+                    ...activePartner,
+                    // Aseguramos que los campos de texto nunca sean null
+                    websiteUrl: activePartner.websiteUrl || '',
+                    description: activePartner.description || '',
+                    environmentalCommitment: activePartner.environmentalCommitment || ''
+                });
+            } else {
+                setFormData(initialState);
+            }
         }
     }, [isOpen, activePartner]);
 
@@ -60,14 +74,13 @@ const PartnerFormModal = ({ isOpen, onClose, themeColor }) => {
 
         const payload = {
             ...formData,
-            logo: finalImageUrl.trim() === ''
-                ? 'https://via.placeholder.com/150'
-                : finalImageUrl,
+            logo: finalImageUrl.trim() === '' ? 'https://via.placeholder.com/150' : finalImageUrl,
             isLocked: false
         };
 
         try {
             if (activePartner) {
+                // Importante: pasar el ID por separado si tu mutation lo requiere
                 await updatePartner({ id: activePartner._id, ...payload }).unwrap();
             } else {
                 await createPartner(payload).unwrap();
@@ -78,7 +91,7 @@ const PartnerFormModal = ({ isOpen, onClose, themeColor }) => {
             setModalConfig({
                 isOpen: true,
                 title: 'Error al Guardar',
-                message: error.data?.message || 'Verifica que todos los datos sean correctos e intenta de nuevo.',
+                message: error.data?.message || 'Verifica los datos e intenta de nuevo.',
                 variant: 'danger'
             });
         }
@@ -89,34 +102,32 @@ const PartnerFormModal = ({ isOpen, onClose, themeColor }) => {
     const isLoading = isCreating || isUpdating;
 
     return createPortal(
-        <div className="fixed inset-0 z-[99999] flex justify-end bg-black/70 backdrop-blur-md animate-in fade-in transition-all" onClick={onClose}>
+        <div className="fixed inset-0 z-[99999] flex justify-end bg-black/70 backdrop-blur-md transition-all" onClick={onClose}>
             <div
-                className="bg-white dark:bg-gray-900 w-full max-w-xl h-full shadow-2xl border-l border-gray-100 dark:border-white/10 flex flex-col animate-in slide-in-from-right duration-300 overflow-hidden"
+                className="bg-white dark:bg-gray-900 w-full max-w-xl h-full shadow-2xl flex flex-col overflow-hidden"
                 onClick={e => e.stopPropagation()}
             >
-
-                {/* HEADER */}
-                <div className="p-8 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-white/5">
+                {/* HEADER (Igual al tuyo) */}
+                <div className="p-8 border-b dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-white/5">
                     <div className="flex items-center gap-4">
-                        <div className="p-3 text-white rounded-[1.5rem] shadow-xl" style={{ backgroundColor: accent, boxShadow: `0 8px 25px ${accent} 40` }}>
+                        <div className="p-3 text-white rounded-[1.5rem]" style={{ backgroundColor: accent }}>
                             {activePartner ? <ShieldCheck size={24} /> : <Building2 size={24} />}
                         </div>
                         <div>
-                            <h2 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">
+                            <h2 className="text-2xl font-black dark:text-white uppercase tracking-tighter">
                                 {activePartner ? 'Editar Socio' : 'Nuevo Aliado'}
                             </h2>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Gestión estratégica de alianzas corporativas</p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-3 hover:bg-white dark:hover:bg-white/10 rounded-2xl transition-all group shadow-sm active:scale-90">
-                        <X size={20} className="text-gray-400 group-hover:text-red-500" />
+                    <button onClick={onClose} className="p-3 hover:bg-white dark:hover:bg-white/10 rounded-2xl transition-all">
+                        <X size={20} className="text-gray-400" />
                     </button>
                 </div>
 
                 {/* FORM BODY */}
-                <div className="p-8 overflow-y-auto custom-scrollbar space-y-8 flex-1">
+                <div className="p-8 overflow-y-auto space-y-8 flex-1">
 
-                    {/* SECCIÓN 1: Identidad Corporativa */}
+                    {/* SECCIÓN 1: Perfil */}
                     <div className="space-y-6">
                         <div className="flex items-center gap-2 border-l-4 pl-4" style={{ borderColor: accent }}>
                             <Zap size={18} style={{ color: accent }} />
@@ -125,19 +136,35 @@ const PartnerFormModal = ({ isOpen, onClose, themeColor }) => {
 
                         <div className="space-y-4">
                             <div className="flex flex-col">
-                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-3 ml-1">Nombre de la Entidad</label>
+                                <label className="text-[10px] font-black uppercase text-gray-400 mb-3 ml-1">Nombre de la Entidad</label>
                                 <input
                                     type="text" name="name" required value={formData.name} onChange={handleChange}
                                     placeholder="Ej: Banco Nacional del Perú"
-                                    className="w-full px-6 py-4 rounded-[1.5rem] bg-gray-50 dark:bg-white/5 border-2 border-transparent transition-all font-bold text-gray-900 dark:text-white outline-none focus:bg-white dark:focus:bg-gray-800 dark:placeholder:text-gray-500"
-                                    onFocus={(e) => { e.target.style.borderColor = accent; }}
-                                    onBlur={(e) => { e.target.style.borderColor = 'transparent'; }}
+                                    className="w-full px-6 py-4 rounded-[1.5rem] bg-gray-50 dark:bg-white/5 border-2 border-transparent font-bold text-gray-900 dark:text-white outline-none focus:bg-white dark:focus:bg-gray-800"
                                 />
+                            </div>
+
+                            {/* NUEVO CAMPO: SITIO WEB */}
+                            <div className="flex flex-col">
+                                <label className="text-[10px] font-black uppercase text-gray-400 mb-3 ml-1">Sitio Web Oficial</label>
+                                <div className="relative group">
+                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400">
+                                        <Globe size={18} />
+                                    </div>
+                                    <input
+                                        type="url"
+                                        name="websiteUrl"
+                                        value={formData.websiteUrl}
+                                        onChange={handleChange}
+                                        placeholder="www.aliado-ejemplo.com"
+                                        className="w-full pl-14 pr-6 py-4 rounded-[1.5rem] bg-gray-50 dark:bg-white/5 border-2 border-transparent font-bold text-gray-900 dark:text-white outline-none focus:bg-white dark:focus:bg-gray-800"
+                                    />
+                                </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="flex flex-col">
-                                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-3 ml-1">Tipo de Filtro</label>
+                                    <label className="text-[10px] font-black uppercase text-gray-400 mb-3 ml-1">Tipo de Filtro</label>
                                     <CustomSelect
                                         value={formData.filterType}
                                         onChange={(v) => setFormData({ ...formData, filterType: v })}
@@ -151,13 +178,11 @@ const PartnerFormModal = ({ isOpen, onClose, themeColor }) => {
                                     />
                                 </div>
                                 <div className="flex flex-col">
-                                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-3 ml-1">Etiqueta Visible</label>
+                                    <label className="text-[10px] font-black uppercase text-gray-400 mb-3 ml-1">Etiqueta Visible</label>
                                     <input
                                         type="text" name="typeLabel" value={formData.typeLabel} onChange={handleChange}
                                         placeholder="Ej: Organización"
-                                        className="w-full px-6 py-4 rounded-[1.5rem] bg-gray-50 dark:bg-white/5 border-2 border-transparent transition-all font-bold text-sm text-gray-900 dark:text-white outline-none dark:placeholder:text-gray-500"
-                                        onFocus={(e) => { e.target.style.borderColor = accent; }}
-                                        onBlur={(e) => { e.target.style.borderColor = 'transparent'; }}
+                                        className="w-full px-6 py-4 rounded-[1.5rem] bg-gray-50 dark:bg-white/5 border-2 border-transparent font-bold text-sm text-gray-900 dark:text-white outline-none"
                                     />
                                 </div>
                             </div>
@@ -249,12 +274,12 @@ const PartnerFormModal = ({ isOpen, onClose, themeColor }) => {
                 </div>
 
                 {/* FOOTER */}
-                <div className="p-8 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 flex gap-4">
+                <div className="p-8 border-t dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 flex gap-4">
                     <button onClick={onClose} className="flex-1 px-6 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest text-gray-500 hover:bg-gray-200 dark:hover:bg-white/10 transition-all">Cancelar</button>
                     <button
                         type="button" onClick={handleSubmit} disabled={isLoading}
                         className="flex-[2] px-10 py-4 text-white rounded-[1.5rem] text-[12px] font-black uppercase tracking-[0.2em] transition-all shadow-2xl flex items-center justify-center gap-3 active:scale-95"
-                        style={{ backgroundColor: accent, boxShadow: `0 15px 35px ${accent}40` }}
+                        style={{ backgroundColor: accent }}
                     >
                         {isLoading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
                         {activePartner ? 'Actualizar Socio' : 'Guardar Alianza'}

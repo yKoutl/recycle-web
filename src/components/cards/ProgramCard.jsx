@@ -29,7 +29,7 @@ const ProgramCard = ({ program, t, isFocused, isJoined }) => {
     const image = program.imageUrl || program.image;
     const points = Number(program.points ?? program.ecopoints ?? 0);
     const participants = Number(program.participants ?? 0);
-    const location = program.location || 'Sin ubicacion';
+    const location = program.location.name || 'Sin ubicacion';
 
     return (
         <div className={`group h-full flex flex-col transition-all duration-200 ${isFocused ? 'brightness-[1.06]' : ''}`}>

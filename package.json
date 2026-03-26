@@ -13,6 +13,7 @@
     "@google/generative-ai": "^0.24.1",
     "@pdf-viewer/react": "^1.16.1",
     "@reduxjs/toolkit": "^2.11.2",
+    "axios": "^1.13.6",
     "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "firebase": "^12.11.0",

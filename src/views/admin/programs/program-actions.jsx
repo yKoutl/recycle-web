@@ -21,11 +21,20 @@ const ProgramsList = ({ themeColor }) => {
 
     const categories = ['Todos', ...new Set(programs.map(p => p.category || 'Sin categoría'))];
 
+    // 1. CORRECCIÓN EN EL FILTRO (Búsqueda segura)
     const filteredPrograms = programs.filter(program => {
         const matchesCategory = selectedCategory === 'Todos' || program.category === selectedCategory;
-        const matchesSearch = program.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+
+        // Obtenemos el nombre de la ubicación de forma segura (soporta objeto o string antiguo)
+        const locationName = typeof program.location === 'object'
+            ? (program.location?.name || '')
+            : (program.location || '');
+
+        const matchesSearch =
+            program.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             (program.description || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (program.location || '').toLowerCase().includes(searchQuery.toLowerCase());
+            locationName.toLowerCase().includes(searchQuery.toLowerCase());
+
         const matchesDate = !dateFilter || (program.date && program.date.includes(dateFilter));
         return matchesCategory && matchesSearch && matchesDate;
     });
@@ -57,7 +66,14 @@ const ProgramsList = ({ themeColor }) => {
     const stats = [
         { label: 'Total', value: programs.length, icon: Layout, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-500/20' },
         { label: 'Participantes', value: programs.reduce((acc, curr) => acc + (curr.participants || 0), 0), icon: Users, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-500/10 border-blue-500/20' },
-        { label: 'Ubicaciones', value: new Set(programs.map(p => p.location)).size, icon: MapPin, color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-500/10 border-orange-500/20' },
+        {
+            label: 'Ubicaciones',
+            // Mapeamos a .name para que el Set cuente nombres únicos, no instancias de objetos
+            value: new Set(programs.map(p => typeof p.location === 'object' ? p.location?.name : p.location)).size,
+            icon: MapPin,
+            color: 'text-orange-500',
+            bg: 'bg-orange-50 dark:bg-orange-500/10 border-orange-500/20'
+        },
     ];
 
     return (
@@ -222,7 +238,11 @@ const ProgramsList = ({ themeColor }) => {
                                     <div className="flex justify-between items-center">
                                         <span className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase tracking-widest">
                                             <MapPin size={12} style={{ color: accent }} />
-                                            {program.location || 'N/A'}
+                                            {/* Renderizado Seguro: Si es objeto mostramos .name, si es string lo mostramos directo */}
+                                            {typeof program.location === 'object'
+                                                ? (program.location?.name || 'N/A')
+                                                : (program.location || 'N/A')
+                                            }
                                         </span>
                                         <span className="flex items-center gap-1.5 text-slate-400 text-[10px] font-black uppercase tracking-widest">
                                             <Users size={12} />
